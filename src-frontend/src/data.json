@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "fieldName": "email",
+    "type": "email",
+    "value": "demlabz@@gmail.com"
+  },
+  {
+    "id": 2,
+    "fieldName": "city",
+    "type": "text",
+    "value": ""
+  },
+  {
+    "id": 3,
+    "fieldName": "state",
+    "type": "text",
+    "value": ""
+  }
+]

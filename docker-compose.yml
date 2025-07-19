@@ -1,0 +1,48 @@
+version: '3.9'
+
+services:
+  healthcompetition:
+    container_name: healthcompetition
+    build: .
+    ports:
+      - "80:80"
+      - "5555:5555" # Celery Flower task monitoring - do not open to public - only for local network for debugging
+      - "9001:9001" # Supervisord process monitoring - do not open to public - only for local network for debugging
+      - "8000:8000" # Django admin space - do not open to public - only for local network for debugging
+    volumes:
+      - django_data:/health_competition/src-backend/data
+    environment:
+      - POSTGRES_HOST=healthcompetition-database
+      - POSTGRES_DB=healthcompetition
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - DEBUG=false
+      - STRAVA_CLIENT_ID=000000
+      - STRAVA_CLIENT_SECRET=<secret_key>
+      - REACT_APP_SENTRY_DSN=https://<PUBLIC_KEY>@<HOST>/<PROJECT_ID>
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+
+  database:
+    image: postgres:15
+    container_name: healthcompetition-database
+    environment:
+      - POSTGRES_DB=healthcompetition
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  django_data:

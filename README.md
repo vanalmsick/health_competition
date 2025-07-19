@@ -22,8 +22,8 @@ version: '3.9'
 
 services:
   healthcompetition:
+    image: vanalmsick/health_competition
     container_name: healthcompetition
-    build: .
     ports:
       - "80:80"
       - "5555:5555" # Celery Flower task monitoring - do not open to public - only for local network for debugging

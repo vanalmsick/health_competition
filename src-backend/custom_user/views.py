@@ -104,7 +104,7 @@ class LinkStravaView(APIView):
         )
 
         if response.ok is False:
-            return Response({"message": "Invalid Strava linkage code."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Invalid Strava linkage code"}, status=status.HTTP_400_BAD_REQUEST)
 
         strava_tokens = response.json()
         setattr(user, 'strava_refresh_token', strava_tokens.get('refresh_token', None))
@@ -112,7 +112,13 @@ class LinkStravaView(APIView):
         user.save()
 
         cache.set(f"strava_access_token_{user.id}", strava_tokens.get('access_token', None), int(strava_tokens.get('expires_in', 21600)) - 60)
-        sync_strava(user__id=user.id)
+        try:
+            sync_strava(user__id=user.id)
+        except requests.exceptions.HTTPError as err:
+            if err.response.status_code == 401:
+                return Response({'message': 'Access to activities denied by Strava. Not sufficient permissions to download activities.', 'original': err.response.json()}, status=status.HTTP_403_FORBIDDEN)
+            else:
+                raise Response(err.response.json(), status=err.response.status_code)
 
         return Response({"message": "Successfully linked Strava."}, status=status.HTTP_200_OK)
 

@@ -22,7 +22,7 @@ export function InitStravaLink() {
     const encodedBaseUrl = encodeURIComponent(baseUrl);
 
     const isIOS = () => {
-      return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     };
 
     const urlSecondPart = 'client_id=156364&response_type=code&approval_prompt=force&scope=profile:read_all,activity:read_all&redirect_uri=' + encodedBaseUrl;
@@ -61,15 +61,12 @@ export function InitStravaLink() {
     // redirect screen
     return (
         <PageWrapper>
-            If you are not redirected automatically, follow this <a className="text-blue-500 hover:underline" href={(urlFirstPart + urlSecondPart)}>link to Strava</a>.
+            If you are not redirected automatically, follow this <a className="text-blue-500 hover:underline"
+                                                                    href={(urlFirstPart + urlSecondPart)}>link to
+            Strava</a>.
         </PageWrapper>
     )
 
-}
-
-
-function wait(seconds) {
-  return new Promise(resolve => setTimeout(resolve, seconds * 1000));
 }
 
 
@@ -78,44 +75,53 @@ export function ReturnStravaLink() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const [linkStrava, {error: linkStravaError}] = useLinkStravaMutation();
+    const [linkStrava, {
+        data: linkStravaData,
+        error: linkStravaError,
+        isLoading: linkStravaIsLoading,
+        isSuccess: linkStravaIsSuccess,
+        isError: linkStravaIsError,
+    }] = useLinkStravaMutation();
 
-    const { search } = useLocation();
+    const {search} = useLocation();
     const query = new URLSearchParams(search);
     const searchCode = query.get('code'); // null if not present
     const searchScope = query.get('scope'); // null if not present
 
     const [errorMsg, setErrorMsg] = React.useState(null);
 
-    const waitAndRedirect = async () => {
-        await wait(5); // waits for 3 seconds
-        navigate('/strava/link');
-    }
+    useEffect(() => {
+        if (!(linkStravaIsLoading || linkStravaIsSuccess || linkStravaIsError)) {
+            if (searchCode === null) {
+                // send user back to set up link page
+                console.log('No auth strava code');
+                setErrorMsg('No auth code received from Strava. Please try again.');
+                navigate('/strava/link');
+            } else {
+                linkStrava(searchCode)
+                    .unwrap()
+                    .then(() => {
+                        // successful linkage - redirect user to dashboard
+                        console.log('Successfully linked Strava');
+                        dispatch(workoutsApi.util.invalidateTags(['Workout']));
+                        dispatch(usersApi.util.invalidateTags(['User']));
+                        navigate('/dashboard');
+                    })
+                    .catch((err) => {
+                        // send user back to set up link page
+                        console.error('Strava linkage error (1):', err);
+                        setErrorMsg(`Strava linkage error (${err?.status} / ${err?.data?.message}). Please try again.`);
+                    });
+            }
+        }
+    }, [])
 
     useEffect(() => {
-        if (searchCode === null) {
-            // send user back to set up link page
-            console.log('No auth strava code (redirecting back to link page)');
-            setErrorMsg('No auth code received from Strava. Please try again.');
-            waitAndRedirect();
-        } else {
-            linkStrava(searchCode)
-                .unwrap()
-                .then(() => {
-                    // successful linkage - redirect user to dashboard
-                    console.log('Successfully linked Strava');
-                    dispatch(workoutsApi.util.invalidateTags(['Workout']));
-                    dispatch(usersApi.util.invalidateTags(['User']));
-                    navigate('/dashboard');
-                })
-                .catch((err) => {
-                    // send user back to set up link page
-                    console.error('Strava linkage error (redirecting back to link page):', err);
-                    setErrorMsg(`Strava linkage error (${err?.status} / ${err?.error} / ${err?.originalStatus} / ${err?.message}). Please try again.`);
-                    waitAndRedirect();
-                });
+        if (linkStravaError) {
+            console.error('Strava linkage error (2):', linkStravaError);
+            setErrorMsg(`Strava linkage error (${linkStravaError?.status} / ${linkStravaError?.message}). Please try again.`);
         }
-    })
+    }, [linkStravaError])
 
     // error message
     if (errorMsg) {
@@ -123,8 +129,10 @@ export function ReturnStravaLink() {
             <PageWrapper additionClasses="h-screen flex items-center justify-center">
                 <div className="text-center">
                     <p className="p-2">{errorMsg}</p>
-                    <p className="p-0.5"><a className="text-blue-500 hover:underline" href='/strava/link'>Click here to <b>try again linking Strava</b></a></p>
-                    <p className="p-0.5"><a className="text-blue-500 hover:underline" href='/dashboard'>Or go back to the <b>Dashboard</b></a></p>
+                    <p className="p-0.5"><a className="text-blue-500 hover:underline" href='/strava/link'>Click here
+                        to <b>try again linking Strava</b></a></p>
+                    <p className="p-0.5"><a className="text-blue-500 hover:underline" href='/dashboard'>Or go back to
+                        the <b>Dashboard</b></a></p>
                 </div>
             </PageWrapper>
         )

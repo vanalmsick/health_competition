@@ -15,7 +15,7 @@ import {PageWrapper} from "../utils/miscellaneous";
 function BaseHome({children}) {
     return (
         <div className="relative min-h-screen bg-cover bg-center"
-             style={{backgroundImage: "url('/running-4782722_1920.jpg')"}}>
+             style={{backgroundImage: "url('/running.jpg')"}}>
 
             <div className="absolute inset-0 bg-black/50 z-0"></div>
 

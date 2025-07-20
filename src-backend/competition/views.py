@@ -126,7 +126,10 @@ class StatsPermissions(BasePermission):
         return False
 
     def has_object_permission(self, request, view, obj):
-        return (request.user.id == obj.get('competition', {}).get('owner', None)) or (request.user.id in obj.get('competition', {}).get('member', []))
+        competition_lst = Competition.objects.filter(
+            Q(pk=view.kwargs.get('competition', 0)) & (Q(owner=request.user) | Q(user=request.user))
+        )
+        return len(competition_lst) > 0
 
 
 class CompetitionStatsQueryView(APIView):

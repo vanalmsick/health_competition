@@ -2,6 +2,9 @@ import React, {useEffect, useState} from "react";
 import {useJoinCompetitionMutation} from "../utils/reducers/joinSlice";
 import {useNavigate} from "react-router-dom";
 import {JoinButton, Modal, SingleForm} from "./basicComponents";
+import {competitionsApi} from "../utils/reducers/competitionsSlice";
+import {usersApi} from "../utils/reducers/usersSlice";
+import {useDispatch} from "react-redux";
 
 
 const fields = {
@@ -20,6 +23,7 @@ const fields = {
 
 export default function JoinCompetitionForm({setModalState, join_code= null}) {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const [values, setValues] = useState({});
     const [fieldErrors, setFieldErrors] = useState({});
@@ -60,6 +64,8 @@ export default function JoinCompetitionForm({setModalState, join_code= null}) {
             setModalState(false);
             document.body.classList.remove('body-no-scroll');
             navigate('/competition/' + result.competition);
+            dispatch(competitionsApi.util.invalidateTags(['Competition']));
+            dispatch(usersApi.util.invalidateTags(['User']));
         } catch (err) {
             console.error('Join Competition failed', err);
             setFieldErrors(err.data);

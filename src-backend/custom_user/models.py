@@ -145,12 +145,22 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 @receiver(m2m_changed, sender=CustomUser.my_competitions.through)
 def my_competitions_changed_handler(sender, instance, action, pk_set, **kwargs):
     if 'post' in action:
-        if 'add' in action:
-            # instance user obj / pk_set comp id to add
-            trigger_user_change(instance=instance, new=False, changes={'my_competitions': (None, list(pk_set))})
-        elif 'remove' in action or 'clear' in action:
-            # instance user obj / pk_set comp id to remove
-            trigger_user_change(instance=instance, new=False, changes={'my_competitions': (list(pk_set), None)})
+        if isinstance(instance, CustomUser):
+            if 'add' in action:
+                # instance user obj / pk_set comp id to add
+                trigger_user_change(instance=instance, new=False, changes={'my_competitions': (None, list(pk_set))})
+            elif 'remove' in action or 'clear' in action:
+                # instance user obj / pk_set comp id to remove
+                trigger_user_change(instance=instance, new=False, changes={'my_competitions': (list(pk_set), None)})
+        else: # is instance of Competition
+            for user_id in list(pk_set):
+                user_obj = CustomUser.objects.get(pk=user_id)
+                if 'add' in action:
+                    # instance competition obj / pk_set user id to add
+                    trigger_user_change(instance=user_obj, new=False, changes={'my_competitions': (None, [instance.pk])})
+                elif 'remove' in action or 'clear' in action:
+                    # instance competition obj / pk_set user id to remove
+                    trigger_user_change(instance=user_obj, new=False, changes={'my_competitions': ([instance.pk], None)})
 
 
 

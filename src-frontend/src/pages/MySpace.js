@@ -8,10 +8,10 @@ import {
     Timer,
     Ruler,
 } from 'lucide-react';
-import {useGetWorkoutsQuery} from "../utils/reducers/workoutsSlice";
+import {useGetWorkoutsQuery, workoutsApi} from "../utils/reducers/workoutsSlice";
 import WorkoutForm, {workoutTypes} from "../forms/workoutForm";
 import _ from 'lodash';
-import {useGetUserByIdQuery} from "../utils/reducers/usersSlice";
+import {useGetUserByIdQuery, usersApi} from "../utils/reducers/usersSlice";
 import {useGetCompetitionsQuery} from "../utils/reducers/competitionsSlice";
 import CompetitionForm from "../forms/competitionForm";
 import PersonalGoalsForm from "../forms/personalGoalsForm";
@@ -29,7 +29,7 @@ import {
 } from "../forms/basicComponents";
 import {BoxSection, ErrorBoxSection, PageWrapper} from "../utils/miscellaneous";
 import {SectionLoader} from "../utils/loaders";
-
+import {useDispatch} from "react-redux";
 
 
 function WelcomeBox({user, workouts, setLinkStrava}) {
@@ -103,6 +103,13 @@ function WorkoutsBox({workouts, user, setLinkStrava}) {
 
     const [showEditWorkoutModal, setShowEditWorkoutModal] = useState(false);
     const stravaLinked = user?.strava_athlete_id !== null;
+    const dispatch = useDispatch();
+
+    function refreshWorkouts() {
+        dispatch(workoutsApi.util.invalidateTags(['Workout']));
+        dispatch(usersApi.util.invalidateTags(['User']));
+        window.confirm('Not yet implemented');
+    }
 
     return (
         <BoxSection>
@@ -112,7 +119,7 @@ function WorkoutsBox({workouts, user, setLinkStrava}) {
                 <div className="p-0">
                     {
                         (stravaLinked) ? <SyncStravaButton additionalClasses="my-0.5 sm:my-0"
-                                                           onClick={() => window.confirm('Not yet implemented')}/> :
+                                                           onClick={() => refreshWorkouts()}/> :
                             <StravaButton additionalClasses="my-0.5 sm:my-0"
                                           label={"Link Strava for Automatic Import"}
                                           onClick={() => setLinkStrava(true)}/>
@@ -133,30 +140,30 @@ function WorkoutsBox({workouts, user, setLinkStrava}) {
                         </td>
                     </tr>
                 ) : (
-                workouts.map((workout, iWorkout) => (
-                    <tr key={"workout" + iWorkout} className="hover:bg-gray-100 dark:hover:bg-gray-900 border-b">
-                        <td className="py-2 px-4 text-sm md:text-base"><span
-                            className="font-semibold">{workout.start_datetime_fmt.date_readable}</span><br/><span
-                            className="text-sm hidden sm:block">{workout.start_datetime_fmt.time_24h}</span></td>
-                        <td className="py-2 px-4 text-sm md:text-base">{workout.duration.substring(0, 5)} <span
-                            className="font-semibold text-base">{workoutTypes[workout.sport_type].label_short} {(workout.distance) ? (
-                            <span className="hidden sm:inline">({workout.distance}km)</span>) : (null)}</span>
-                        </td>
-                        <td className="py-2 px-4 text-sm md:text-base">
-                            {(workout.kcal) ? (
-                                <>
-                                    {Math.round(workout.kcal).toLocaleString()}
-                                    <span className="text-sm"> kcal < /span>
-                                </>
-                            ) : null}
-                        </td>
-                        <td className="py-2 px-4">
-                            <EditButton additionalClasses={"mx-auto"}
-                                        onClick={() => setShowEditWorkoutModal(workout.id)} label={false}
-                                        larger={true}/>
-                        </td>
-                    </tr>
-                ))
+                    workouts.map((workout, iWorkout) => (
+                        <tr key={"workout" + iWorkout} className="hover:bg-gray-100 dark:hover:bg-gray-900 border-b">
+                            <td className="py-2 px-4 text-sm md:text-base"><span
+                                className="font-semibold">{workout.start_datetime_fmt.date_readable}</span><br/><span
+                                className="text-sm hidden sm:block">{workout.start_datetime_fmt.time_24h}</span></td>
+                            <td className="py-2 px-4 text-sm md:text-base">{workout.duration.substring(0, 5)} <span
+                                className="font-semibold text-base">{workoutTypes[workout.sport_type].label_short} {(workout.distance) ? (
+                                <span className="hidden sm:inline">({workout.distance}km)</span>) : (null)}</span>
+                            </td>
+                            <td className="py-2 px-4 text-sm md:text-base">
+                                {(workout.kcal) ? (
+                                    <>
+                                        {Math.round(workout.kcal).toLocaleString()}
+                                        <span className="text-sm"> kcal < /span>
+                                    </>
+                                ) : null}
+                            </td>
+                            <td className="py-2 px-4">
+                                <EditButton additionalClasses={"mx-auto"}
+                                            onClick={() => setShowEditWorkoutModal(workout.id)} label={false}
+                                            larger={true}/>
+                            </td>
+                        </tr>
+                    ))
                 )}
                 </tbody>
             </table>
@@ -201,20 +208,20 @@ function CompetitionsBox({competitions, setJoinCompetition}) {
                         </td>
                     </tr>
                 ) : (
-                competitions.map((competition, iCompetition) => (
-                    <tr key={"comp" + iCompetition} onClick={() => handleClick(competition.id)}
-                        className="hover:bg-gray-100 dark:hover:bg-gray-900 border-b cursor-pointer">
-                        <td className="py-2 px-4"><span
-                            className="font-semibold">{competition.name}</span><br/><span
-                            className="text-sm text-gray-400">{competition.start_date_fmt} - {competition.end_date_fmt}</span>
-                        </td>
-                        <td className="py-2 px-4 text-right text-sm">{(competition.my_rank) ? (<>No. <span
-                                className="text-2xl font-semibold">{competition.my_rank}</span>{(competition.has_teams) ? (
-                                <span><br/><span
-                                    className="font-semibold">{competition.team_name}:</span> Rank {competition.team_rank}</span>) : null}</>) :
-                            <span className="text-gray-400">Not yet started</span>}</td>
-                    </tr>
-                ))
+                    competitions.map((competition, iCompetition) => (
+                        <tr key={"comp" + iCompetition} onClick={() => handleClick(competition.id)}
+                            className="hover:bg-gray-100 dark:hover:bg-gray-900 border-b cursor-pointer">
+                            <td className="py-2 px-4"><span
+                                className="font-semibold">{competition.name}</span><br/><span
+                                className="text-sm text-gray-400">{competition.start_date_fmt} - {competition.end_date_fmt}</span>
+                            </td>
+                            <td className="py-2 px-4 text-right text-sm">{(competition.my_rank) ? (<>No. <span
+                                    className="text-2xl font-semibold">{competition.my_rank}</span>{(competition.has_teams) ? (
+                                    <span><br/><span
+                                        className="font-semibold">{competition.team_name}:</span> Rank {competition.team_rank}</span>) : null}</>) :
+                                <span className="text-gray-400">Not yet started</span>}</td>
+                        </tr>
+                    ))
                 )}
                 </tbody>
             </table>
@@ -478,7 +485,7 @@ function CalendarStats({workouts, last5Weeks}) {
 }
 
 
-function NewStatsBox({workouts, user}) {
+function StatsBox({workouts, user}) {
 
     const [thirtyDayStats, setThirtyDayStats] = useState({activeDays: 0, workouts: 0, distance: 0, kcal: 0, time: 0});
     const [sevenDayStats, setSevenDayStats] = useState([]);
@@ -644,7 +651,7 @@ export default function MySpace() {
                     ) : (
                         <div
                             className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 w-full flex flex-col xl:flex-row mb-4">
-                            <NewStatsBox workouts={workouts} user={user}/>
+                            <StatsBox workouts={workouts} user={user}/>
                         </div>
                     )
                 }

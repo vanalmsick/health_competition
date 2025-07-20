@@ -1,7 +1,8 @@
 import {useEffect, useState} from 'react'
 import {QRCodeSVG} from 'qrcode.react';
-import {useGetUserByIdQuery} from "../utils/reducers/usersSlice";
-import {useSearchParams} from "react-router-dom";
+import {usersApi} from "../utils/reducers/usersSlice";
+import {useDispatch} from "react-redux";
+import {workoutsApi} from "../utils/reducers/workoutsSlice";
 
 const steps = [
     {title: "Welcome", content: "Let's find out how to best navigate the Health Competition!", img: null},
@@ -86,6 +87,13 @@ export function LinkStravaScreen({setModal}) {
     const domain = window.location.origin;
     const url = domain + '/strava/link/';
 
+    const dispatch = useDispatch();
+
+    function refreshWorkouts() {
+        dispatch(workoutsApi.util.invalidateTags(['Workout']));
+        dispatch(usersApi.util.invalidateTags(['User']));
+    }
+
     return (
         <div className="fixed inset-0 z-50 bg-white bg-opacity-80 dark:bg-black dark:bg-opacity-80 flex items-center justify-center">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 max-w-2xl w-full text-center space-y-4">
@@ -135,6 +143,7 @@ export function LinkStravaScreen({setModal}) {
                             onClick={() => {
                                 if (current === 1) {
                                     setModal(false); // Close the modal
+                                    refreshWorkouts(); // refresh workouts in case Strava was linked on phone via QR code
                                 } else {
                                     setCurrent(1); // Go to next step
                                 }

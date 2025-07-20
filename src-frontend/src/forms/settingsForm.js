@@ -1,7 +1,6 @@
-import {usersApi, useUpdateUserMutation} from "../utils/reducers/usersSlice";
+import {useDeleteUserMutation, usersApi, useUpdateUserMutation} from "../utils/reducers/usersSlice";
 import React, {useEffect, useState} from "react";
 import {DeleteButton, Modal, SaveButton, SingleForm, StravaButton} from "./basicComponents";
-import {useDeleteCompetitionMutation} from "../utils/reducers/competitionsSlice";
 import {useNavigate} from "react-router-dom";
 import {useUnlinkStravaMutation} from "../utils/reducers/linkSlice";
 import {useDispatch} from "react-redux";
@@ -113,7 +112,7 @@ export default function SettingsForm({user, setModalState, setLinkStrava}) {
         error: deleteError,
         isLoading: deleteIsLoading,
         isSuccess: deleteIsSuccess
-    }] = useDeleteCompetitionMutation();
+    }] = useDeleteUserMutation();
     const [unlinkStrava, {
         data: unlinkData,
         error: unlinkError,
@@ -149,7 +148,7 @@ export default function SettingsForm({user, setModalState, setLinkStrava}) {
                 console.log('Delete User success:', result);
                 setModalState(false);
                 document.body.classList.remove('body-no-scroll');
-                navigate('/');
+                navigate('/logout');
             }
         } catch (err) {
             console.error('Delete User failed', err);

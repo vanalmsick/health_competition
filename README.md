@@ -16,7 +16,7 @@ docker run vanalmsi/health_competition -p 80:80
 ```
 
 ## Full Production Deployment
-**docker-compose.yml**
+[**docker-compose.yml**](/docker-compose.yml)
 ```
 version: '3.9'
 
@@ -67,24 +67,41 @@ services:
       retries: 5
 ```
 
-### Steps to get the Strava API Client id & secret
+### Environment variables
+| Variable              | Default                             | Definition                                                                                                                                                                                                                                                                                                      |
+|-----------------------|-------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| MAIN_HOST             | "http://localhost"                  | The main hosting url for the Django backend.                                                                                                                                                                                                                                                                    |
+| HOSTS                 | "http://localhost,http://127.0.0.1" | Comma seperated list of hosts for Django. This is used for [ALLOWED_HOSTS](https://docs.djangoproject.com/en/5.2/ref/settings/#allowed-hosts), [CORS_ALLOWED_ORIGINS](https://pypi.org/project/django-cors-headers/), and [CSRF_TRUSTED_ORIGINS](https://pypi.org/project/django-cors-headers/).                |
+| SECRET_KEY            | [a hard-coded string in code]       | Django's [SECRET_KEY](https://docs.djangoproject.com/en/5.2/ref/settings/#std-setting-SECRET_KEY) for cryptographic signing.                                                                                                                                                                                    |
+| TIME_ZONE             | "Europe/London"                     | Timezone for [Django](https://docs.djangoproject.com/en/5.2/ref/settings/#time-zone) and [Celery](https://docs.celeryq.dev/en/stable/userguide/configuration.html#timezone)                                                                                                                                     |
+| DEBUG                 | false                               | Django's DEBUG mode. If true, [CORS_ALLOW_ALL_ORIGINS](https://pypi.org/project/django-cors-headers/) will also be true and the [CACHE](https://docs.djangoproject.com/en/5.2/ref/settings/#caches) will use [Local Memory Cache](https://docs.djangoproject.com/en/5.2/ref/settings/#caches) instead of Redis. |
+| POSTGRES_HOST         | None                                | If set to None, Django will use SQLite as database (might cause database lock errors in production), else this is the host url to the [Postgres database](https://hub.docker.com/_/postgres/).                                                                                                                  |
+| POSTGRES_DB           | "postgres"                          | Database name in [Postgres database](https://hub.docker.com/_/postgres/)                                                                                                                                                                                                                                        | 
+| POSTGRES_USER         | "postgres"                          | Database username in [Postgres database](https://hub.docker.com/_/postgres/)                                                                                                                                                                                                                                    | 
+| POSTGRES_PASSWORD     | ""                                  | Database password in [Postgres database](https://hub.docker.com/_/postgres/)                                                                                                                                                                                                                                    | 
+| REACT_APP_SENTRY_DSN  | None                                | If None no [Sentry.io](https://sentry.io/) error capturing, else please provide the project url https://<PUBLIC_KEY>@<HOST>/<PROJECT_ID>                                                                                                                                                                        | 
+| STRAVA_CLIENT_ID      | "1234321"                           | [Strava API](https://developers.strava.com) Client Id. Please see below how to get one.                                                                                                                                                                                                                         | 
+| STRAVA_CLIENT_SECRET  | "ReplaceWithClientSecret"           | [Strava API](https://developers.strava.com) Client Secret. Please see below how to get one.                                                                                                                                                                                                                     | 
+| REACT_APP_BACKEND_URL | ""                                  | Overwrite the url to the Django API used by React. This is intended for local development outside of the docker container - e.g. http://localhost:8000.                                                                                                                                                         | 
+
+### How to get the Strava API Client id & secret
 1. Login to your Strava account [strava.com/login](https://www.strava.com/login)
 2. Profile picture -> Settings
 3. "My API Application"
 
 ## Do you want to help / contribute?
 ### Code Overview / Structure
-- **Docker Container** for deployment 
-- **Supervisord** to start all processes in docker container
-- **Nginx** to run frontend (React) and proxy traffic to backend (Django) which is run by gunicorn
-#### Frontend *(src-frontend)*
-- **React**
-#### Backend *(src-backend)*
-- **Django** (RestAPI) via gunicorn for production
-- **Redis** as cache/memory and for Celery
-- **Celery** as task que for Django
-- **Celery Beat** for task scheduling for Django
-- **Celery Flower** UI to inspect task que and task status
+- [**Docker Container**](/Dockerfile) for deployment 
+- [**Supervisord**](supervisord.conf) to start all processes in docker container
+- [**Nginx**](/nginx.conf) to run frontend (React) and proxy traffic to backend (Django) which is run by gunicorn
+#### Frontend *([src-frontend](/src-frontend))*
+- [**React**](/src-frontend/src/App.js)
+#### Backend *([src-backend](/src-backend))*
+- [**Django**](/src-backend/health_competition/settings.py) (RestAPI) via gunicorn for production
+- [**Redis**](supervisord.conf) as cache/memory and for Celery
+- [**Celery**](/src-backend/health_competition/celery.py) as task que for Django
+- [**Celery Beat**](supervisord.conf) for task scheduling for Django
+- [**Celery Flower**](supervisord.conf) UI to inspect task que and task status
 
 ### How to run it in dev
 #### Backend - Task-Scheduling (Celery)
@@ -121,3 +138,5 @@ REACT_APP_BACKEND_URL=http://localhost:8000
 - Fix calendar if 30 days cause 6 weeks
 - Improve modal to change teams
 - Add password reset functionality
+- User account deletion causes "maximum recursion depth exceeded" error 
+- Form error of controlled components (incl. tick-box)

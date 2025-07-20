@@ -36,6 +36,7 @@ import {
 } from "../forms/basicComponents";
 import {BoxSection, ErrorBoxSection, PageWrapper, useDarkMode} from "../utils/miscellaneous";
 import {workoutTypes} from "../forms/workoutForm";
+import CompetitionInviteModal from "../forms/shareModal";
 
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Filler, Tooltip, Legend, BarElement, ChartDataLabels);
 
@@ -43,6 +44,7 @@ ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Filler, 
 function CompetitionHead({competition, feed, isOwner}) {
 
     const [showEditCompetitionModal, setShowEditCompetitionModal] = useState(false);
+    const [showInviteCompetitionModal, setShowInviteCompetitionModal] = useState(false);
     const [countTotal, setCountTotal] = useState(0);
     const [countGroups, setCountGroups] = useState({});
 
@@ -82,13 +84,12 @@ function CompetitionHead({competition, feed, isOwner}) {
                         (isOwner) && <SettingsButton  additionalClasses="mx-auto sm:ml-auto sm:mr-0 my-1" onClick={() => setShowEditCompetitionModal(competition.id)}/>
                     }
                     <LeaveButton additionalClasses="mx-auto sm:ml-auto sm:mr-0 my-1" onClick={() => window.confirm('Not yet implemented')} />
-                    <ShareButton  additionalClasses="mx-auto sm:ml-auto sm:mr-0 my-1" onClick={() => window.confirm('Not yet implemented')} />
+                    <ShareButton  additionalClasses="mx-auto sm:ml-auto sm:mr-0 my-1" onClick={() => setShowInviteCompetitionModal(true)} />
                 </div>
             </div>
 
-            {(showEditCompetitionModal) ? (
-                <CompetitionForm setModalState={setShowEditCompetitionModal} competition={competition}/>
-            ) : null}
+            {(showEditCompetitionModal) && <CompetitionForm setModalState={setShowEditCompetitionModal} competition={competition}/>}
+            {(showInviteCompetitionModal) && <CompetitionInviteModal setModalState={setShowInviteCompetitionModal} competition={competition}/>}
 
         </BoxSection>
     )

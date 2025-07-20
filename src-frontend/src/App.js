@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import {useSelector, useDispatch, Provider} from 'react-redux';
-import logo from './logo.svg';
 import './App.css';
 import { store } from './utils/store';
 

@@ -517,7 +517,7 @@ function NewStatsBox({workouts, user}) {
         if (user.goal_workout_minutes !== null) {
             newGoals.push({
                 name: 'Time Goal',
-                value: Math.round(_.sumBy(filtered7Days, item => +item.duration_seconds || 0)),
+                value: Math.round(_.sumBy(filtered7Days, item => +item.duration_seconds || 0) / 60),
                 target: user.goal_workout_minutes,
                 unit: 'min'
             });

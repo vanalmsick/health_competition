@@ -93,7 +93,7 @@ class Competition(models.Model):
         """ trigger recalculation of points_capped if competition changes """
         is_create = self.pk is None
         if self.join_code == '':
-            self.join_code = re.sub(r'[^a-zA-Z0-9]', '', self.name) + str(random.randint(100_000, 999_999))
+            self.join_code = re.sub(r'[^a-zA-Z0-9]', '', self.name)[:8] + str(self.owner.pk).zfill(3) + str(random.randint(10_000, 99_999))
         self.join_code = self.join_code.upper()
         super().save(*args, **kwargs)
         changed = self.get_changed_fields()

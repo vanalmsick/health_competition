@@ -22,7 +22,7 @@ class WorkoutViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         # return all workouts from the user himself/herself
         #time.sleep(3)  # throttle for testing
-        return Workout.objects.filter(Q(user=self.request.user)).order_by('-start_datetime', '-duration', '-id') # | Q(points__goal__competition__user=self.request.user)).distinct().order_by('-start_datetime', '-duration', '-id')
+        return Workout.objects.filter(user__id=self.request.user.id).order_by('-start_datetime', '-duration', '-id') # | Q(points__goal__competition__user=self.request.user)).distinct().order_by('-start_datetime', '-duration', '-id')
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

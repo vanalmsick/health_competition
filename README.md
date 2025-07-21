@@ -88,6 +88,8 @@ services:
 1. Login to your Strava account [strava.com/login](https://www.strava.com/login)
 2. Profile picture -> Settings
 3. "My API Application"
+4. Test the competition (only works with your own Strava account)
+5. If you like the competition, apply to the [Strava developer program](https://share.hsforms.com/1VXSwPUYqSH6IxK0y51FjHwcnkd8) here to also allow other users to link their Strava
 
 ## Do you want to help / contribute?
 ### Code Overview / Structure
@@ -136,7 +138,7 @@ REACT_APP_BACKEND_URL=http://localhost:8000
 
 ### ToDos:
 - Fix calendar if 30 days cause 6 weeks
-- Improve modal to change teams
+- Improve modal to change teams (plus access right issue if not owner)
 - Add password reset functionality
 - User account deletion causes "maximum recursion depth exceeded" error 
 - Form error of controlled components (incl. tick-box)

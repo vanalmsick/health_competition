@@ -55,7 +55,7 @@ export default function JoinTeamForm({setModalState, competition, join_code = nu
     const [filteredTeams, setFilteredTeams] = useState([]);
 
     useEffect(() => {
-        if (teamsIsSuccess || usersIsSuccess) {
+        if (teamsIsSuccess && usersIsSuccess && users && teams) {
             let tmpTeams = [];
             for (const team of teams) {
                 if (team.competition === competition.id) {
@@ -63,7 +63,7 @@ export default function JoinTeamForm({setModalState, competition, join_code = nu
                         'name': team.name,
                         'id': team.id,
                         'user': team.user.map(user => users.find(userItem => userItem.id === user)),
-                        'my': team.user.some(user => users.find(userItem => userItem.id === user).my),
+                        'my': team.user.some(user => users.find(userItem => userItem.id === user)?.my),
                     });
                 }
             }
@@ -111,12 +111,12 @@ export default function JoinTeamForm({setModalState, competition, join_code = nu
                                             <>
                                                 {((team.user.length === 0) ? (
                                                     <button onClick={() => handleTeamDelete(team.id)}
-                                                            className="flex items-center gap-2 px-4 py-2 h-9 mr-2 bg-gray-100 rounded-full hover:bg-gray-300 transition">
+                                                            className="flex items-center gap-2 px-4 py-2 h-9 mr-2 bg-gray-100 dark:bg-gray-900 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 transition">
                                                         <Trash2 className="w-3 h-3"/>
                                                     </button>
                                                 ) : null)}
                                                 <button onClick={() => handleTeamChange(team.id)}
-                                                        className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full hover:bg-gray-300 transition">
+                                                        className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-900 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 transition">
                                                     <UsersRound className="w-3 h-3"/>
                                                     <span className="text-sm break-keep">Join Team</span>
                                                 </button>
@@ -125,7 +125,7 @@ export default function JoinTeamForm({setModalState, competition, join_code = nu
                                         : <div className="text-sm pr-4">My Team</div>
                                 )}
                             </div>
-                            <ul className="list-disc list-inside text-gray-700">
+                            <ul className="list-disc list-inside text-gray-700 dark:text-gray-300">
                                 {team.user.map((user, userindex) => (
                                     <li key={"teamuser" + userindex} className="py-0.5">{user.username}</li>
                                 ))}
@@ -142,14 +142,14 @@ export default function JoinTeamForm({setModalState, competition, join_code = nu
                                 placeholder="Enter team name"
                                 required={true}
                                 disabled={createIsLoading || joinIsLoading || teamsLoading}
-                                className="flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                className="flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 dark:bg-gray-900 focus:ring-blue-400"
                             />
                             {(joinIsLoading || createIsLoading || teamsLoading || teamsIsFetching) ? (
                                 <BeatLoader color="rgb(209 213 219)"/>
                             ) : (
                                 <button type="button" type="submit"
                                         disabled={createIsLoading || joinIsLoading || teamsLoading}
-                                        className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full hover:bg-gray-300 transition">
+                                        className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-900 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 transition">
                                     <PlusIcon className="w-3 h-3"/>
                                     <span className="text-sm break-keep">Create & Join</span>
                                 </button>

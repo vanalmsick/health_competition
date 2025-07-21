@@ -104,7 +104,7 @@ export function LinkStravaScreen({setModal}) {
                             <p className="text-gray-600 dark:text-gray-400">Either manually enter your workouts or link your free Strava
                                 account for automatic workout import.</p>
                             <img src="/how_to_strava_sync.png"/>
-                            <p>Only absolut necessary metrics are synced with Strava:</p>
+                            <p>Only absolutely necessary metrics are synced with Strava:</p>
                             <ul>
                                 <li>• Sport type</li>
                                 <li>• Start time & duration</li>

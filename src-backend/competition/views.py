@@ -59,7 +59,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("Teams are disabled for this competition.")
 
         # only allow user to create a team if they are a member or owner of the competition
-        if not (competition_obj.owner == self.request.user) and not (competition_obj in self.request.user.competitions.all()):
+        if not (competition_obj.owner == self.request.user) and not (competition_obj in self.request.user.my_competitions.all()):
             raise PermissionDenied("You are not a participant of the competition you want to create a team for.")
 
         serializer.save()

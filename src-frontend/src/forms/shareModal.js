@@ -7,14 +7,14 @@ export default function CompetitionInviteModal({competition, setModalState}) {
 
     return (
         <Modal title="Invite Friends" landscape={false} setShowModal={setModalState} isLoading={false}>
-            <div className="text-gray-800">
+            <div className="text-gray-800 dark:text-gray-200">
                 <p><b>Link to join:</b> {url}</p>
                 <p><b>Join code:</b> {competition.join_code}</p>
             </div>
-            <div className="relative bg-gray-100 text-gray-800 rounded-xl p-4">
+            <div className="relative bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300 rounded-xl p-4">
                 <button
                     onClick={() => navigator.clipboard.writeText(document.getElementById('code-block').innerText)}
-                    className="absolute top-2 right-2 text-sm bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded">
+                    className="absolute top-2 right-2 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 px-2 py-1 rounded">
                     Copy
                 </button>
                 <pre id="code-block" className="overflow-x-auto whitespace-pre-wrap">

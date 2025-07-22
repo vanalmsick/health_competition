@@ -222,8 +222,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Strava API
-STRAVA_CLIENT_ID = int(os.environ.get("STRAVA_CLIENT_ID", "1234321"))
+STRAVA_CLIENT_ID = int(os.environ.get("STRAVA_CLIENT_ID", 1234321))
 STRAVA_CLIENT_SECRET = os.environ.get("STRAVA_CLIENT_SECRET", "ReplaceWithClientSecret")
+STRAVA_LIMIT_15MIN = int(os.environ.get("STRAVA_LIMIT_15MIN", 100))
+STRAVA_LIMIT_DAY = int(os.environ.get("STRAVA_LIMIT_DAY", 1000))
 
 
 # Sentry

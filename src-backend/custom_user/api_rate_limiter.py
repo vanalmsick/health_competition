@@ -1,6 +1,7 @@
 # myapp/monitor.py
-from collections import deque
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
+from django.conf import settings
+
 
 class RateLimitExceeded(Exception):
     """Raised when the API rate limit is exceeded."""
@@ -67,4 +68,4 @@ class APIRequestMonitor:
 
 
 # Singleton instance
-strava_api_monitor = APIRequestMonitor(limit_15min=100, limit_day=1_000)
+strava_api_monitor = APIRequestMonitor(limit_15min=settings.STRAVA_LIMIT_15MIN, limit_day=settings.STRAVA_LIMIT_DAY)

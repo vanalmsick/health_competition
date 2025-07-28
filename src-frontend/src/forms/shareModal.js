@@ -7,7 +7,7 @@ export default function CompetitionInviteModal({competition, setModalState}) {
 
     return (
         <Modal title="Invite Friends" landscape={false} setShowModal={setModalState} isLoading={false}>
-            <div className="text-gray-800 dark:text-gray-200">
+            <div className="text-gray-800 dark:text-gray-200 leading-relaxed">
                 <p><b>Link to join:</b> {url}</p>
                 <p><b>Join code:</b> {competition.join_code}</p>
             </div>
@@ -17,7 +17,7 @@ export default function CompetitionInviteModal({competition, setModalState}) {
                     className="absolute top-2 right-2 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 px-2 py-1 rounded">
                     Copy
                 </button>
-                <pre id="code-block" className="overflow-x-auto whitespace-pre-wrap">
+                <pre id="code-block" className="overflow-x-auto whitespace-pre-wrap text-sm">
                     <code>Hi, I am taking part in the "{competition.name}" competition.<br/>It would be even more fun if you'd join, too.<br/>Here is the link to join: {url}</code>
                 </pre>
             </div>

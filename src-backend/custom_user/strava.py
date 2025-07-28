@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db import IntegrityError
 from health_competition.celery import app, is_task_already_executing
+from django.db.models import Q
 
 from workouts.models import Workout
 from .api_rate_limiter import strava_api_monitor, RateLimitExceeded  # Import to trigger initialization
@@ -38,7 +39,13 @@ def daily_strava_sync(self):
         return 'Task already executing. Skipping.'
 
     CustomUser = get_user_model()
-    user_lst = CustomUser.objects.filter(strava_refresh_token__isnull=False, is_active=True, strava_last_synced_at__gt=timezone.now() - datetime.timedelta(hours=20)).order_by('strava_last_synced_at')
+    user_lst = CustomUser.objects.filter(
+        strava_refresh_token__isnull=False,
+        is_active=True
+    ).filter(
+        Q(strava_last_synced_at__lt=timezone.now() - datetime.timedelta(hours=20)) |
+        Q(strava_last_synced_at__isnull=True)
+    ).order_by('strava_last_synced_at', 'pk')
 
     print(f'Syncing Strava for {len(user_lst)} users: {user_lst.values_list("username", flat=True)}')
 

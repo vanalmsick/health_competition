@@ -47,7 +47,8 @@ def daily_strava_sync(self):
         Q(strava_last_synced_at__isnull=True)
     ).order_by('strava_last_synced_at', 'pk')
 
-    print(f'Syncing Strava for {len(user_lst)} users: {user_lst.values_list("username", flat=True)}')
+    user_lst_names = user_lst.values_list("username", flat=True)
+    print(f'Syncing Strava for {len(user_lst)} users: {user_lst_names}')
 
     for user in user_lst:
         try:
@@ -56,6 +57,9 @@ def daily_strava_sync(self):
             sleep_time = _seconds_until_next_interval() + 60
             print(f'Strava sync rate limit exceeded - sleeping for {sleep_time // 60 } mins')
             raise self.retry(exc=exc, countdown=sleep_time)  # retry in next Strava 15min api period
+
+    print('Finished syncing Strava.')
+    return user_lst_names
 
 
 

@@ -37,12 +37,6 @@ def recalc_points(self):
         points_lst = Points.objects.filter(goal=task_group['goal'], workout__user=task_group['user'], workout__start_datetime__gte=task_group['start_datetime']).order_by('workout__start_datetime')
 
         goal = ActivityGoal.objects.get(pk=task_group['goal'])
-        floor_workout = None if goal.min_per_workout is None else goal.min_per_workout / goal.goal * 100
-        cap_workout = None if goal.max_per_workout is None else goal.max_per_workout / goal.goal * 100
-        floor_day = None if goal.min_per_day is None else goal.min_per_day / goal.goal * 100
-        cap_day = None if goal.max_per_day is None else goal.max_per_day / goal.goal * 100
-        floor_week = None if goal.min_per_week is None else goal.min_per_week / goal.goal * 100
-        cap_week = None if goal.max_per_week is None else goal.max_per_week / goal.goal * 100
 
         scorer = Scorer()
         scorer.set_goal(goal)
@@ -54,6 +48,7 @@ def recalc_points(self):
 
     all_tasks.delete()
     print('All points recalculated.')
+    return [{k: str(v) for k, v in i.items()} for i in grouped_tasks]
 
 
 

@@ -1,5 +1,5 @@
 import requests
-import qrcode
+import qrcode, datetime
 from decimal import Decimal
 
 from django.db import models
@@ -13,6 +13,7 @@ from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 
 from competition.scorer import trigger_user_change
+from custom_user.emails.welcome_email import welcome_email
 
 # Create your models here.
 GENDER_CHOICES = [
@@ -133,6 +134,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
         is_create = self.pk is None
         super().save(*args, **kwargs)
+
+        if is_create:
+            eta = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=60 * 5)
+            welcome_email.apply_async(args=[self.pk], eta=eta)
+
         changed = self.get_changed_fields()
         trigger_user_change(
             instance=self,

@@ -3,7 +3,7 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>{EMAIL_SUBJECT}</title>
+    <title>{{ EMAIL_SUBJECT }}</title>
     <style media="all" type="text/css">
     /* -------------------------------------
     GLOBAL RESETS
@@ -62,9 +62,9 @@
     }
     /* pexels-pixabay-47730.jpg */
     .hero-home {
-            background-image: url('{MAIN_HOST}/running.jpg');
+            background-image: url('{{ MAIN_HOST }}/running.jpg');
             background-color: #001440;
-            box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, .2) !important;
+            box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, .3) !important;
             background-size: cover;
             background-position: center;
             border: 1px solid #eaebed;
@@ -115,6 +115,14 @@
       font-size: 16px;
       text-align: center;
     }
+
+    hr {
+      border: none;
+      border-top: 1px solid rgba(0, 0, 0, .2);
+      padding-top: 4px;
+      padding-bottom: 3px;
+    }
+
     /* -------------------------------------
     TYPOGRAPHY
 ------------------------------------- */
@@ -176,17 +184,38 @@
     }
 
     .btn-primary a {
-      background-color: #fc4c02;
-      border-color: #fc4c02;
+      background-color: rgb(7 89 133);
+      border-color: rgb(7 89 133);
       color: #ffffff;
     }
 
     @media all {
       .btn-primary table td:hover {
         background-color: #ffffff !important;
-        color: #fc4c02 !important;
+        color: rgb(7 89 133) !important;
       }
       .btn-primary a:hover {
+        background-color: #ffffff !important;
+        border-color: rgb(7 89 133) !important;
+        color: rgb(7 89 133) !important;
+      }
+
+    }.btn-strava table td {
+      background-color: #0867ec;
+    }
+
+    .btn-strava a {
+      background-color: #fc4c02;
+      border-color: #fc4c02;
+      color: #ffffff;
+    }
+
+    @media all {
+      .btn-strava table td:hover {
+        background-color: #ffffff !important;
+        color: #fc4c02 !important;
+      }
+      .btn-strava a:hover {
         background-color: #ffffff !important;
         border-color: #fc4c02 !important;
         color: #fc4c02 !important;
@@ -348,7 +377,8 @@
             <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="main">
 
               <!-- START MAIN CONTENT AREA -->
-              {MAIN_BODY}
+              {% block main %}
+              {% endblock %}
               <!-- END MAIN CONTENT AREA -->
               </table>
 
@@ -358,7 +388,8 @@
                 <tr>
                   <td class="content-block">
                     <span class="apple-link">Health Competition</span>
-                    <br> Any issues? <a href="mailto:{EMAIL_REPLY_TO}">Send us an Email</a>.
+                    <br> Any issues? <a href="mailto:{{ EMAIL_REPLY_TO }}">Send us an Email</a>.
+                    <br> See the <a href="https://github.com/vanalmsick/health_competition">Source Code</a>.
                   </td>
                 </tr>
               </table>

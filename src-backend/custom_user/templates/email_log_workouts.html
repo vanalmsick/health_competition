@@ -1,0 +1,50 @@
+{% extends 'email_base.html' %}
+
+{% block main %}
+<tr>
+    <td class="wrapper">
+        <p>Hi {{ first_name }},</p>
+        <p>New week, new gains!</p>
+        <p>But first time to <b>log last week's workouts</b> before we send out the leaderboard this afternoon!</p>
+        <hr>
+        <p><b>Your last workouts:</b></p>
+        <table style="text-align: center;">
+            <thead>
+            <tr>
+                <th>Time</th>
+                <th>Workout</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in last_workouts %}
+                <tr style="border-top: thin solid;border-bottom: thin solid;">
+                    <td>{{ item.start_datetime|date:"D, M j H:i" }}</td>
+                    <td>{{ item.duration }} <b>{{ item.sport_type }}</b></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
+            <tbody>
+            <tr>
+                <td align="left">
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                        <tbody>
+                        <tr>
+                            <td><a href="{{ MAIN_HOST }}/dashboard" target="_blank">Log New Workouts</a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <hr>
+        {{ LINK_STRAVA_BLOCK }}
+        <br>
+        <p>Enjoy the Competition.</p>
+        <p>Good luck!</p>
+    </td>
+</tr>
+{% endblock %}

@@ -20,14 +20,28 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
+    # every morning import users strava workouts
     "strava_sync": {
         "task": "custom_user.strava.daily_strava_sync",
         "schedule": crontab(minute="44", hour="4"),
         "args": (),
     },
+    # not needed - just fallback - do all pending point recalc tasks in the morning
     "point_recal": {
         "task": "custom_user.point_recalc.recalc_points",
         "schedule": crontab(minute="55", hour="5"),
+        "args": (),
+    },
+    # every Monday morning ask people who didn't connect Strava to please log their workouts
+    "send_all_log_workouts_email": {
+        "task": "custom_user.emails.celery_emails.send_all_log_workouts_email",
+        "schedule": crontab(day_of_week="1", minute="5", hour="9"),
+        "args": (),
+    },
+    # every Monday afternoon send competition leaderboards out
+    "send_all_leaderboard_emails": {
+        "task": "custom_user.emails.celery_emails.send_all_leaderboard_emails",
+        "schedule": crontab(day_of_week="1", minute="5", hour="15"),
         "args": (),
     },
 }

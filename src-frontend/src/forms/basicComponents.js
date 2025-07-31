@@ -16,6 +16,7 @@ import {
     Scale,
 } from "lucide-react";
 import {BeatLoader} from "react-spinners";
+import TimeField from 'react-simple-timefield';
 
 
 export function Modal({setShowModal, title = null, landscape = false, isLoading = false, children}) {
@@ -93,6 +94,15 @@ export function FormInput({
                               errorMsg = null,
                           }) {
 
+    // detect Andriod phones as time input filed does not work for them reliably
+    const [isAndroid, setIsAndroid] = useState(false);
+    useEffect(() => {
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        if (/android/i.test(userAgent)) {
+            setIsAndroid(true);
+        }
+    }, []);
+
     let additionalClasses = "";
     if (readOnly) {
         additionalClasses += " bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400 ";
@@ -129,69 +139,77 @@ export function FormInput({
                 {/* Input Element */}
                 {
                     (type === "checkbox") ? (
-                            <> {/* Checkbox Input Element has to go before the label */} </>
-                        ) :
-                        (type === "radio") ? (
-                                <>
-                                    {/* Radio Select Input Element */}
-                                    {selectList.map((item, index) => (
-                                        <label key={index} className="inline-flex items-center mr-4 text-gray-700 text-sm">
-                                            <input type="radio" className="form-radio text-gray-700"
-                                                   name={name}
-                                                   tabIndex={tabIndex}
-                                                   disabled={disabled}
-                                                   autoFocus={autoFocus}
-                                                   checked={(item.value === value) ? true : null}
-                                                   onChange={(e) => setValue(e.target.value)}
-                                                   value={item.value}
-                                            />
-                                            <span className="ml-2">{item.label}</span>
-                                        </label>
-                                    ))}
-                                </>
-                            ) :
-                            (type === "select") ? (
-                                    <>
-                                        {/* Dropdown Input Element */}
-                                        <select
-                                            className={"w-full shadow border rounded py-2 px-3 text-gray-700 dark:bg-gray-800 dark:text-gray-500 leading-tight focus:outline-none focus:shadow-outline" + additionalClasses}
-                                            name={name}
-                                            tabIndex={tabIndex}
-                                            required={required}
-                                            disabled={disabled}
-                                            autoFocus={autoFocus}
-                                            value={value}
-                                            onChange={(e) => setValue(e.target.value)}
-                                        >
-                                            <option value="">{(placeholder) ? placeholder : "Select an option"}</option>
-                                            {selectList.map((item, index) => (
-                                                <option key={index} value={item.value}>{item.label}</option>
-                                            ))}
-                                        </select>
-                                    </>
-                                ) :
-                                (
-                                    <>
-                                        {/* All Other Input Elements */}
-                                        <input
-                                            className={"w-full shadow border rounded py-2 px-3 text-gray-700 dark:bg-gray-900 dark:text-gray-500 leading-tight focus:outline-none focus:shadow-outline" + additionalClasses}
-                                            name={name}
-                                            type={type}
-                                            placeholder={placeholder}
-                                            tabIndex={tabIndex}
-                                            required={required}
-                                            readOnly={readOnly}
-                                            disabled={disabled}
-                                            autoFocus={autoFocus}
-                                            autoComplete={autoComplete}
-                                            pattern={pattern}
-                                            value={value}
-                                            list={name + "-suggestions"}
-                                            onChange={(e) => setValue(e.target.value)}
-                                            step={type === "time" ? "60" : undefined}
-                                        />
-                                    </>
-                                )
+                        <> {/* Checkbox Input Element has to go before the label */} </>
+                    ) :
+                    (type === "time" && isAndroid) ? (
+                        <TimeField
+                            value={value}
+                            onChange={(e) => setValue(e.target.value)}
+                            input={<input type="text" className={"w-full shadow border rounded py-2 px-3 text-gray-700 dark:bg-gray-900 dark:text-gray-500 leading-tight focus:outline-none focus:shadow-outline" + additionalClasses} />}
+                            showSeconds={true}
+                        />
+                    ) :
+                    (type === "radio") ? (
+                        <>
+                            {/* Radio Select Input Element */}
+                            {selectList.map((item, index) => (
+                                <label key={index} className="inline-flex items-center mr-4 text-gray-700 text-sm">
+                                    <input type="radio" className="form-radio text-gray-700"
+                                           name={name}
+                                           tabIndex={tabIndex}
+                                           disabled={disabled}
+                                           autoFocus={autoFocus}
+                                           checked={(item.value === value) ? true : null}
+                                           onChange={(e) => setValue(e.target.value)}
+                                           value={item.value}
+                                    />
+                                    <span className="ml-2">{item.label}</span>
+                                </label>
+                            ))}
+                        </>
+                    ) :
+                    (type === "select") ? (
+                        <>
+                            {/* Dropdown Input Element */}
+                            <select
+                                className={"w-full shadow border rounded py-2 px-3 text-gray-700 dark:bg-gray-800 dark:text-gray-500 leading-tight focus:outline-none focus:shadow-outline" + additionalClasses}
+                                name={name}
+                                tabIndex={tabIndex}
+                                required={required}
+                                disabled={disabled}
+                                autoFocus={autoFocus}
+                                value={value}
+                                onChange={(e) => setValue(e.target.value)}
+                            >
+                                <option value="">{(placeholder) ? placeholder : "Select an option"}</option>
+                                {selectList.map((item, index) => (
+                                    <option key={index} value={item.value}>{item.label}</option>
+                                ))}
+                            </select>
+                        </>
+                    ) :
+                    (
+                        <>
+                            {/* All Other Input Elements */}
+                            <input
+                                className={"w-full shadow border rounded py-2 px-3 text-gray-700 dark:bg-gray-900 dark:text-gray-500 leading-tight focus:outline-none focus:shadow-outline" + additionalClasses}
+                                name={name}
+                                type={type}
+                                placeholder={placeholder}
+                                tabIndex={tabIndex}
+                                required={required}
+                                readOnly={readOnly}
+                                disabled={disabled}
+                                autoFocus={autoFocus}
+                                autoComplete={autoComplete}
+                                pattern={pattern}
+                                value={value}
+                                list={name + "-suggestions"}
+                                onChange={(e) => setValue(e.target.value)}
+                                step={type === "time" ? "60" : undefined}
+                            />
+                        </>
+                    )
                 }
 
                 {/* Input User Suggestions */}

@@ -1,5 +1,3 @@
-import datetime, time
-
 from django.conf import settings
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied
@@ -12,8 +10,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework.permissions import BasePermission
 
-from django.db.models import Sum, Avg, Count, ExpressionWrapper, DurationField, F, IntegerField, DateField, Window, Func, FloatField
-from django.db.models.functions import TruncDay, Now, Coalesce, Cast, ExtractDay
+from django.db.models import Sum
 
 from custom_user.views import IsOwnerOrReadOnly
 from custom_user.models import CustomUser
@@ -21,7 +18,10 @@ from custom_user.strava import sync_strava
 from custom_user.point_recalc import recalc_points
 from .models import Competition, Team, ActivityGoal, Points
 from .serializers import CompetitionSerializer, TeamSerializer, ActivityGoalSerializer, PointsSerializer
+from .stats import get_competition_stats
 
+from celery import current_app
+import json
 
 class CompetitionViewSet(viewsets.ModelViewSet):
     #queryset = Competition.objects.all()
@@ -98,26 +98,6 @@ class PointsViewSet(viewsets.ModelViewSet):
         return Points.objects.filter(Q(goal__competition__owner=self.request.user) | Q(goal__competition__user=self.request.user) | Q(workout__user=self.request.user)).distinct().order_by('-workout__start_datetime', '-workout__duration', '-workout', '-workout__user')
 
 
-def _add_rank(data, key, enhance_dict, id_field, rank_field='rank', reverse=True):
-    sorted_data = sorted(data, key=lambda x: x[key], reverse=reverse)
-    rank = 0
-    last_value = None
-    user_lst = []
-    for idx, item in enumerate(sorted_data, start=1):
-        if item[key] != last_value:
-            rank = idx
-            last_value = item[key]
-        sorted_data[idx-1] = {**item, rank_field: rank, **enhance_dict[item[id_field]]}
-        enhance_dict[item[id_field]]['rank'] = rank
-        enhance_dict[item[id_field]]['points'] = item[key]
-        user_lst.append(item[id_field])
-    for i in [i for i in enhance_dict.keys() if i not in user_lst]:
-        sorted_data.append({**enhance_dict[i], rank_field: None, key: None})
-        enhance_dict[i]['rank'] = None
-        enhance_dict[i]['points'] = None
-    return sorted_data
-
-
 class StatsPermissions(BasePermission):
     def has_permission(self, request, view):
         # Only authenticated users
@@ -132,146 +112,97 @@ class StatsPermissions(BasePermission):
         return len(competition_lst) > 0
 
 
+class IsAdmin(BasePermission):
+    """
+    Custom permission class to allow access only to admin users.
+    """
+    def has_permission(self, request, view):
+        # Check if user is authenticated and is an admin
+        return bool(request.user and request.user.is_authenticated and request.user.is_staff)
+
+
+class CeleryQueryView(APIView):
+    permission_classes = [IsAdmin]
+
+    def get(self, request, task_id=None):
+        if task_id:
+            # Get status of specific task
+            try:
+                task = current_app.AsyncResult(task_id)
+                return Response({
+                    'task_id': task.id,
+                    'status': task.status,
+                    'result': task.result if task.successful() else None,
+                    'error': str(task.result) if task.failed() else None
+                })
+            except Exception as e:
+                return Response(
+                    {"error": f"Error retrieving task status: {str(e)}"}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        else:
+            # List all registered tasks
+            try:
+                registered_tasks = [
+                    name
+                    for name, task in sorted(current_app.tasks.items())
+                    if not name.startswith('celery.')
+                ]
+                return Response(registered_tasks)
+            except Exception as e:
+                return Response(
+                    {"error": f"Error retrieving tasks: {str(e)}"}, 
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+
+    def post(self, request):
+        task = request.query_params.get('task')
+        args = request.query_params.get('args', '[]')
+        kwargs = request.query_params.get('kwargs', '{}')
+        
+        if not task:
+            return Response(
+                {"error": "Task name is required"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+        try:
+            # Convert string args and kwargs to Python objects
+            args_list = json.loads(args)
+            kwargs_dict = json.loads(kwargs)
+            
+            # Get the task by name and apply it with args and kwargs
+            celery_task = current_app.tasks[task]
+            result = celery_task.delay(*args_list, **kwargs_dict)
+            
+            return Response({
+                "task_id": result.task_id,
+                "status": "Task sent successfully"
+            })
+            
+        except json.JSONDecodeError:
+            return Response(
+                {"error": "Invalid JSON format in args or kwargs"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except KeyError:
+            return Response(
+                {"error": f"Task '{task}' not found"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
 class CompetitionStatsQueryView(APIView):
     permission_classes = [StatsPermissions]
 
     @method_decorator(cache_page(30))  # cache for 30 seconds
     def get(self, request, competition):
-        # Custom query logic
-        try:
-            competition_obj = Competition.objects.get(id=competition)
-        except Competition.DoesNotExist:
-            return Response({"detail": "Competition not found."}, status=status.HTTP_404_NOT_FOUND)
-        all_points = Points.objects.filter(Q(award__competition__id=competition) | Q(goal__competition_id=competition))
-
-        # For SQLite
-        if settings.DATABASES.get('default', {}).get('ENGINE') == 'django.db.backends.sqlite3':
-            all_points_date = (
-                all_points
-                .annotate(date=TruncDay('workout__start_datetime'))
-                .annotate(tmp_today=TruncDay(Now()))
-                .annotate(tmp_start_date=TruncDay(F('workout__start_datetime')))
-                .annotate(
-                    days_ago=ExpressionWrapper(
-                    (F('tmp_today') - F('tmp_start_date')) / 86_400_000_000,
-                    output_field=IntegerField()
-                )
-                )
-            )
-        # For Postgres
-        else:
-            all_points_date = (
-                all_points
-                .annotate(date=TruncDay('workout__start_datetime'))
-                .annotate(
-                    days_ago_duration=ExpressionWrapper(
-                        TruncDay(Now()) - TruncDay(F('workout__start_datetime')),
-                        output_field=DurationField()
-                    )
-                ).annotate(
-                    days_ago=ExtractDay(F('days_ago_duration'))
-                )
-            )
-        tmp_all = (
-            all_points_date
-            .values('days_ago')
-            .annotate(total=Sum('points_capped'))
-            .values('days_ago', 'total')
-            .order_by('-days_ago')
-        )
-        results_all = {}
-        for i in tmp_all:
-            days_ago = i.pop('days_ago')
-            results_all[days_ago] = i
-
-        tmp_user = (
-            all_points_date
-            .values('days_ago', 'workout__user__id')
-            .annotate(total=Sum('points_capped'))
-            .order_by('-days_ago')
-        )
-        results_user = {}
-        for i in tmp_user:
-            user_id = i.pop('workout__user__id')
-            days_ago = i.pop('days_ago')
-            if user_id not in results_user:
-                results_user[user_id] = {}
-            results_user[user_id][days_ago] = i
-
-        tmp_team = (
-            all_points_date
-            .values('days_ago', 'workout__user__my_teams')
-            .annotate(total=Sum('points_capped'))
-            .order_by('-days_ago')
-        )
-        results_team = {}
-        for i in tmp_team:
-            team_id = i.pop('workout__user__my_teams')
-            days_ago = i.pop('days_ago')
-            if team_id not in results_team:
-                results_team[team_id] = {}
-            results_team[team_id][days_ago] = i
-
-        # Get user data
-        user_dict = {i['id']: i for i in CustomUser.objects.filter(my_competitions=competition).values('id', 'username', 'strava_allow_follow', 'strava_athlete_id').order_by('username', 'id')}
-        for key, value in user_dict.items():
-            if value['strava_allow_follow'] is False:
-                value['strava_athlete_id'] = None
-
-        # Get user rankings
-        leaderboard_user = (
-            all_points
-            .values('workout__user__id')
-            .annotate(total_capped=Sum('points_capped'))
-            .order_by('-total_capped')
-        )
-        leaderboard_user = _add_rank(leaderboard_user, key="total_capped", enhance_dict=user_dict, id_field='workout__user__id')
-
-        # Get team data
-        team_dict = {i.id: {'id': i.id, 'name': i.name, 'members': [user_dict.get(i.id, {'id': i.id, 'username': 'ERROR'}) for i in i.user.all()]} for i in Team.objects.filter(competition=competition).prefetch_related('user')}
-
-        # Get team rankings
-        leaderboard_team = (
-            all_points
-            .values('workout__user__my_teams__id')
-            .annotate(total_capped=Sum('points_capped'))
-            .order_by('-total_capped')
-        )
-        leaderboard_team = [{**i, 'total_capped': i['total_capped'] / len(team_dict[i['workout__user__my_teams__id']]['members'])} for i in leaderboard_team if i['workout__user__my_teams__id'] in team_dict]
-        leaderboard_team = _add_rank(leaderboard_team, key="total_capped", enhance_dict=team_dict, id_field='workout__user__my_teams__id')
-
-
-        results_team_members = (
-            Team.objects.filter(competition__id=competition)
-            .annotate(member_count=Count('user'))
-            .values('id', 'name', 'member_count')
-        )
-        results_competition = {
-            'name': competition_obj.name,
-            'owner': competition_obj.owner.pk,
-            'members': list(competition_obj.user.all().values_list('pk', flat=True)),
-            'member_count': competition_obj.user.all().count(),
-            'start_date': competition_obj.start_date,
-            'start_date_count': (datetime.date.today() - competition_obj.start_date).days,
-            'end_date': competition_obj.end_date,
-            'end_date_count': (datetime.date.today() - competition_obj.end_date).days,
-            'has_teams': competition_obj.has_teams,
-            'goals': competition_obj.activitygoal_set.all().values(),
-        }
-
-        response_obj = {
-            'timeseries': {
-                'all': results_all,
-                'user': results_user,
-                'team': results_team,
-            },
-            'teams': {value['id']: value for i, value in enumerate(results_team_members)},
-            'competition': results_competition,
-            'leaderboard': {
-                'team': leaderboard_team,
-                'individual': leaderboard_user,
-            }
-        }
+        response_obj = get_competition_stats(competition)
         self.check_object_permissions(request, response_obj)
         return Response(response_obj)
 

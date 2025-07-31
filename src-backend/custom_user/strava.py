@@ -59,7 +59,7 @@ def daily_strava_sync(self):
             raise self.retry(exc=exc, countdown=sleep_time)  # retry in next Strava 15min api period
 
     print('Finished syncing Strava.')
-    return user_lst_names
+    return [str(i) for i in user_lst_names]
 
 
 

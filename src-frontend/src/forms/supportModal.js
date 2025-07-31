@@ -48,6 +48,7 @@ function AccordionMenu() {
         {title: "Report a Bug", link: "https://github.com/vanalmsick/health_competition/issues"},
         {title: "Help developing", link: "https://github.com/vanalmsick/health_competition"},
         {title: "What data is saved and how is it handled?", content: "No data is sold/shared to/with anyone. If you delete your account all data is unrecoverably deleted. There might be backups containing your user data for a few more weeks until the retention period is exceeded. " + ((SENTRY_DSN !== undefined && SENTRY_DSN !== null && SENTRY_DSN !== '') ? "Sentry.io error and performance monitoring is enabled. In line with EU GDPR, if errors occur these are reported anonymized (no 'Personal-Identifiable-Information') to the administrator on top of some basic statics like loading speed of approx. 25% of sessions to detect malfunctions. Please see Sentry.io's data privacy policy. " : "") + "No user statistics or other analytics are collected by the website itself. The data you see when using the app is the data saved (e.g. personal profile, workout data, competition signups, points)."},
+        {title: "Credits", content: "This is an Open Source project under the GLP-3.0 license on github.com/vanalmsick/health_competition. Go to [URL]/credits.txt for stock image credits."},
     ];
 
     return (

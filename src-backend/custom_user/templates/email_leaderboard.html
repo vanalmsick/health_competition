@@ -1,0 +1,59 @@
+{% extends 'email_base.html' %}
+
+{% block main %}
+<tr>
+    <td class="wrapper">
+        <p>Hi {{ first_name }},</p>
+        <p>Let's see where you're on the leaderboard!</p>
+        <hr>
+
+        {% for competition in competitions %}
+
+            <p><b>{{ competition.competition.name }}</b></p>
+
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <!-- Left Column: Individual Leaderboard -->
+                <td width="50%" valign="top" style="padding:10px; font-family:Arial, sans-serif; font-size:14px; vertical-align:top;">
+                  <strong>Individual Leaderboard</strong><br>
+                    {% for individual in competition.leaderboard.individual %}
+                        {% if individual.rank is not None %}#{{ individual.rank }}{% else %}-/-{% endif %} <b>{{ individual.username }}</b> {{ individual.total_capped|floatformat:0 }}P<br>
+                    {% endfor %}
+                </td>
+
+                <!-- Right Column: Team Leaderboard -->
+                <td width="50%" valign="top" style="padding:10px; font-family:Arial, sans-serif; font-size:14px; vertical-align:top;">
+                  <strong>Team Leaderboard</strong><br>
+                  {% for team in competition.leaderboard.team %}
+                      {% if team.rank is not None %}#{{ team.rank }}{% else %}-/-{% endif %} <b>{{ team.name }}</b> {{ team.total_capped|floatformat:0 }}P<br>
+                    {% endfor %}
+                </td>
+              </tr>
+            </table>
+        <hr>
+        {% endfor %}
+
+        <br>
+        <p><b>Login to see more detailed breakdowns:</b></p>
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
+            <tbody>
+            <tr>
+                <td align="left">
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                        <tbody>
+                        <tr>
+                            <td><a href="{{ MAIN_HOST }}/dashboard" target="_blank">Log In</a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <br>
+        <p>Enjoy the Competition.</p>
+        <p>Good luck!</p>
+    </td>
+</tr>
+{% endblock %}

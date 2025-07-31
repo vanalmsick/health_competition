@@ -21,7 +21,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 from rest_framework.routers import DefaultRouter
-from competition.views import CompetitionViewSet, TeamViewSet, ActivityGoalViewSet, PointsViewSet, CompetitionStatsQueryView, FeedQueryView, JoinCompetitionView, JoinTeamView
+from competition.views import CompetitionViewSet, TeamViewSet, ActivityGoalViewSet, PointsViewSet, CompetitionStatsQueryView, FeedQueryView, JoinCompetitionView, JoinTeamView, CeleryQueryView
 from workouts.views import WorkoutViewSet
 from custom_user.views import CustomUserViewSet, LinkStravaView, UnlinkStravaView
 
@@ -42,6 +42,9 @@ urlpatterns = [
         path('join/team/<int:id>/', JoinTeamView.as_view(), name='join-team'),
         path('strava/link/<str:code>/', LinkStravaView.as_view(), name='link-strava'),
         path('strava/unlink/', UnlinkStravaView.as_view(), name='unlink-strava'),
+        path('celery/tasks/', CeleryQueryView.as_view(), name='celery-task-list'),
+        path('celery/tasks/<str:task_id>/', CeleryQueryView.as_view(), name='celery-task-status'),
+        path('celery/', CeleryQueryView.as_view(), name='celery-task-run'),
         path('token/', TokenObtainPairView.as_view(), name='token-initial'),
         path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
     ])),

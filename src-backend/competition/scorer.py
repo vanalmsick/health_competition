@@ -69,7 +69,11 @@ def trigger_workout_change(instance, new, changes):
             metric_change_lst.extend(['km'])
 
         recalc_start_datetime = changes.get('start_datetime', [instance.start_datetime])[0]
-        for recalc_goal in [i.goal for i in instance.points_set.all() if i.goal.metric in metric_change_lst]:
+        for recalc_points, recalc_goal in [(i, i.goal) for i in instance.points_set.all() if i.goal.metric in metric_change_lst]:
+            points = _calculate_points_raw(goal=recalc_goal, workout=instance)
+            setattr(recalc_points, 'points_raw', points)
+            setattr(recalc_points, 'points_capped', points)
+            recalc_points.save()
             RecalcRequest(user=instance.user, goal=recalc_goal, start_datetime=recalc_start_datetime).save()
 
     print(f"Workout ({instance.pk}) update triggered point cap recalc - {'NEW ENTRY' if new else 'EXISTING CHANGED'}" + ("" if new else f" - {changes}"))

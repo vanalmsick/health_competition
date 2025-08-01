@@ -51,17 +51,18 @@ def send_all_log_workouts_email():
     print("Scheduling log workout emails...")
     CustomUser = apps.get_model('custom_user', 'CustomUser')
     user_lst = CustomUser.objects.filter(
-        Q(competition__start_date__lte=datetime.date.today()) &
-        Q(competition__end_date__gte=datetime.date.today()) &
+        Q(my_competitions__start_date__lte=datetime.date.today()) &
+        Q(my_competitions__end_date__gte=datetime.date.today()) &
         (Q(strava_refresh_token__isnull=True) | Q(strava_refresh_token=''))
     ).order_by('pk')
-    eta_steps = max(min((60 * 60) // len(user_lst), 60), 10)
-    eta = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=10)
     task_log = []
-    for user_obj in user_lst:
-        result = log_workouts_email.apply_async(args=[user_obj.pk], eta=eta)
-        task_log.append({'pk': user_obj.pk, 'username': user_obj.username, 'email': user_obj.email, 'task_id': result.task_id, 'eta': eta.isoformat()})
-        eta += datetime.timedelta(seconds=eta_steps)
+    if len(user_lst) > 0:
+        eta_steps = max(min((60 * 60) // len(user_lst), 60), 10)
+        eta = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=10)
+        for user_obj in user_lst:
+            result = log_workouts_email.apply_async(args=[user_obj.pk], eta=eta)
+            task_log.append({'pk': user_obj.pk, 'username': user_obj.username, 'email': user_obj.email, 'task_id': result.task_id, 'eta': eta.isoformat()})
+            eta += datetime.timedelta(seconds=eta_steps)
     return task_log
 
 
@@ -108,7 +109,7 @@ def log_workouts_email(user_pk):
 def send_all_leaderboard_emails():
     print("Scheduling leaderboard emails...")
     CustomUser = apps.get_model('custom_user', 'CustomUser')
-    user_lst = CustomUser.objects.filter(competition__start_date__lte=datetime.date.today(), competition__end_date__gte=datetime.date.today()).order_by('pk')
+    user_lst = CustomUser.objects.filter(my_competitions__start_date__lt=datetime.date.today(), my_competitions__end_date__gte=datetime.date.today()).order_by('pk')
     eta_steps = max(min((60 * 60) // len(user_lst), 60), 10)
     eta = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=10)
     task_log = []

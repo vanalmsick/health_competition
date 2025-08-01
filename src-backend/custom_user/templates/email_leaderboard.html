@@ -17,7 +17,7 @@
                 <td width="50%" valign="top" style="padding:10px; font-family:Arial, sans-serif; font-size:14px; vertical-align:top;">
                   <strong>Individual Leaderboard</strong><br>
                     {% for individual in competition.leaderboard.individual %}
-                        {% if individual.rank is not None %}#{{ individual.rank }}{% else %}-/-{% endif %} <b>{{ individual.username }}</b> {{ individual.total_capped|floatformat:0 }}P<br>
+                        {% if individual.rank is not None %}#{{ individual.rank }}{% else %}-/-{% endif %} <b>{{ individual.username }}</b> {% if team.total_capped is not None %}{{ individual.total_capped|floatformat:0 }}P{% endif %}<br>
                     {% endfor %}
                 </td>
 
@@ -25,7 +25,7 @@
                 <td width="50%" valign="top" style="padding:10px; font-family:Arial, sans-serif; font-size:14px; vertical-align:top;">
                   <strong>Team Leaderboard</strong><br>
                   {% for team in competition.leaderboard.team %}
-                      {% if team.rank is not None %}#{{ team.rank }}{% else %}-/-{% endif %} <b>{{ team.name }}</b> {{ team.total_capped|floatformat:0 }}P<br>
+                      {% if team.rank is not None %}#{{ team.rank }}{% else %}-/-{% endif %} <b>{{ team.name }}</b> {% if team.total_capped is not None %}{{ team.total_capped|floatformat:0 }}P{% endif %}<br>
                     {% endfor %}
                 </td>
               </tr>

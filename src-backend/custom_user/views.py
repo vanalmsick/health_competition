@@ -1,7 +1,7 @@
 import time
 import requests
 from rest_framework import viewsets
-from rest_framework.permissions import BasePermission, IsAdminUser, SAFE_METHODS
+from rest_framework.permissions import BasePermission, IsAdminUser, SAFE_METHODS, AllowAny
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
 from rest_framework.views import APIView
@@ -12,6 +12,7 @@ from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.core.cache import cache
 
+from .serializers import PasswordResetSerializer, PasswordResetConfirmSerializer
 from .models import CustomUser
 from .serializers import CustomUserSerializer
 from .filters import CustomUserFilter
@@ -79,6 +80,27 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 
         return get_object_or_404(self.get_queryset(), pk=lookup_value)
 
+
+class PasswordResetView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = PasswordResetSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(request=request)
+            return Response({"detail": "Password reset e-mail sent."})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PasswordResetConfirmView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = PasswordResetConfirmSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"detail": "Password has been reset."})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LinkStravaView(APIView):

@@ -155,8 +155,7 @@ REACT_APP_BACKEND_URL=http://localhost:8000
 **executable:** `npm start`
 
 ### ToDos:
-- Fix calendar if 30 days cause 6 weeks
 - Improve modal to change teams (plus access right issue if not owner)
-- Add password reset functionality
-- User account deletion causes "maximum recursion depth exceeded" error 
-- Form error of controlled components (incl. tick-box)
+- User account deletion causes "maximum recursion depth exceeded" error
+- Re-Sync Strava Button
+- Leave Competition Button

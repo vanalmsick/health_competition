@@ -183,8 +183,9 @@ class Workout(models.Model):
         is_create = self.pk is None
         if self.intensity_category is None or self.intensity_category == "":
             self.intensity_category = 2
+        scaling_kcal = float((1 if kwargs.get('user', None) is None else kwargs.get('user').scaling_kcal) if self.user is None else self.user.scaling_kcal)
         if self.kcal is None or self.kcal == "":
-            self.kcal = SPORT_MET.get(self.sport_type, SPORT_MET['Workout'])[self.intensity_category] * 80 * (self.duration.seconds / (60 * 60)) # default human 80kg (will be personalised with the equalizer feature)
+            self.kcal = SPORT_MET.get(self.sport_type, SPORT_MET['Workout'])[self.intensity_category] * 75 * (self.duration.seconds / (60 * 60)) * scaling_kcal # default human 75kg scaled up/down by scaler
         super().save(*args, **kwargs)
         changed = self.get_changed_fields()
         trigger_workout_change(

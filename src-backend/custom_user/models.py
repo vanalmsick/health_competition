@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 from django.conf import settings
 from django.db.models.signals import m2m_changed
@@ -74,8 +75,16 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     goal_distance = models.IntegerField(null=True, blank=True, default=None)
 
     # personal scaling factors
-    scaling_kcal = models.DecimalField(null=False, blank=False, default=1, max_digits=5, decimal_places=4)
-    scaling_distance = models.DecimalField(null=False, blank=False, default=1, max_digits=5, decimal_places=4)
+    scaling_kcal = models.DecimalField(null=False, blank=False, default=1, max_digits=8, decimal_places=4, validators=[
+            MinValueValidator(Decimal('0.6666')),
+            MaxValueValidator(Decimal('1.3333'))
+        ]
+    )
+    scaling_distance = models.DecimalField(null=False, blank=False, default=1, max_digits=8, decimal_places=4, validators=[
+            MinValueValidator(Decimal('0.6666')),
+            MaxValueValidator(Decimal('1.3333'))
+        ]
+    )
 
     # has_paid = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)

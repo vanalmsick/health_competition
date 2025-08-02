@@ -30,11 +30,13 @@ import {
 import {BoxSection, ErrorBoxSection, PageWrapper} from "../utils/miscellaneous";
 import {SectionLoader} from "../utils/loaders";
 import {useDispatch} from "react-redux";
+import GoalEqualizerForm from "../forms/equalizerForm";
 
 
 function WelcomeBox({user, workouts, setLinkStrava}) {
 
     const [showEditSettingsModal, setShowEditSettingsModal] = useState(false);
+    const [showGoalEqualizerModal, setShowGoalEqualizerModal] = useState(false);
     const [countTotal, setCountTotal] = useState(0);
     const [countGroups, setCountGroups] = useState({});
 
@@ -86,11 +88,14 @@ function WelcomeBox({user, workouts, setLinkStrava}) {
                     <SettingsButton additionalClasses="mx-auto sm:ml-auto sm:mr-0 my-1"
                                     onClick={() => setShowEditSettingsModal(true)}/>
                     <FairGoalsButton additionalClasses="mx-auto sm:ml-auto sm:mr-0 my-1"
-                                     onClick={() => window.confirm('Not yet implemented')}/>
+                                     onClick={() => setShowGoalEqualizerModal(true)}/>
                 </div>
 
                 {(showEditSettingsModal) && (
                     <SettingsForm user={user} setModalState={setShowEditSettingsModal} setLinkStrava={setLinkStrava}/>
+                )}
+                {(showGoalEqualizerModal) && (
+                    <GoalEqualizerForm user={user} setModalState={setShowGoalEqualizerModal}/>
                 )}
 
             </div>
@@ -239,6 +244,7 @@ function getLast5WeeksRange() {
     let cnt = 35;
     const today = new Date();
     const currentDay = today.getDay(); // 0 (Sun) - 6 (Sat)
+    const isMonday = currentDay === 1;
 
     // Find this week's Monday
     const thisMonday = new Date(today);
@@ -247,7 +253,8 @@ function getLast5WeeksRange() {
 
     // Find Monday 5 weeks ago
     const start = new Date(thisMonday);
-    start.setDate(thisMonday.getDate() - 28); // 28 weeks = 35 days - 7 this week = 28
+    // If today is Monday, subtract 35 days (5 weeks), otherwise subtract 28 days (4 weeks)
+    start.setDate(thisMonday.getDate() - (isMonday ? 35 : 28));
 
     // Find this week's Sunday
     const end = new Date(thisMonday);
@@ -291,29 +298,37 @@ function ThirtyDayStats({thirtyDayStats}) {
                     <div className="text-6xl text-left">{thirtyDayStats.activeDays}</div>
                 </div>
             </div>
-            <div className="flex flex-wrap p-3">
-                <Dumbbell className="w-6 h-6 text-gray-500"/>
-                <div className="flex flex-col px-4 text-left">
-                    <div className="text-xs tracking-wide text-gray-500">Workouts</div>
-                    <div className="text-3xl">{thirtyDayStats.workouts}</div>
-                </div>
-                <Timer className="w-6 h-6 ml-4 text-gray-500"/>
-                <div className="flex flex-col px-4 text-left">
-                    <div className="text-xs tracking-wide text-gray-500">Time</div>
-                    <div><span
-                        className="text-3xl">{Math.floor(thirtyDayStats.time / 3600).toLocaleString()}</span>hr <span
-                        className="text-3xl">{Math.floor((thirtyDayStats.time % 3600) / 60)}</span>min
+            <div className="flex flex-wrap p-3 pt-1 space-y-3 space-x-1 sm:space-x-4">
+                <div className="flex items-center">
+                    <Dumbbell className="w-6 h-6 text-gray-500"/>
+                    <div className="flex flex-col px-4 text-left">
+                        <div className="text-xs tracking-wide text-gray-500">Workouts</div>
+                        <div className="text-3xl">{thirtyDayStats.workouts}</div>
                     </div>
                 </div>
-                <Flame className="w-6 h-6 ml-4 text-gray-500"/>
-                <div className="flex flex-col px-4 text-left">
-                    <div className="text-xs tracking-wide text-gray-500">Calories</div>
-                    <div><span className="text-3xl">{thirtyDayStats.kcal.toLocaleString()}</span>kcal</div>
+                <div className="flex items-center">
+                    <Timer className="w-6 h-6 text-gray-500"/>
+                    <div className="flex flex-col px-4 text-left">
+                        <div className="text-xs tracking-wide text-gray-500">Time</div>
+                        <div><span
+                            className="text-3xl">{Math.floor(thirtyDayStats.time / 3600).toLocaleString()}</span>hr <span
+                            className="text-3xl">{Math.floor((thirtyDayStats.time % 3600) / 60)}</span>min
+                        </div>
+                    </div>
                 </div>
-                <Ruler className="w-6 h-6 ml-4 text-gray-500"/>
-                <div className="flex flex-col px-4 text-left">
-                    <div className="text-xs tracking-wide text-gray-500">Distance</div>
-                    <div><span className="text-3xl">{Math.round(thirtyDayStats.distance).toLocaleString()}</span>km
+                <div className="flex items-center">
+                    <Flame className="w-6 h-6 text-gray-500"/>
+                    <div className="flex flex-col px-4 text-left">
+                        <div className="text-xs tracking-wide text-gray-500">Calories</div>
+                        <div><span className="text-3xl">{thirtyDayStats.kcal.toLocaleString()}</span>kcal</div>
+                    </div>
+                </div>
+                <div className="flex items-center">
+                    <Ruler className="w-6 h-6 text-gray-500"/>
+                    <div className="flex flex-col px-4 text-left">
+                        <div className="text-xs tracking-wide text-gray-500">Distance</div>
+                        <div><span className="text-3xl">{Math.round(thirtyDayStats.distance).toLocaleString()}</span>km
+                        </div>
                     </div>
                 </div>
             </div>
@@ -343,14 +358,15 @@ function SevenDayStats({sevenDayStats, user}) {
                 </div>
             </div>
 
-            <div className="flex overflow-x-auto space-x-4">
+            <div className="flex flex-col mt-3 sm:mt-0 sm:overflow-x-auto sm:flex-row sm:space-x-4">
                 {sevenDayStats.map((goal, idx) => (
-                    <div key={idx} className="bg-gray-100 dark:bg-gray-900 rounded-lg p-6 m-4">
+                    <div key={idx} className="bg-gray-100 dark:bg-gray-900 rounded-lg p-6 mb-4 sm:mb-0 sm:m-4">
                         <div className="flex flex-col px-4 text-left" style={{width: '220px'}}>
                             <div className="tracking-wide text-gray-500 mb-0.5">{goal.name}</div>
-                            <div
-                                className="text-2xl text-sky-800 text-left mb-2">{goal.value.toLocaleString()} / {goal.target.toLocaleString()}<span
-                                className="text-sm">{goal.unit}</span></div>
+                            <div className="text-2xl text-sky-800 text-left mb-2">
+                                {goal.value.toLocaleString()} / {goal.target.toLocaleString()}
+                                <span className="text-sm">{goal.unit}</span>
+                            </div>
                             <div className="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-4">
                                 <div className="h-4 rounded-full" style={{
                                     width: Math.min(goal.value / goal.target * 100, 100) + '%',
@@ -383,6 +399,10 @@ function CalendarStats({workouts, last5Weeks}) {
     const [tableDateData, setTableDateData] = useState([]);
     const [tableStreakData, setTableStreakData] = useState({});
     const [weekStreak, setWeekStreak] = useState(0);
+
+    const today = new Date();
+    const isMonday = today.getDay() === 1;
+    const weeks = (isMonday ? 5 : 4);
 
     useEffect(() => {
         // chunked table data
@@ -448,17 +468,17 @@ function CalendarStats({workouts, last5Weeks}) {
                         <td className="py-0 px-1 sm:px-2 hidden md:block">
                             <div
                                 className="mx-auto flex items-center justify-center text-gray-300 h-5 font-bold">
-                                {(tableStreakData[4 - idxWeek + 1] > 0 && tableStreakData[4 - idxWeek] > 0) ? "|" : ""}
+                                {(tableStreakData[weeks - idxWeek + 1] > 0 && tableStreakData[weeks - idxWeek] > 0) ? "|" : ""}
                             </div>
                             <div
-                                className={"mx-auto flex items-center justify-center w-8 h-8 rounded-full font-semibold text-white " + ((tableStreakData[4 - idxWeek] > 0) ? "bg-streak-blue" : "bg-gray-200 dark:bg-gray-700")}>
-                                {(tableStreakData[4 - idxWeek] >= 9000) ?
-                                    <CheckCheck className="w-5 h-5"/> : (tableStreakData[4 - idxWeek] > 0) ?
+                                className={"mx-auto flex items-center justify-center w-8 h-8 rounded-full font-semibold text-white " + ((tableStreakData[weeks - idxWeek] > 0) ? "bg-streak-blue" : "bg-gray-200 dark:bg-gray-700")}>
+                                {(tableStreakData[weeks - idxWeek] >= 9000) ?
+                                    <CheckCheck className="w-5 h-5"/> : (tableStreakData[weeks - idxWeek] > 0) ?
                                         <Check className="w-5 h-5"/> : ""}
                             </div>
                             <div
                                 className="mx-auto flex items-center justify-center w-1.5 h-1.5 mt-1 rounded-full text-gray-300 font-bold">
-                                {(tableStreakData[4 - idxWeek - 1] > 0 && tableStreakData[4 - idxWeek] > 0) ? "|" : ""}
+                                {(tableStreakData[weeks - idxWeek - 1] > 0 && tableStreakData[weeks - idxWeek] > 0) ? "|" : ""}
                             </div>
                         </td>
 

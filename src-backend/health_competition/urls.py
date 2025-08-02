@@ -23,7 +23,7 @@ from rest_framework_simplejwt.views import (
 from rest_framework.routers import DefaultRouter
 from competition.views import CompetitionViewSet, TeamViewSet, ActivityGoalViewSet, PointsViewSet, CompetitionStatsQueryView, FeedQueryView, JoinCompetitionView, JoinTeamView, CeleryQueryView
 from workouts.views import WorkoutViewSet
-from custom_user.views import CustomUserViewSet, LinkStravaView, UnlinkStravaView
+from custom_user.views import CustomUserViewSet, LinkStravaView, UnlinkStravaView, PasswordResetView, PasswordResetConfirmView
 
 router = DefaultRouter()
 router.register(r'competition', CompetitionViewSet, basename='competition')
@@ -47,6 +47,8 @@ urlpatterns = [
         path('celery/', CeleryQueryView.as_view(), name='celery-task-run'),
         path('token/', TokenObtainPairView.as_view(), name='token-initial'),
         path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
+        path('password-reset/request/', PasswordResetView.as_view(), name='password-reset'),
+        path('password-reset/confirm/', PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
     ])),
     path('admin/', admin.site.urls),
 ]

@@ -91,6 +91,7 @@ export function FormInput({
                               autoComplete = "off",
                               pattern = null,
                               width = "w-full",
+                              highlight = false,
                               errorMsg = null,
                           }) {
 
@@ -126,14 +127,16 @@ export function FormInput({
                             disabled={disabled}
                             autoFocus={autoFocus}
                             checked={value}
-                            onChange={(e) => setValue(e.target.value)}
+                            onChange={(e) => setValue(!value)}
                         />
                     ) : null
                 }
 
                 {/* Input Label */}
                 {(label) ? <label
-                    className="w-full text-gray-700 dark:text-gray-500 text-sm font-bold mb-2 mr-4">{label}{(required) ? "*" : null}{(errorMsg) ?
+                    className="w-full text-gray-700 dark:text-gray-500 text-sm font-bold mb-2 mr-4"
+                    onClick={(type === "checkbox") ? (e) => setValue(!value): null}
+                >{label}{(required) ? "*" : null}{(errorMsg) ?
                     <span className="text-red-600 font-normal italic"> ({errorMsg})</span> : null}</label> : null}
 
                 {/* Input Element */}
@@ -145,7 +148,7 @@ export function FormInput({
                         <TimeField
                             value={value}
                             onChange={(e) => setValue(e.target.value)}
-                            input={<input type="text" className={"w-full shadow border rounded py-2 px-3 text-gray-700 dark:bg-gray-900 dark:text-gray-500 leading-tight focus:outline-none focus:shadow-outline" + additionalClasses} />}
+                            input={<input type="text" className={"w-full shadow border rounded py-2 px-3 text-gray-700 dark:bg-gray-900 dark:text-gray-500 leading-tight focus:outline-none focus:shadow-outline" + (highlight ? " bg-blue-100 dark:bg-blue-950 ": "") + additionalClasses} />}
                             showSeconds={true}
                         />
                     ) :
@@ -172,13 +175,13 @@ export function FormInput({
                         <>
                             {/* Dropdown Input Element */}
                             <select
-                                className={"w-full shadow border rounded py-2 px-3 text-gray-700 dark:bg-gray-800 dark:text-gray-500 leading-tight focus:outline-none focus:shadow-outline" + additionalClasses}
+                                className={"w-full shadow border rounded py-2 px-3 text-gray-700 dark:bg-gray-800 dark:text-gray-500 leading-tight focus:outline-none focus:shadow-outline" + (highlight ? " bg-blue-100 dark:bg-blue-950 ": "") + additionalClasses}
                                 name={name}
                                 tabIndex={tabIndex}
                                 required={required}
                                 disabled={disabled}
                                 autoFocus={autoFocus}
-                                value={value}
+                                value={(value === null) ? '' : value}
                                 onChange={(e) => setValue(e.target.value)}
                             >
                                 <option value="">{(placeholder) ? placeholder : "Select an option"}</option>
@@ -192,7 +195,7 @@ export function FormInput({
                         <>
                             {/* All Other Input Elements */}
                             <input
-                                className={"w-full shadow border rounded py-2 px-3 text-gray-700 dark:bg-gray-900 dark:text-gray-500 leading-tight focus:outline-none focus:shadow-outline" + additionalClasses}
+                                className={"w-full shadow border rounded py-2 px-3 text-gray-700 dark:bg-gray-900 dark:text-gray-500 leading-tight focus:outline-none focus:shadow-outline" + (highlight ? " bg-blue-100 dark:bg-blue-950 ": "") + additionalClasses}
                                 name={name}
                                 type={type}
                                 placeholder={placeholder}
@@ -203,7 +206,7 @@ export function FormInput({
                                 autoFocus={autoFocus}
                                 autoComplete={autoComplete}
                                 pattern={pattern}
-                                value={value}
+                                value={(value === null) ? '' : value}
                                 list={name + "-suggestions"}
                                 onChange={(e) => setValue(e.target.value)}
                                 step={type === "time" ? "60" : undefined}

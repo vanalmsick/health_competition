@@ -159,3 +159,4 @@ REACT_APP_BACKEND_URL=http://localhost:8000
 - User account deletion causes "maximum recursion depth exceeded" error
 - Re-Sync Strava Button
 - Leave Competition Button
+- Competition start & finish email

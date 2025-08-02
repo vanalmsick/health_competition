@@ -38,6 +38,7 @@ class Competition(models.Model):
     start_date = models.DateField(null=False)
     end_date = models.DateField(null=False)
     has_teams = models.BooleanField(default=False)
+    organizer_assigns_teams = models.BooleanField(default=False)
 
     join_code = models.CharField(
         blank=False,

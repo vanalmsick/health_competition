@@ -1,9 +1,6 @@
-import {useDeleteUserMutation, usersApi, useUpdateUserMutation} from "../utils/reducers/usersSlice";
+import {useUpdateUserMutation} from "../utils/reducers/usersSlice";
 import React, {useEffect, useState} from "react";
-import {DeleteButton, Modal, SaveButton, SingleForm, StravaButton} from "./basicComponents";
-import {useNavigate} from "react-router-dom";
-import {useUnlinkStravaMutation} from "../utils/reducers/linkSlice";
-import {useDispatch} from "react-redux";
+import {Modal, SaveButton, SingleForm} from "./basicComponents";
 
 
 const fields = {
@@ -171,7 +168,7 @@ export default function GoalEqualizerForm({user, setModalState}) {
 
     return (
         <Modal title="Equalize Goals" landscape={false} setShowModal={setModalState} isLoading={updateIsLoading}>
-            <p className="text-gray-700">Everyone has a unique <b>Basal Metabolic Rate (BMR)</b>, dependent on factors like age, gender, height, and weight. To ensure a fair competition, the calculator below estimates your personal equalizing factors, which will be used to scale the competition goals. Your inputs <u>stay on your device</u> — only the final two equalizing values are sent to the server and stored.</p>
+            <p className="text-gray-700 dark:text-gray-300">Everyone has a unique <b>Basal Metabolic Rate (BMR)</b>, dependent on factors like age, gender, height, and weight. To ensure a fair competition, the calculator below estimates your personal equalizing factors, which will be used to scale the competition goals. Your inputs <u>stay on your device</u> — only the final two equalizing values are sent to the server and stored.</p>
             <SingleForm fields={fields} values={values} setValues={setValues} errors={fieldErrors}/>
             <div className="text-center text-red-500 text-xs italic">{formError}</div>
             <div className="text-center text-gray-800 text-xs italic"><b>Current Effort Factor:</b> {Math.round(user.scaling_kcal * 100)}% / <b>Current Distance Factor:</b> {Math.round(user.scaling_distance * 100)}%</div>

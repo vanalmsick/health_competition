@@ -5,7 +5,7 @@ from .models import Competition, ActivityGoal, Team, Points
 class CompetitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Competition
-        fields = ['id', 'owner', 'name', 'start_date', 'start_date_fmt', 'start_date_epoch', 'end_date', 'end_date_fmt', 'end_date_epoch', 'has_teams', 'join_code']
+        fields = ['id', 'owner', 'name', 'start_date', 'start_date_fmt', 'start_date_epoch', 'end_date', 'end_date_fmt', 'end_date_epoch', 'has_teams', 'organizer_assigns_teams', 'join_code']
         read_only_fields = ['owner', 'join_code']
 
 

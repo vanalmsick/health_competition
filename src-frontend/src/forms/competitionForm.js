@@ -42,6 +42,13 @@ const fields = {
         "label": "Users can compete in teams",
     },
 
+    "organizer_assigns_teams": {
+        "type": "checkbox",
+        "required": false,
+        "read_only": false,
+        "label": "Only organizer can assign teams",
+    },
+
 }
 
 
@@ -87,6 +94,12 @@ export default function CompetitionForm({competition, setModalState}) {
             setValues(competition);
         }
     }, [])
+    
+    // conditionally show/hide organizer_assigns_teams 
+    const finalFields = {...fields};
+    if (!values.has_teams) {
+        delete finalFields.organizer_assigns_teams;
+    }
 
     // form action button left
     async function handleDiscard() {
@@ -143,7 +156,7 @@ export default function CompetitionForm({competition, setModalState}) {
 
     return (
         <Modal title="Competition" landscape={true} setShowModal={setModalState} isLoading={updateIsLoading || createIsLoading || deleteIsLoading}>
-            <SingleForm fields={fields} values={values} setValues={setValues} errors={fieldErrors}/>
+            <SingleForm fields={finalFields} values={values} setValues={setValues} errors={fieldErrors}/>
             <div className="text-center text-red-500 text-xs italic">{formError}</div>
             <div className="relative flex justify-between items-center">
               <DeleteButton onClick={handleDiscard} label={(competition !== undefined) ? "Delete" : "Discard"} highlighted={false} larger={true} />

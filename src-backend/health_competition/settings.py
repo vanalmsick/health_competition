@@ -173,6 +173,7 @@ SIMPLE_JWT = {
     'UPDATE_LAST_LOGIN': False,
 }
 
+PASSWORD_RESET_TIMEOUT = 600  # seconds = 10 minutes
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

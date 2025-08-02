@@ -61,7 +61,7 @@ function CompetitionHead({competition, feed, isOwner}) {
     return (
         <BoxSection additionalClasses="mb-4">
             <div className="flex flex-col items-center justify-between sm:flex-row sm:items-center sm:gap-6 sm:py-4">
-                <div className="space-y-1 pl-6">
+                <div className="space-y-1 pl-0 sm:pl-6 pb-3 sm:pb-0 text-center sm:text-left">
                     <p className="text-2xl font-semibold">{competition.name}</p>
                     <p className="font-small text-gray-500">{competition.start_date_fmt} - {competition.end_date_fmt}</p>
 
@@ -79,7 +79,7 @@ function CompetitionHead({competition, feed, isOwner}) {
                         </div>
                     ))}
                 </div>
-                <div className="p-3 sm:p-4">
+                <div className="p-2 sm:p-4">
                     {
                         (isOwner) && <SettingsButton  additionalClasses="mx-auto sm:ml-auto sm:mr-0 my-1" onClick={() => setShowEditCompetitionModal(competition.id)}/>
                     }
@@ -447,7 +447,7 @@ function FeedBox({feed, refreshCompetition, competitionIsRefreshing}) {
     )
 }
 
-function ActivityGoalsBox({stats, feed, competitionId, userId, isOwner}) {
+function ActivityGoalsBox({user, stats, feed, competitionId, userId, isOwner}) {
 
     const [showModifyGoals, setShowModifyGoals] = useState(false);
 
@@ -495,8 +495,22 @@ function ActivityGoalsBox({stats, feed, competitionId, userId, isOwner}) {
                 filteredList = filteredCompetition;
             }
 
+            let scaling = 1;
+            if (['kcal', 'kj'].includes(goal.metric)) {
+                scaling = user?.scaling_kcal ?? 1;
+            } else if (['km'].includes(goal.metric)) {
+                scaling = user?.scaling_distance ?? 1;
+            }
+
             tmpGoals.push({
                 ...goal,
+                goal: goal.goal * scaling,
+                min_per_workout: goal.min_per_workout !== null ? goal.min_per_workout * scaling : null,
+                max_per_workout: goal.max_per_workout !== null ? goal.max_per_workout * scaling : null,
+                min_per_day: goal.min_per_day !== null ? goal.min_per_day * scaling : null,
+                max_per_day: goal.max_per_day !== null ? goal.max_per_day * scaling : null,
+                min_per_week: goal.min_per_week !== null ? goal.min_per_week * scaling : null,
+                max_per_week: goal.max_per_week !== null ? goal.max_per_week * scaling : null,
                 points_capped: _.sumBy(_.flatMap(filteredList, 'details').filter(item => item.goal === goal.id), 'points_capped'),
                 points_raw: _.sumBy(_.flatMap(filteredList, 'details').filter(item => item.goal === goal.id), 'points_raw'),
             })
@@ -523,7 +537,7 @@ function ActivityGoalsBox({stats, feed, competitionId, userId, isOwner}) {
                             <div className="flex flex-row justify-between items-center text-gray-500 mb-0.5">
                                 <div className="tracking-wide"><span className="font-semibold">{goal.name}</span>
                                 </div>
-                                <div>{goal.goal.toLocaleString()} {goal.metric} <span
+                                <div>{Math.round(goal.goal).toLocaleString()} {goal.metric} <span
                                     className="text-xs">/ {goal.period}</span>
                                 </div>
                             </div>
@@ -545,33 +559,33 @@ function ActivityGoalsBox({stats, feed, competitionId, userId, isOwner}) {
                                 <span className="font-semibold">Limits: </span>
                                 {(goal.min_per_workout) && (
                                     <><ArrowDownToLine
-                                        className="w-4 h-4 inline"/> {goal.min_per_workout.toLocaleString()} </>
+                                        className="w-4 h-4 inline"/> {Math.round(goal.min_per_workout).toLocaleString()} </>
                                 )}
                                 {(goal.max_per_workout) && (
                                     <><ArrowUpToLine
-                                        className="w-4 h-4 inline"/> {goal.max_per_workout.toLocaleString()} </>
+                                        className="w-4 h-4 inline"/> {Math.round(goal.max_per_workout).toLocaleString()} </>
                                 )}
                                 {(goal.min_per_workout || goal.max_per_workout) && (
                                     <span className="text-xs">{goal.metric} / workout </span>
                                 )}
                                 {(goal.min_per_day) && (
                                     <><ArrowDownToLine
-                                        className="w-4 h-4 inline"/> {goal.min_per_day.toLocaleString()} </>
+                                        className="w-4 h-4 inline"/> {Math.round(goal.min_per_day).toLocaleString()} </>
                                 )}
                                 {(goal.max_per_day) && (
                                     <><ArrowUpToLine
-                                        className="w-4 h-4 inline"/> {goal.max_per_day.toLocaleString()} </>
+                                        className="w-4 h-4 inline"/> {Math.round(goal.max_per_day).toLocaleString()} </>
                                 )}
                                 {(goal.min_per_day || goal.max_per_day) && (
                                     <span className="text-xs">{goal.metric} / day </span>
                                 )}
                                 {(goal.min_per_week) && (
                                     <><ArrowDownToLine
-                                        className="w-4 h-4 inline"/> {goal.min_per_week.toLocaleString()} </>
+                                        className="w-4 h-4 inline"/> {Math.round(goal.min_per_week).toLocaleString()} </>
                                 )}
                                 {(goal.max_per_week) && (
                                     <><ArrowUpToLine
-                                        className="w-4 h-4 inline"/> {goal.max_per_week.toLocaleString()} </>
+                                        className="w-4 h-4 inline"/> {Math.round(goal.max_per_week).toLocaleString()} </>
                                 )}
                                 {(goal.min_per_week || goal.max_per_week) && (
                                     <span className="text-xs">{goal.metric} / week </span>
@@ -802,7 +816,7 @@ export default function Competition() {
                                 <ErrorBoxSection additionalClasses="mb-4"
                                     errorMsg={statsError?.status + ' / ' + (statsError?.error || statsError?.message || statsError?.data?.detail)}/>
                             ) : (
-                                <ActivityGoalsBox stats={stats} feed={feed} competitionId={id} userId={user?.id} isOwner={isOwner} />
+                                <ActivityGoalsBox user={user} stats={stats} feed={feed} competitionId={id} userId={user?.id} isOwner={isOwner} />
                             )
                         }
                     </div>

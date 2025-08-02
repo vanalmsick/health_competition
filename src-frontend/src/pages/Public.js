@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Link, useLocation} from "react-router-dom";
+import {Link, useLocation, useParams} from "react-router-dom";
 import {useDispatch} from 'react-redux';
 import {useNavigate} from 'react-router-dom';
 import {logout, setToken} from "../utils/reducers/authSlice";
@@ -164,10 +164,14 @@ const apiCreateAccount = async (email, first_name, last_name, gender, password) 
         return [true, undefined]
     } else {
         console.log('Registration Error:', response.status, response.statusText);
-        const error = await response.json();
         let error_msg = 'Registration Error (' + response.status + '): ' + response.statusText + ', ';
-        for (const key in error) {
-            error_msg += key + ': ' + error[key] + ', ';
+        try {
+            const error = await response.json();
+            for (const key in error) {
+                error_msg += key + ': ' + error[key] + ', ';
+            }
+        } catch (e) {
+            error_msg += ' Unknown error';
         }
         return [false, error_msg];
     }
@@ -193,8 +197,71 @@ const apiLogin = async (email, password) => {
         return [true, undefined]
     } else {
         console.log('Login Error:', response.status, response.statusText);
-        const error = await response.json();
-        return [false, response.statusText + ' (' + response.status + ') - ' + error.detail]
+        let parsedError = null;
+        try {
+            parsedError = await response.json();
+        } catch (e) {
+            parsedError = null;
+        }
+        return [false, response.statusText + ' (' + response.status + ') - ' + (parsedError ? parsedError.detail : 'Unknown error')]
+    }
+
+}
+
+
+const apiRequestNewPassword = async (email) => {
+
+    const response = await fetch((process.env.REACT_APP_BACKEND_URL || '') + '/api/password-reset/request/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            email: email,
+        }),
+    })
+    if (response.ok) {
+        console.log('Password Reset Request Successful');
+        return [true, undefined]
+    } else {
+        console.log('Password Reset Request Error:', response.status, response.statusText, response);
+        let parsedError = null;
+        try {
+            parsedError = await response.json();
+        } catch (e) {
+            parsedError = null;
+        }
+        return [false, response.statusText + ' (' + response.status + ') - ' + (parsedError ? parsedError.detail : 'Unknown error')]
+    }
+
+}
+
+
+const apiSetNewPassword = async (uid, token, newPassword) => {
+
+    const response = await fetch((process.env.REACT_APP_BACKEND_URL || '') + '/api/password-reset/confirm/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            uid: uid,
+            token: token,
+            new_password: newPassword,
+        }),
+    })
+    if (response.ok) {
+        console.log('Set New Password Successful');
+        return [true, undefined]
+    } else {
+        console.log('Set New Password Error:', response.status, response.statusText, response);
+        let parsedError = null;
+        try {
+            parsedError = await response.json();
+        } catch (e) {
+            parsedError = null;
+        }
+        return [false, response.statusText + ' (' + response.status + ') - ' + (parsedError ? parsedError.detail : 'Unknown error')]
     }
 
 }
@@ -467,10 +534,10 @@ function LogInPage() {
                                     className="shadow appearance-none border  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                     id="password" type="password" placeholder="******************" tabIndex="2"
                                     required={true}/>
-                                <div onClick={() => window.confirm('Not yet implemented')} className="button italic text-sm text-sky-800 hover:text-sky-600"
+                                <Link to={`/password/`} className="button italic text-sm text-sky-800 hover:text-sky-600"
                                       tabIndex="3">
                                     Forgot Password?
-                                </div>
+                                </Link>
                             </div>
                             <div className="flex items-center justify-between">
                                 <button
@@ -495,32 +562,60 @@ function LogInPage() {
 
 
 function ResetPasswordPage() {
+
+    const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+
+    // handle submit/reset action from reset password form
+    async function handleSubmit(e) {
+        e.preventDefault();
+        setErrorMessage(null);
+        setIsLoading(true);
+        const email = e.target.email.value;
+        const [success, msg] = await apiRequestNewPassword(email);
+        if (success) {
+            // success reset request - redirect to start page
+            window.confirm('Success! Please check your email for a reset link.');
+            setIsLoading(false);
+            console.log('redirect to login page');
+            navigate(`/`);
+        } else {
+            // error reset request - user try again
+            setErrorMessage(msg);
+            setIsLoading(false);
+        }
+    }
+
     return (
         <BaseHome children={
             <div className="flex justify-center">
-                <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" style={{minWidth: '310px'}}>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email" autoFocus="True">
-                            Email
-                        </label>
-                        <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="email" type="text" placeholder="Email" autoFocus="True" tabIndex="1"/>
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <button
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2"
-                            type="button" tabIndex="2">
-                            Reset Password
-                        </button>
-                        <Link to="/login"
-                              className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800 ml-2"
-                              tabIndex="3">
-                            Back to SignIn
-                        </Link>
-                    </div>
-                    <p className="text-red-500 text-xs italic mt-5">Please choose a password.</p>
-                </form>
+                {
+                    isLoading ? <LoadingForm/> : (
+                    <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" style={{minWidth: '310px'}}>
+                        <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email" autoFocus="True">
+                                Email
+                            </label>
+                            <input
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                id="email" type="text" placeholder="Email" autoFocus="True" tabIndex="1"/>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <button
+                                className="bg-sky-800 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2 sm:mr-16"
+                                type="submit" tabIndex="2">
+                                Reset Password
+                            </button>
+                            <Link to="/login"
+                                  className="inline-block align-baseline font-bold text-sm text-sky-800 hover:text-sky-600 ml-2"
+                                  tabIndex="3">
+                                Back to SignIn
+                            </Link>
+                        </div>
+                        <p className="text-red-500 text-xs italic mt-5">{ errorMessage }</p>
+                    </form>
+                )}
             </div>
         }/>
     );
@@ -528,35 +623,72 @@ function ResetPasswordPage() {
 
 
 function SetNewPasswordPage() {
+    const {id, token} = useParams();
+
+    const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+
+    // handle submit/reset action from reset password form
+    async function handleSubmit(e) {
+        e.preventDefault();
+        setErrorMessage(null);
+        setIsLoading(true);
+        const password1 = e.target.password1.value;
+        const password2 = e.target.password2.value;
+        if (typeof (password1) === "undefined" || password1 === null || password1 === "") {
+            setErrorMessage(['Please enter a password.']);
+            setIsLoading(false);
+        } else if (password1 !== password2) {
+            setErrorMessage(['Passwords do not match.']);
+            setIsLoading(false);
+        } else {
+            const [success, msg] = await apiSetNewPassword(id, token, password1);
+            if (success) {
+                // success reset password - redirect to login page
+                setIsLoading(false);
+                console.log('redirect to login page');
+                navigate(`/login/`);
+            } else {
+                // error resetting password - user try again
+                setErrorMessage(msg);
+                setIsLoading(false);
+            }
+        }
+    }
+
     return (
         <BaseHome children={
             <div className="flex justify-center">
-                <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" style={{minWidth: '45%'}}>
-                    <div className="mb-6">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password1">
-                            Password
-                        </label>
-                        <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="password1" type="password" placeholder="******************" tabIndex="1"/>
-                    </div>
-                    <div className="mb-6">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password2">
-                            Repeat Password
-                        </label>
-                        <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="password2" type="password" placeholder="******************" tabIndex="2"/>
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <button
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2"
-                            type="button" tabIndex="3">
-                            Reset Password
-                        </button>
-                    </div>
-                    <p className="text-red-500 text-xs italic mt-5">Please choose a password.</p>
-                </form>
+                {
+                    isLoading ? <LoadingForm/> : (
+                    <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" style={{minWidth: '45%'}}>
+                        <div className="mb-6">
+                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password1">
+                                Password
+                            </label>
+                            <input
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                id="password1" type="password" placeholder="******************" tabIndex="1" autoFocus={true}/>
+                        </div>
+                        <div className="mb-6">
+                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password2">
+                                Repeat Password
+                            </label>
+                            <input
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                id="password2" type="password" placeholder="******************" tabIndex="2"/>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <button
+                                className="bg-sky-800 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mx-auto sm:mx-16"
+                                type="submit" tabIndex="3">
+                                Reset Password
+                            </button>
+                        </div>
+                        <p className="text-red-500 text-xs italic mt-5">{ errorMessage }</p>
+                    </form>
+                )}
             </div>
         }/>
     );

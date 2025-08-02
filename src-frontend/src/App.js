@@ -28,7 +28,7 @@ function App() {
                 <Route excat path="login" element={<LogInPage />} />
                 <Route excat path="logout" element={<LogoutPage />} />
                 <Route excat path="password" element={<ResetPasswordPage />} />
-                <Route excat path="password/set" element={<SetNewPasswordPage />} />
+                <Route excat path="password/reset/:id/:token" element={<SetNewPasswordPage />} />
 
                 <Route excat path="dashboard" element={<MySpace />} />
                 <Route path="competition/:id" element={<Competition />} />

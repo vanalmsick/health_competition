@@ -106,10 +106,10 @@ export function FormInput({
 
     let additionalClasses = "";
     if (readOnly) {
-        additionalClasses += " bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400 ";
+        additionalClasses += " text-gray-500 dark:text-gray-400 " + ((highlight) ? "": " bg-gray-100 dark:bg-gray-700 ");
     }
     if (disabled) {
-        additionalClasses += " bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed";
+        additionalClasses += " text-gray-500 dark:text-gray-400 cursor-not-allowed " + ((highlight) ? "": " bg-gray-100 dark:bg-gray-700 ");
     }
 
     return (
@@ -175,7 +175,7 @@ export function FormInput({
                         <>
                             {/* Dropdown Input Element */}
                             <select
-                                className={"w-full shadow border rounded py-2 px-3 text-gray-700 dark:bg-gray-800 dark:text-gray-500 leading-tight focus:outline-none focus:shadow-outline" + (highlight ? " bg-blue-100 dark:bg-blue-950 ": "") + additionalClasses}
+                                className={"w-full shadow border rounded py-2 px-3 text-gray-700 dark:bg-gray-800 dark:text-gray-500 leading-tight focus:outline-none focus:shadow-outline" + (highlight ? " bg-sky-50 dark:bg-sky-950 ": "") + additionalClasses}
                                 name={name}
                                 tabIndex={tabIndex}
                                 required={required}
@@ -195,7 +195,7 @@ export function FormInput({
                         <>
                             {/* All Other Input Elements */}
                             <input
-                                className={"w-full shadow border rounded py-2 px-3 text-gray-700 dark:bg-gray-900 dark:text-gray-500 leading-tight focus:outline-none focus:shadow-outline" + (highlight ? " bg-blue-100 dark:bg-blue-950 ": "") + additionalClasses}
+                                className={"w-full shadow border rounded py-2 px-3 text-gray-700 dark:text-gray-500 leading-tight focus:outline-none focus:shadow-outline" + (highlight ? " bg-sky-50 dark:bg-sky-950 ": " dark:bg-gray-900 ") + additionalClasses}
                                 name={name}
                                 type={type}
                                 placeholder={placeholder}

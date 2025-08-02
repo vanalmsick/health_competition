@@ -5,6 +5,7 @@ import {useGetCompetitionByIdQuery} from "../utils/reducers/competitionsSlice";
 import {
     ArrowDownToLine,
     ArrowUpToLine,
+    UsersRound,
 } from "lucide-react";
 import {Bar, Line} from 'react-chartjs-2';
 import {
@@ -283,37 +284,40 @@ function TeamLeaderboardBox({stats, competition}) {
                             </td>
                         </tr>
                     ) : (
-                    stats.leaderboard.team.map((team, index) => (
-                        <tr key={"leader_team" + index} className="hover:bg-gray-100 dark:hover:bg-gray-900 border-b">
-                            <td className="py-2 px-2">
-                                <span className="font-semibold">#{team.rank}</span>
-                            </td>
-                            <td className="py-2 px-2">
-                                <span className="font-semibold">{team.name}</span>
-                            </td>
-                            <td className="py-2 px-2 group relative inline-block cursor-pointer">
-                                <span
-                                    className="text-sm italic text-gray-500">({team.members.length} Participants)</span>
-                                <div
-                                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 p-2 bg-white dark:bg-gray-800 border dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto z-10">
-                                    <p className="text-sm font-semibold">Members:</p>
-                                    <ul className="text-sm list-disc pl-5">
-                                        {team.members.map((user, usr_index) => (
-                                            <li key={"leader_user" + usr_index}>{user.username} {Math.round(user.points, 0).toLocaleString()}P</li>
-                                        ))}
-                                    </ul>
+                        stats.leaderboard.team.map((team, index) => (
+                            <tr key={"leader_team" + index}
+                                className="hover:bg-gray-100 dark:hover:bg-gray-900 border-b">
+                                <td className="py-2 px-2">
+                                    <span className="font-semibold">#{team.rank}</span>
+                                </td>
+                                <td className="py-2 px-2">
+                                    <span className="font-semibold">{team.name}</span>
+                                </td>
+                                <td className="py-2 px-2 group relative inline-block cursor-pointer">
+                                <span className="text-sm text-gray-500 flex items-center gap-1">
+                                    <UsersRound className="h-3.5 w-3.5"/> {team.members.length}
+                                </span>
+                                    <div
+                                        className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 p-2 bg-white dark:bg-gray-800 border dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto z-10">
+                                        <p className="text-sm font-semibold">Members:</p>
+                                        <ul className="text-sm list-disc pl-5">
+                                            {team.members.map((user, usr_index) => (
+                                                <li key={"leader_user" + usr_index}>{user.username} {Math.round(user.points, 0).toLocaleString()}P</li>
+                                            ))}
+                                        </ul>
 
-                                </div>
-                            </td>
-                            <td className="py-2 px-2 text-right">
+                                    </div>
+                                </td>
+                                <td className="py-2 px-2 text-right">
                                 <span
                                     className="font-semibold">{Math.round(team.total_capped, 0).toLocaleString()}P</span>
-                            </td>
-                        </tr>
-                    ))
+                                </td>
+                            </tr>
+                        ))
                     )}
                     </tbody>
                 </table>
+                {(competition.organizer_assigns_teams) ? <div className="pt-1 w-full text-center text-sm text-gray-500 italic"><b>Note:</b> The organizer assigns teams!</div> : null}
             </BoxSection>
             {(showChangeTeamModal) ? (
                 <JoinTeamForm setModalState={setShowChangeTeamModal} competition={competition}
@@ -395,17 +399,13 @@ function FeedBox({feed, refreshCompetition, competitionIsRefreshing}) {
                             <tr key={"feed" + index} className="hover:bg-gray-100 dark:hover:bg-gray-900 border-b">
                                 <td className="py-2 px-4 text-sm md:text-base">
                                     <span className="font-semibold">{entry.workout__start_datetime_fmt.date_readable}</span><br/>
-                                    <span
-                                        className="text-sm hidden sm:block">{entry.workout__start_datetime_fmt.time_24h}</span>
+                                    <span className="text-sm hidden sm:block">{entry.workout__start_datetime_fmt.time_24h}</span>
                                 </td>
                                 <td className="py-2 px-4 block md:table-cell">
                                     {/* Mobile view (stacked) */}
                                     <div className="md:hidden">
                                         <div className="font-medium">{entry.workout__user__username}</div>
-                                        <div
-                                            className="text-sm text-gray-600 dark:text-gray-400">{Math.round(parseFloat(entry.workout__duration) / 60, 0).toLocaleString()}min<span
-                                            className="font-semibold"> {workoutTypes[entry.workout__sport_type].label_short}</span>
-                                        </div>
+                                        <div className="text-sm text-gray-600 dark:text-gray-400">{Math.round(parseFloat(entry.workout__duration) / 60, 0).toLocaleString()}min<span className="font-semibold"> {workoutTypes[entry.workout__sport_type].label_short}</span></div>
                                     </div>
                                     {/* Desktop view (normal) */}
                                     <div className="hidden md:block">{entry.workout__user__username}</div>
@@ -556,7 +556,7 @@ function ActivityGoalsBox({user, stats, feed, competitionId, userId, isOwner}) {
                                 </div>
                             </div>
                             <div className="text-sm text-gray-400 pt-1.5 hidden group-hover:block">
-                                <span className="font-semibold">Limits: </span>
+                                <span className="font-semibold">Limits: </span> 
                                 {(goal.min_per_workout) && (
                                     <><ArrowDownToLine
                                         className="w-4 h-4 inline"/> {Math.round(goal.min_per_workout).toLocaleString()} </>

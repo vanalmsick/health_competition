@@ -147,14 +147,20 @@ function WorkoutsBox({workouts, user, setLinkStrava}) {
                 ) : (
                     workouts.map((workout, iWorkout) => (
                         <tr key={"workout" + iWorkout} className="hover:bg-gray-100 dark:hover:bg-gray-900 border-b">
-                            <td className="py-2 px-4 text-sm md:text-base"><span
-                                className="font-semibold">{workout.start_datetime_fmt.date_readable}</span><br/><span
-                                className="text-sm hidden sm:block">{workout.start_datetime_fmt.time_24h}</span></td>
-                            <td className="py-2 px-4 text-sm md:text-base">{workout.duration.substring(0, 5)} <span
-                                className="font-semibold text-base">{workoutTypes[workout.sport_type].label_short} {(workout.distance) ? (
-                                <span className="hidden sm:inline">({workout.distance}km)</span>) : (null)}</span>
+                            <td className="py-2 px-4 text-sm md:text-base">
+                                <span className="font-semibold">{workout.start_datetime_fmt.date_readable}</span><br/>
+                                <span className="text-sm hidden sm:block">{workout.start_datetime_fmt.time_24h}</span>
                             </td>
                             <td className="py-2 px-4 text-sm md:text-base">
+                                {/* Mobile view (stacked) */}
+                                <div className="md:hidden">
+                                    <div className="font-base">{workout.duration.substring(0, 5)} <span className="font-semibold">{workoutTypes[workout.sport_type].label_short}</span></div>
+                                    <div className="text-sm text-gray-600 dark:text-gray-400">{Math.round(workout.kcal).toLocaleString()}<span className="text-sm"> kcal < /span></div>
+                                </div>
+                                {/* Desktop view (normal) */}
+                                <div className="hidden md:block">{workout.duration.substring(0, 5)} <span className="font-semibold text-base">{workoutTypes[workout.sport_type].label_short}</span> {(workout.distance) ? (<span className="hidden sm:inline">({workout.distance}km)</span>) : (null)}</div>
+                            </td>
+                            <td className="py-2 px-4 hidden md:table-cell">
                                 {(workout.kcal) ? (
                                     <>
                                         {Math.round(workout.kcal).toLocaleString()}

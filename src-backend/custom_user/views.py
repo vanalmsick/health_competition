@@ -30,18 +30,18 @@ class IsOwnerOrReadOnly(BasePermission):
         # Read requests always allowed
         if request.method in SAFE_METHODS:
             return True  # allow GET, HEAD, OPTIONS (GET is filtered at viweset level to only show allowed entries)
+        # Only workout user can edit workout
+        if hasattr(obj, 'user') and obj.user == request.user:
+            return True
+        # Only owner of competition can modify
+        elif hasattr(obj, 'owner') and obj.owner == request.user:
+            return True
+        # Only owner can modify goals and awards
+        elif hasattr(obj, 'competition') and hasattr(obj.competition, 'owner') and obj.competition.owner == request.user:
+            return True
         # If admin allow all requests
         if bool(request.user and request.user.is_staff):
             return True
-        # Only owner of competition can modify
-        if hasattr(obj, 'owner'):
-            return obj.owner == request.user
-        # Only owner can modify goals and awards
-        elif hasattr(obj, 'competition') and hasattr(obj.competition, 'owner'):
-            return obj.competition.owner == request.user
-        # Only workout user can edit workout
-        elif hasattr(obj, 'user'):
-            return obj.user == request.user
         return False
 
 

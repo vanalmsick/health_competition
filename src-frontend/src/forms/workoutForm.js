@@ -256,6 +256,7 @@ export default function WorkoutForm({id, setModalState}) {
                isLoading={iniLoading || updateIsLoading || createIsLoading || deleteIsLoading}>
             <SingleForm fields={fields} values={values} setValues={setValues} errors={fieldErrors}/>
             <div className="text-center text-red-500 text-xs italic">{formError}</div>
+            {(id !== true && (values?.strava_id === null || values?.strava_id === '')) ? <div className="text-center text-gray-700 dark:text-gray-300 text-xs italic"><b>Note:</b> Empty the kcal field to re-calculate after changes to the workout type, duration, or intensity.</div> : null}
             <div className="relative flex justify-between items-center">
                 {
                     (id !== true) ? (

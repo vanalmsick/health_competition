@@ -43,7 +43,7 @@ def daily_strava_sync(self):
         strava_refresh_token__isnull=False,
         is_active=True
     ).filter(
-        Q(strava_last_synced_at__lt=timezone.now() - datetime.timedelta(hours=20)) |
+        Q(strava_last_synced_at__lt=timezone.now() - datetime.timedelta(hours=6)) |
         Q(strava_last_synced_at__isnull=True)
     ).order_by('strava_last_synced_at', 'pk')
 

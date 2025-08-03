@@ -171,7 +171,7 @@ export default function GoalEqualizerForm({user, setModalState}) {
             <p className="text-gray-700 dark:text-gray-300">Everyone has a unique <b>Basal Metabolic Rate (BMR)</b>, dependent on factors like age, gender, height, and weight. To ensure a fair competition, the calculator below estimates your personal equalizing factors, which will be used to scale the competition goals. Your inputs <u>stay on your device</u> — only the final two equalizing values are sent to the server and stored.</p>
             <SingleForm fields={fields} values={values} setValues={setValues} errors={fieldErrors}/>
             <div className="text-center text-red-500 text-xs italic">{formError}</div>
-            <div className="text-center text-gray-800 text-xs italic"><b>Current Effort Factor:</b> {Math.round(user.scaling_kcal * 100)}% / <b>Current Distance Factor:</b> {Math.round(user.scaling_distance * 100)}%</div>
+            <div className="text-center text-gray-700 dark:text-gray-300 text-xs italic"><b>Current Effort Factor:</b> {Math.round(user.scaling_kcal * 100)}% / <b>Current Distance Factor:</b> {Math.round(user.scaling_distance * 100)}%</div>
             <div className="relative flex justify-between items-center">
                 <SaveButton onClick={handleSubmit} label="Update" highlighted={true} larger={true} />
             </div>

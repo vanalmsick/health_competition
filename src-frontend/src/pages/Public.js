@@ -2,9 +2,7 @@ import React, {useEffect, useState} from "react";
 import {Link, useLocation, useParams} from "react-router-dom";
 import {useDispatch} from 'react-redux';
 import {useNavigate} from 'react-router-dom';
-import {logout, setToken} from "../utils/reducers/authSlice";
 import {BarLoader, MoonLoader} from "react-spinners";
-import {JoinButton} from "../forms/basicComponents";
 import {usersApi} from '../utils/reducers/usersSlice';
 import {workoutsApi} from '../utils/reducers/workoutsSlice';
 import {competitionsApi} from '../utils/reducers/competitionsSlice';
@@ -576,7 +574,7 @@ function ResetPasswordPage() {
         const [success, msg] = await apiRequestNewPassword(email);
         if (success) {
             // success reset request - redirect to start page
-            window.confirm('Success! Please check your email for a reset link.');
+            window.alert('Success! Please check your email for a reset link.');
             setIsLoading(false);
             console.log('redirect to login page');
             navigate(`/`);

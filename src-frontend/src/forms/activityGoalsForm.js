@@ -219,7 +219,7 @@ export default function ActivityGoalsForm({competitionId, setModalState}) {
         if (noErrors) {
             document.body.classList.remove('body-no-scroll');
             setModalState(false);
-            window.confirm('Saved. The points might need to be re-calculated. Thus changes can take up to 10 minutes to reflect on the competition page for all users.');
+            window.alert('Saved. The points might need to be re-calculated. Thus changes can take up to 10 minutes to reflect on the competition page for all users.');
         }
     }
 

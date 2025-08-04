@@ -1,4 +1,4 @@
-import time
+import time, datetime
 import requests
 from rest_framework import viewsets
 from rest_framework.permissions import BasePermission, IsAdminUser, SAFE_METHODS, AllowAny
@@ -7,6 +7,7 @@ from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from django.conf import settings
@@ -156,3 +157,20 @@ class UnlinkStravaView(APIView):
         user.save()
 
         return Response({"message": "Successfully unlinked Strava."}, status=status.HTTP_200_OK)
+
+
+class SyncStravaView(APIView):
+    """ API get view for users to sync Strava. """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        if user.strava_refresh_token is None or user.strava_refresh_token == '':
+            return Response({"message": "Strava is not linked."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if user.strava_last_synced_at is None or user.strava_last_synced_at == '' or user.strava_last_synced_at < (timezone.now() - datetime.timedelta(minutes=59)):
+            sync_strava(user__id=user.id)
+            return Response({"message": f"Successfully synced Strava."}, status=status.HTTP_200_OK)
+
+        return Response({"message": "Too many requests! You can only request a Strava sync every 60 minutes."}, status=status.HTTP_429_TOO_MANY_REQUESTS)

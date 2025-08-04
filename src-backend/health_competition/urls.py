@@ -23,7 +23,7 @@ from rest_framework_simplejwt.views import (
 from rest_framework.routers import DefaultRouter
 from competition.views import CompetitionViewSet, TeamViewSet, ActivityGoalViewSet, PointsViewSet, CompetitionStatsQueryView, FeedQueryView, JoinCompetitionView, JoinTeamView, CeleryQueryView
 from workouts.views import WorkoutViewSet
-from custom_user.views import CustomUserViewSet, LinkStravaView, UnlinkStravaView, PasswordResetView, PasswordResetConfirmView
+from custom_user.views import CustomUserViewSet, LinkStravaView, UnlinkStravaView, SyncStravaView, PasswordResetView, PasswordResetConfirmView
 
 router = DefaultRouter()
 router.register(r'competition', CompetitionViewSet, basename='competition')
@@ -40,8 +40,9 @@ urlpatterns = [
         path('feed/<int:competition>/', FeedQueryView.as_view(), name='competition-feed'),
         path('join/competition/<str:join_code>/', JoinCompetitionView.as_view(), name='join-competition'),
         path('join/team/<int:id>/', JoinTeamView.as_view(), name='join-team'),
-        path('strava/link/<str:code>/', LinkStravaView.as_view(), name='link-strava'),
-        path('strava/unlink/', UnlinkStravaView.as_view(), name='unlink-strava'),
+        path('strava/link/<str:code>/', LinkStravaView.as_view(), name='strava-link'),
+        path('strava/unlink/', UnlinkStravaView.as_view(), name='strava-unlink'),
+        path('strava/sync/', SyncStravaView.as_view(), name='strava-sync'),
         path('celery/tasks/', CeleryQueryView.as_view(), name='celery-task-list'),
         path('celery/tasks/<str:task_id>/', CeleryQueryView.as_view(), name='celery-task-status'),
         path('celery/', CeleryQueryView.as_view(), name='celery-task-run'),

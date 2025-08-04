@@ -141,7 +141,7 @@ export function ReturnStravaLink() {
     // loading screen
     return (
         <PageWrapper additionClasses="h-screen flex items-center justify-center">
-            <SectionLoader height={"w-2/3 h-80 mb-4"}/>
+            <SectionLoader height={"w-2/3 h-80 mb-4"} message={"Hang in there! Importing your workouts from Strava..."} />
         </PageWrapper>
     )
 

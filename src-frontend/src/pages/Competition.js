@@ -84,7 +84,7 @@ function CompetitionHead({competition, feed, isOwner}) {
                     {
                         (isOwner) && <SettingsButton  additionalClasses="mx-auto sm:ml-auto sm:mr-0 my-1" onClick={() => setShowEditCompetitionModal(competition.id)}/>
                     }
-                    <LeaveButton additionalClasses="mx-auto sm:ml-auto sm:mr-0 my-1" onClick={() => window.confirm('Not yet implemented')} />
+                    <LeaveButton additionalClasses="mx-auto sm:ml-auto sm:mr-0 my-1" onClick={() => window.alert('Not yet implemented')} />
                     <ShareButton  additionalClasses="mx-auto sm:ml-auto sm:mr-0 my-1" onClick={() => setShowInviteCompetitionModal(true)} />
                 </div>
             </div>

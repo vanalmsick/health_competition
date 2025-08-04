@@ -17,10 +17,18 @@ export const linkApi = createApi({
                 method: 'POST',
             }),
         }),
+        syncStrava: builder.query({
+            query: () => ({
+                url: `strava/sync/`,
+                method: 'GET',
+            }),
+        }),
     }),
 });
 
 export const {
     useLinkStravaMutation,
     useUnlinkStravaMutation,
+    useGetSyncStravaQuery,
+    useLazySyncStravaQuery
 } = linkApi;

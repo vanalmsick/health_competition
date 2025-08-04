@@ -134,7 +134,7 @@ export default function CompetitionForm({competition, setModalState}) {
                 console.log('Update Competition success:', result);
                 setModalState(false);
                 document.body.classList.remove('body-no-scroll');
-                window.confirm('Saved. Changes might take up to 10 minutes to reflect on the competition page for all users.');
+                window.alert('Saved. Changes might take up to 10 minutes to reflect on the competition page for all users.');
             } catch (err) {
                 console.error('Update Competition failed', err);
                 setFieldErrors(err.data);

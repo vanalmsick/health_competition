@@ -158,7 +158,7 @@ export default function GoalEqualizerForm({user, setModalState}) {
             console.log('Update Personal Scaling Factors success:', result);
             setModalState(false);
             document.body.classList.remove('body-no-scroll');
-            window.confirm('Saved. The re-calculation of your competition points might take a few minutes.');
+            window.alert('Saved. The re-calculation of your competition points might take a few minutes.');
         } catch (err) {
             console.error('Update Personal Scaling Factors failed', err);
             setFieldErrors(err.data);

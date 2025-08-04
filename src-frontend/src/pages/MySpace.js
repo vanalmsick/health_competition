@@ -31,6 +31,9 @@ import {BoxSection, ErrorBoxSection, PageWrapper} from "../utils/miscellaneous";
 import {SectionLoader} from "../utils/loaders";
 import {useDispatch} from "react-redux";
 import GoalEqualizerForm from "../forms/equalizerForm";
+import {useLazySyncStravaQuery} from "../utils/reducers/linkSlice";
+import {statsApi} from "../utils/reducers/statsSlice";
+import {feedApi} from "../utils/reducers/feedSlice";
 
 
 function WelcomeBox({user, workouts, setLinkStrava}) {
@@ -109,12 +112,26 @@ function WorkoutsBox({workouts, user, setLinkStrava}) {
     const [showEditWorkoutModal, setShowEditWorkoutModal] = useState(false);
     const stravaLinked = user?.strava_athlete_id !== null;
     const dispatch = useDispatch();
+    const [triggerStravaSync, { data: stravaSyncData, isFetching: stravaSyncIsFetching, error: stravaSyncError, isSuccess: stravaSyncIsSuccess }] = useLazySyncStravaQuery();
 
-    function refreshWorkouts() {
+    useEffect(() => {
         dispatch(workoutsApi.util.invalidateTags(['Workout']));
         dispatch(usersApi.util.invalidateTags(['User']));
-        window.confirm('Not yet implemented');
-    }
+        if (stravaSyncIsSuccess) {
+            dispatch(statsApi.util.invalidateTags(['Stats']));
+            dispatch(feedApi.util.invalidateTags(['Feed']));
+            console.log("Strava sync successful!");
+        } else if (stravaSyncError) {
+            if (stravaSyncError?.status === 429) {
+                console.log("Strava sync denied! Too many requests!");
+                window.alert(`${stravaSyncError?.data?.message}`);
+            } else {
+                console.log("Strava sync failed!", stravaSyncError);
+                window.alert("Strava sync failed! Unknown error. Please try again later or wait till 4 am for scheduled sync.");
+            }
+
+        }
+    }, [stravaSyncIsFetching]);
 
     return (
         <BoxSection>
@@ -123,17 +140,13 @@ function WorkoutsBox({workouts, user, setLinkStrava}) {
                 <span className="mx-4 text-gray-500 uppercase font-bold mb-1.5 sm:mb-0">My Workouts</span>
                 <div className="p-0">
                     {
-                        (stravaLinked) ? <SyncStravaButton additionalClasses="my-0.5 sm:my-0"
-                                                           onClick={() => refreshWorkouts()}/> :
-                            <StravaButton additionalClasses="my-0.5 sm:my-0"
-                                          label={"Link Strava for Automatic Import"}
-                                          onClick={() => setLinkStrava(true)}/>
+                        (stravaLinked) ? <SyncStravaButton additionalClasses="my-0.5 sm:my-0" isLoading={stravaSyncIsFetching} onClick={() => triggerStravaSync()}/> :
+                            <StravaButton additionalClasses="my-0.5 sm:my-0" label={"Link Strava for Automatic Import"} onClick={() => setLinkStrava(true)}/>
                     }
                 </div>
 
                 <div className="p-0">
-                    <AddButton additionalClasses="my-0.5 sm:my-0" label={"Add Workout Manually"}
-                               onClick={() => setShowEditWorkoutModal(true)}/>
+                    <AddButton additionalClasses="my-0.5 sm:my-0" label={"Add Workout Manually"} onClick={() => setShowEditWorkoutModal(true)}/>
                 </div>
             </div>
 

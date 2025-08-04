@@ -163,7 +163,7 @@ export default function SettingsForm({user, setModalState, setLinkStrava}) {
             console.log('Update Personal Settings success:', result);
             setModalState(false);
             document.body.classList.remove('body-no-scroll');
-            window.confirm('Saved. Strava and username changes might take up to 10 minutes to reflect on the competition page for all users.');
+            window.alert('Saved. Strava and username changes might take up to 10 minutes to reflect on the competition page for all users.');
         } catch (err) {
             console.error('Update Personal Settings failed', err);
             setFieldErrors(err.data);

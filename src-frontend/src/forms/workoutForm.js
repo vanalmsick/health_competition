@@ -5,6 +5,9 @@ import {
 } from "../utils/reducers/workoutsSlice";
 import React, {useEffect, useState} from "react";
 import {AddButton, DeleteButton, Modal, SaveButton, SingleForm} from "./basicComponents";
+import {statsApi} from "../utils/reducers/statsSlice";
+import {feedApi} from "../utils/reducers/feedSlice";
+import {useDispatch} from "react-redux";
 
 export const workoutTypes = {
     "Badminton": {"label": "Badminton", "label_short": "Badminton"},
@@ -140,6 +143,7 @@ const fields = {
 
 
 export default function WorkoutForm({id, setModalState}) {
+    const dispatch = useDispatch();
 
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
@@ -221,6 +225,8 @@ export default function WorkoutForm({id, setModalState}) {
                 setFieldErrors(err.data);
             }
         }
+        dispatch(statsApi.util.invalidateTags(['Stats']));
+        dispatch(feedApi.util.invalidateTags(['Feed']));
     }
 
     // form action button right
@@ -249,6 +255,8 @@ export default function WorkoutForm({id, setModalState}) {
                 setFieldErrors(err.data);
             }
         }
+        dispatch(statsApi.util.invalidateTags(['Stats']));
+        dispatch(feedApi.util.invalidateTags(['Feed']));
     }
 
     return (

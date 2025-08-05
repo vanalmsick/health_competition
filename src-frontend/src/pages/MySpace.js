@@ -115,21 +115,22 @@ function WorkoutsBox({workouts, user, setLinkStrava}) {
     const [triggerStravaSync, { data: stravaSyncData, isFetching: stravaSyncIsFetching, error: stravaSyncError, isSuccess: stravaSyncIsSuccess }] = useLazySyncStravaQuery();
 
     useEffect(() => {
-        dispatch(workoutsApi.util.invalidateTags(['Workout']));
-        dispatch(usersApi.util.invalidateTags(['User']));
-        if (stravaSyncIsSuccess) {
-            dispatch(statsApi.util.invalidateTags(['Stats']));
-            dispatch(feedApi.util.invalidateTags(['Feed']));
-            console.log("Strava sync successful!");
-        } else if (stravaSyncError) {
-            if (stravaSyncError?.status === 429) {
-                console.log("Strava sync denied! Too many requests!");
-                window.alert(`${stravaSyncError?.data?.message}`);
-            } else {
-                console.log("Strava sync failed!", stravaSyncError);
-                window.alert("Strava sync failed! Unknown error. Please try again later or wait till 4 am for scheduled sync.");
+        if (stravaSyncIsFetching !== undefined && stravaSyncIsFetching !== true) {
+            dispatch(workoutsApi.util.invalidateTags(['Workout']));
+            dispatch(usersApi.util.invalidateTags(['User']));
+            if (stravaSyncIsSuccess) {
+                dispatch(statsApi.util.invalidateTags(['Stats']));
+                dispatch(feedApi.util.invalidateTags(['Feed']));
+                console.log("Strava sync successful!");
+            } else if (stravaSyncError) {
+                if (stravaSyncError?.status === 429) {
+                    console.log("Strava sync denied! Too many requests!");
+                    window.alert(`${stravaSyncError?.data?.message}`);
+                } else {
+                    console.log("Strava sync failed!", stravaSyncError);
+                    window.alert("Strava sync failed! Unknown error. Please try again later or wait till 4 am for scheduled sync.");
+                }
             }
-
         }
     }, [stravaSyncIsFetching]);
 

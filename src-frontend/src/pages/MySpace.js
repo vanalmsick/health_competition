@@ -434,16 +434,20 @@ function CalendarStats({workouts, last5Weeks}) {
         setTableStreakData(workoutsPerWeek);
 
         // streak number
-        let weekI = -1;
+        let weekStreak = -1;
+        let i = -1;
         let stillStreak = true;
         while (stillStreak) {
-            if (workoutsPerWeek[weekI + 1] > 0) {
-                weekI++;
-            } else {
+            // workout done - add one to streak
+            if (workoutsPerWeek[i + 1] > 0) {
+                weekStreak++;
+            // no workout done - break streak but only if this is not the current week
+            } else if (i !== -1) {
                 stillStreak = false;
             }
+            i++;
         }
-        setWeekStreak(weekI + 1);
+        setWeekStreak(weekStreak + 1);
 
     }, [workouts, last5Weeks]);
 

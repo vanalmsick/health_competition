@@ -1,4 +1,5 @@
 import {fetchBaseQuery} from '@reduxjs/toolkit/query/react';
+import * as Sentry from '@sentry/react';
 import {throwErrorWithCode} from '../miscellaneous';
 
 console.log('API URL:', process.env.REACT_APP_BACKEND_URL);
@@ -18,6 +19,28 @@ const baseQuery = fetchBaseQuery({
 export const baseQueryWithReauth = async (args, api, extraOptions) => {
     let result = await baseQuery(args, api, extraOptions);
 
+    // report to Sentry if not 401
+    if (result.error && result.error.status !== 401) {
+        Sentry.withScope((scope) => {
+            scope.setContext('RTK Query Request', {
+                args,
+                endpointName: api.endpoint, // might be undefined outside endpoint context
+                extraOptions,
+            });
+            scope.setContext('RTK Query Error', {
+                status: result.error.status,
+                data: result.error.data,
+                originalStatus: result.error.originalStatus,
+            });
+            scope.setTag('error.source', 'rtk-query');
+            scope.setTag('error.type', 'network-or-server');
+            Sentry.captureException(
+                new Error(`RTK Query request failed: ${result.error.status}`)
+            );
+        });
+    }
+
+    // if 401 forbidden error refresh the access token
     if (result.error && result.error.status === 401) {
         const refreshToken = localStorage.getItem('refresh_token');
         if (!refreshToken) {

@@ -175,7 +175,7 @@ export function FormInput({
                         <>
                             {/* Dropdown Input Element */}
                             <select
-                                className={"w-full shadow border rounded py-2 px-3 text-gray-700 dark:bg-gray-800 dark:text-gray-500 leading-tight focus:outline-none focus:shadow-outline" + (highlight ? " bg-sky-50 dark:bg-sky-950 ": "") + additionalClasses}
+                                className={"w-full shadow border rounded py-2 px-3 text-gray-700 dark:bg-gray-800 dark:text-gray-500 leading-tight focus:outline-none focus:shadow-outline" + (highlight ? " bg-sky-50 dark:bg-sky-950 border border-blue-300 ": "") + additionalClasses}
                                 name={name}
                                 tabIndex={tabIndex}
                                 required={required}
@@ -195,7 +195,7 @@ export function FormInput({
                         <>
                             {/* All Other Input Elements */}
                             <input
-                                className={"w-full shadow border rounded py-2 px-3 text-gray-700 dark:text-gray-500 leading-tight focus:outline-none focus:shadow-outline" + (highlight ? " bg-sky-50 dark:bg-sky-950 ": " dark:bg-gray-900 ") + additionalClasses}
+                                className={"w-full shadow border rounded py-2 px-3 text-gray-700 dark:text-gray-500 leading-tight focus:outline-none focus:shadow-outline" + (highlight ? " bg-sky-50 dark:bg-sky-950 border border-blue-300 ": " dark:bg-gray-900 ") + additionalClasses}
                                 name={name}
                                 type={type}
                                 placeholder={placeholder}

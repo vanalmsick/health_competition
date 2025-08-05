@@ -9,8 +9,10 @@ import {baseQueryWithReauth} from './baseQueryWithReauth';
  */
 export const convertToLocalTimezone = (dateString) => {
     if (!dateString) return dateString;
-    const date = new Date(dateString);
-    return date.toISOString().split('.')[0];
+    const d = new Date(dateString);
+    const pad = num => String(num).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T` +
+           `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 };
 
 /**
@@ -30,6 +32,42 @@ export const addLocalTimezone = (dateString) => {
 };
 
 
+export const dateFormatter = (dateString) => {
+    const date = new Date(dateString);
+    const dateDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    const today = new Date();
+    const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const currentDay = today.getDay(); // 0 (Sun) - 6 (Sat)
+
+    // prev week's Sunday
+    const prevSunday = new Date(today);
+    prevSunday.setDate(today.getDate() - currentDay); // go back to Sunday
+    const prevSundayDate = new Date(prevSunday.getFullYear(), prevSunday.getMonth(), prevSunday.getDate());
+
+    // Calculate difference in days/weeks
+    const daysAgo = Math.floor((todayDate - dateDate) / (24 * 60 * 60 * 1000));
+    const weeksAgo = Math.floor((prevSundayDate - dateDate) / (7 * 24 * 60 * 60 * 1000)) + 1;
+
+    return {
+        epoch: Math.floor(date.getTime() / 1000), // Unix epoch in seconds
+        date_iso: date.toLocaleDateString('en-CA'), // Canadian locale uses YYYY-MM-DD format by default
+        date_readable: date.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric'
+        }), // Mon, Jan 5
+        time_24h: date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        }), // HH:MM
+        weeksAgo: weeksAgo,
+        days_ago: daysAgo,
+    };
+};
+
+
 export const workoutsApi = createApi({
     reducerPath: 'workoutsApi',
     baseQuery: baseQueryWithReauth,
@@ -43,39 +81,10 @@ export const workoutsApi = createApi({
                 params: params,
             }),
             transformResponse: (response) => {
-                const today = new Date();
-                const currentDay = today.getDay(); // 0 (Sun) - 6 (Sat)
-
-                // This week's Monday
-                const thisMonday = new Date(today);
-                const diffToMonday = (currentDay === 0 ? -6 : 1) - currentDay;
-                thisMonday.setDate(today.getDate() + diffToMonday);
-
                 return response.map(workout => {
-                    const date = new Date(workout.start_datetime);
-                    // Reset hours to midnight for both dates to count whole days
-                    const activityDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-                    const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-                    // Calculate difference in days
-                    const daysAgo = Math.floor((todayDate - activityDate) / (1000 * 60 * 60 * 24));
                     return {
                         ...workout,
-                        start_datetime_fmt: {
-                            epoch: Math.floor(date.getTime() / 1000), // Unix epoch in seconds
-                            date_iso: date.toLocaleDateString('en-CA'), // Canadian locale uses YYYY-MM-DD format by default
-                            date_readable: date.toLocaleDateString('en-US', {
-                                weekday: 'short',
-                                month: 'short',
-                                day: 'numeric'
-                            }), // Mon, Jan 5
-                            time_24h: date.toLocaleTimeString('en-US', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                hour12: false
-                            }), // HH:MM
-                            weeksAgo: Math.floor((thisMonday - date) / (7 * 24 * 60 * 60 * 1000)) + 1,
-                            days_ago: daysAgo, // Number of whole days ago
-                        },
+                        start_datetime_fmt: dateFormatter(workout.start_datetime), // format datetime
                         start_datetime: convertToLocalTimezone(workout.start_datetime), // convert to local timezone
                     };
                 });
@@ -89,19 +98,9 @@ export const workoutsApi = createApi({
                 method: 'GET',
             }),
             transformResponse: (response) => {
-                const date = new Date(response.start_datetime);
                 return {
                     ...response,
-                    start_datetime_obj: {
-                        epoch: Math.floor(date.getTime() / 1000), // Unix epoch in seconds
-                        date_iso: date.toLocaleDateString('en-CA'), // Canadian locale uses YYYY-MM-DD format by default
-                        date_readable: date.toLocaleDateString('en-US', {
-                            weekday: 'short',
-                            month: 'short',
-                            day: 'numeric'
-                        }), // Mon, Jan 5
-                        time_24h: date.toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit', hour12: false}) // HH:MM
-                    },
+                    start_datetime_fmt: dateFormatter(response.start_datetime),
                     start_datetime: convertToLocalTimezone(response.start_datetime),
                 };
             },

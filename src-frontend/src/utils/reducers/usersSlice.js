@@ -1,5 +1,6 @@
 import {createApi} from '@reduxjs/toolkit/query/react';
 import {baseQueryWithReauth} from './baseQueryWithReauth';
+import {convertToLocalTimezone, dateFormatter} from "./workoutsSlice";
 
 export const usersApi = createApi({
     reducerPath: 'usersApi',
@@ -13,6 +14,15 @@ export const usersApi = createApi({
                 method: 'GET',
                 params: params,
             }),
+            transformResponse: (response) => {
+                return response.map(user => {
+                    return {
+                        ...user,
+                        strava_last_synced_at_fmt: dateFormatter(user.strava_last_synced_at), // format datetime
+                        strava_last_synced_at: convertToLocalTimezone(user.strava_last_synced_at), // convert to local timezone
+                    };
+                });
+            },
             providesTags: (result = []) => {
                 const tags = result.map(({ id }) => ({ type: 'User', id }));
                 if (result.some(user => user.id === 'me')) {
@@ -27,6 +37,13 @@ export const usersApi = createApi({
                 url: `user/${id}/`,
                 method: 'GET',
             }),
+            transformResponse: (response) => {
+                return {
+                    ...response,
+                    strava_last_synced_at_fmt: dateFormatter(response.strava_last_synced_at),
+                    strava_last_synced_at: convertToLocalTimezone(response.strava_last_synced_at),
+                };
+            },
             providesTags: (result, error, id) => {
                 const tags = [{ type: 'User', id }];
                 if (id === 'me') {

@@ -69,7 +69,7 @@ function ErrorBoxSection({errorMsg, additionalClasses = ''}) {
                 <AlertCircle className="w-20 h-20 mt-1 text-red-700"/>
                 <div>
                     <p className="font-semibold">Oops, that didn't work!</p>
-                    <p>Please delete your browser data and restart your browser. If the error continues to persist, please contact the administrator.</p>
+                    <p>Please reload / refresh the page. If the issue remains, <a href="/logout">log out (here)</a> and log back in. If it still persists, contact the administrator.</p>
                     <br/>
                     <p className="font-semibold italic">This error occurred:</p>
                     <p className="bg-red-200 text-sm p-2 rounded font-mono">{errorMsg}</p>

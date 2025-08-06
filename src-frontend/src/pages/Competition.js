@@ -302,7 +302,7 @@ function TeamLeaderboardBox({stats, competition}) {
                                         <p className="text-sm font-semibold">Members:</p>
                                         <ul className="text-sm list-disc pl-5">
                                             {team.members.map((user, usr_index) => (
-                                                <li key={"leader_user" + usr_index}>{user.username} {Math.round(user.points, 0).toLocaleString()}P</li>
+                                                <li key={"leader_user" + usr_index}>{user.username} {Math.round(user.total_capped, 0).toLocaleString()}P</li>
                                             ))}
                                         </ul>
 
@@ -635,8 +635,8 @@ function Activity7DaysBox({stats, userId, teamId}) {
         let tmpMe = [];
         let tmpTeam = [];
         let tmpAll = [];
-        const participantCount = Math.max(1, stats.competition?.member_count);
-        const teamMemberCount = Math.max(1, stats.teams[1]?.member_count);
+        const participantCount = Math.max(1, stats.competition?.active_member_count);
+        const teamMemberCount = Math.max(1, stats.teams[teamId]?.active_member_count);
         for (const entry of getWeekDates()) {
             tmpLegend.push(entry.dateObj.toLocaleDateString('en-US', {weekday: 'short'}));
             tmpMe.push(Math.round(stats?.timeseries?.user?.[userId]?.[entry.offset]?.total * 10) / 10 || 0);
@@ -698,8 +698,8 @@ function ActivityCompetitionBox({stats, userId, teamId}) {
         let prevTeam = 0;
         let tmpAll = [0];
         let prevAll = 0;
-        const participantCount = Math.max(1, stats.competition?.member_count);
-        const teamMemberCount = Math.max(1, stats.teams[1]?.member_count);
+        const participantCount = Math.max(1, stats.competition?.active_member_count);
+        const teamMemberCount = Math.max(1, stats.teams[teamId]?.active_member_count);
         for (const entry of getDateRange(stats?.competition?.start_date, stats?.competition?.end_date)) {
             tmpLegend.push(entry.dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })); // Mon, Jan 5
             tmpMe.push((stats?.timeseries?.user?.[userId]?.[entry.offset]?.total + prevMe) || null);

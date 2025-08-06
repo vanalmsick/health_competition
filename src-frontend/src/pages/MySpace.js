@@ -615,14 +615,18 @@ export default function MySpace() {
         isLoading: workoutsIsLoading,
         refetch: refetchWorkouts,
         isFetching: workoutsIsFetching,
-    } = useGetWorkoutsQuery(); //{'user_id': user?.id}
+    } = useGetWorkoutsQuery({
+        pollingInterval: 10800000, // 3 hours
+    }); //{'user_id': user?.id}
 
     const {
         data: competitions,
         error: competitionError,
         isLoading: competitionLoading,
         isSuccess: competitionIsSuccess
-    } = useGetCompetitionsQuery({'user_id': user?.id});
+    } = useGetCompetitionsQuery({
+        pollingInterval: 10800000, // 3 hours
+    });
 
     {/* Old Code */
     }

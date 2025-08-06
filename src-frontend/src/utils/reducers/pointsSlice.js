@@ -5,7 +5,8 @@ export const pointsApi = createApi({
     reducerPath: 'pointsApi',
     baseQuery: baseQueryWithReauth,
     tagTypes: ['Point'],
-    keepUnusedDataFor: 60 * 60 * 3, // 3 hours (default is 60)
+    keepUnusedDataFor: 60 * 60 * 3, // 3 hours cache (default is 60)
+    refetchOnMountOrArgChange: 60 * 15, // Refetch if older than 15 minutes
     endpoints: (builder) => ({
         getPoints: builder.query({
             query: (params = {}) => ({

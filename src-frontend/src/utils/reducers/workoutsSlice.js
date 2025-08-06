@@ -72,7 +72,8 @@ export const workoutsApi = createApi({
     reducerPath: 'workoutsApi',
     baseQuery: baseQueryWithReauth,
     tagTypes: ['Workout'],
-    keepUnusedDataFor: 60 * 60 * 3, // 3 hours (default is 60)
+    keepUnusedDataFor: 60 * 60 * 12, // 12 hours cache (default is 60)
+    refetchOnMountOrArgChange: 60 * 60, // Refetch if older than 1 hour
     endpoints: (builder) => ({
         getWorkouts: builder.query({
             query: (params = {}) => ({

@@ -58,8 +58,8 @@ export const workoutTypes = {
     "WeightTraining": {"label": "Weight Training", "label_short": "Weights"},
     "Wheelchair": {"label": "Wheelchair", "label_short": "Wheelchair"},
     "Windsurf": {"label": "Windsurf", "label_short": "Windsurf"},
-    "Workout": {"label": "Other Workout", "label_short": "Other"},
-    "Yoga": {"label": "Yoga", "label_short": "Yoga"}
+    "Yoga": {"label": "Yoga", "label_short": "Yoga"},
+    "Workout": {"label": "Other Workout", "label_short": "Other"}
 }
 
 

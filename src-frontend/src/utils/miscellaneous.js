@@ -69,7 +69,7 @@ function ErrorBoxSection({errorMsg, additionalClasses = ''}) {
                 <AlertCircle className="w-20 h-20 mt-1 text-red-700"/>
                 <div>
                     <p className="font-semibold">Oops, that didn't work!</p>
-                    <p>Please reload / refresh the page. If the issue remains, <a href="/logout">log out (here)</a> and log back in. If it still persists, contact the administrator.</p>
+                    <p>Please <a href='#' className='text-blue-500 hover:underline' onClick={(e) => {e.preventDefault(); window.location.reload()}}>reload / refresh the page (click here)</a>. If the issue remains, <a className='text-blue-500 hover:underline' target='_blank' href="/logout">log out (here)</a> and log back in. If it still persists, contact the administrator.</p>
                     <br/>
                     <p className="font-semibold italic">This error occurred:</p>
                     <p className="bg-red-200 text-sm p-2 rounded font-mono">{errorMsg}</p>

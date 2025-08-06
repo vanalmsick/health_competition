@@ -19,8 +19,8 @@ const baseQuery = fetchBaseQuery({
 export const baseQueryWithReauth = async (args, api, extraOptions) => {
     let result = await baseQuery(args, api, extraOptions);
 
-    // report to Sentry if not 401
-    if (result.error && result.error.status !== 401) {
+    // report to Sentry if not 401 (login access token needs refreshing) and 429 (too many strava sync requests) and 404 (not found after entry deletion)
+    if (result.error && result.error.status !== 401 && result.error.status !== 429 && result.error.status !== 404) {
         Sentry.withScope((scope) => {
             scope.setContext('RTK Query Request', {
                 args,

@@ -66,10 +66,10 @@ def get_competition_stats(competition):
         .values('days_ago', 'total')
         .order_by('-days_ago')
     )
-    results_all = {}
+    timeseries_all = {}
     for i in tmp_all:
         days_ago = i.pop('days_ago')
-        results_all[days_ago] = i
+        timeseries_all[days_ago] = i
 
     tmp_user = (
         all_points_date
@@ -77,13 +77,13 @@ def get_competition_stats(competition):
         .annotate(total=Sum('points_capped'))
         .order_by('-days_ago')
     )
-    results_user = {}
+    timeseries_user = {}
     for i in tmp_user:
         user_id = i.pop('workout__user__id')
         days_ago = i.pop('days_ago')
-        if user_id not in results_user:
-            results_user[user_id] = {}
-        results_user[user_id][days_ago] = i
+        if user_id not in timeseries_user:
+            timeseries_user[user_id] = {}
+        timeseries_user[user_id][days_ago] = i
 
     tmp_team = (
         all_points_date
@@ -91,13 +91,13 @@ def get_competition_stats(competition):
         .annotate(total=Sum('points_capped'))
         .order_by('-days_ago')
     )
-    results_team = {}
+    timeseries_team = {}
     for i in tmp_team:
         team_id = i.pop('workout__user__my_teams')
         days_ago = i.pop('days_ago')
-        if team_id not in results_team:
-            results_team[team_id] = {}
-        results_team[team_id][days_ago] = i
+        if team_id not in timeseries_team:
+            timeseries_team[team_id] = {}
+        timeseries_team[team_id][days_ago] = i
 
     # Get user data
     user_dict = {i['id']: i for i in CustomUser.objects.filter(my_competitions=competition).values('id', 'username', 'strava_allow_follow', 'strava_athlete_id').order_by('username', 'id')}
@@ -113,9 +113,13 @@ def get_competition_stats(competition):
         .order_by('-total_capped')
     )
     leaderboard_user = _add_rank(leaderboard_user, key="total_capped", enhance_dict=user_dict, id_field='workout__user__id')
+    leaderboard_user_dict = {i['id']: i for i in leaderboard_user}
 
     # Get team data
-    team_dict = {i.id: {'id': i.id, 'name': i.name, 'members': [user_dict.get(i.id, {'id': i.id, 'username': 'ERROR'}) for i in i.user.all()]} for i in Team.objects.filter(competition=competition).prefetch_related('user')}
+    team_dict = {i.id: {'id': i.id, 'name': i.name, 'members': [leaderboard_user_dict.get(i.id, {'id': i.id, 'username': 'ERROR', 'total_capped': None}) for i in i.user.all()]} for i in Team.objects.filter(competition=competition).prefetch_related('user')}
+    for key, value in team_dict.items():
+        value['active_member_count'] = sum(1 for i in value.get('members', []) if i.get('total_capped', 0) is not None and i.get('total_capped', 0) > 0)
+        value['member_count'] = len(value.get('members', []))
 
     # Get team rankings
     leaderboard_team = (
@@ -124,19 +128,16 @@ def get_competition_stats(competition):
         .annotate(total_capped=Sum('points_capped'))
         .order_by('-total_capped')
     )
-    leaderboard_team = [{**i, 'total_capped': i['total_capped'] / len(team_dict[i['workout__user__my_teams__id']]['members'])} for i in leaderboard_team if i['workout__user__my_teams__id'] in team_dict]
+    leaderboard_team = [{**i, 'total_capped': i['total_capped'] / max(1, team_dict[i['workout__user__my_teams__id']]['active_member_count'])} for i in leaderboard_team if i['workout__user__my_teams__id'] in team_dict]
     leaderboard_team = _add_rank(leaderboard_team, key="total_capped", enhance_dict=team_dict, id_field='workout__user__my_teams__id')
+    team_dict = {i['id']: i for i in leaderboard_team}
 
-    results_team_members = (
-        Team.objects.filter(competition__id=competition)
-        .annotate(member_count=Count('user'))
-        .values('id', 'name', 'member_count')
-    )
-    results_competition = {
+    competition_details = {
         'name': competition_obj.name,
-        'owner': competition_obj.owner.pk,
-        'members': list(competition_obj.user.all().values_list('pk', flat=True)),
+        'owner': user_dict.get(competition_obj.owner.pk, {'id': competition_obj.owner.pk, 'username': 'ERROR', 'total_capped': None}),
+        'members': [user_dict.get(i, {'id': i, 'username': 'ERROR', 'total_capped': None}) for i in list(competition_obj.user.all().values_list('pk', flat=True))],
         'member_count': competition_obj.user.all().count(),
+        'active_member_count': len(timeseries_user),
         'start_date': competition_obj.start_date,
         'start_date_count': (datetime.date.today() - competition_obj.start_date).days,
         'end_date': competition_obj.end_date,
@@ -146,13 +147,14 @@ def get_competition_stats(competition):
     }
 
     response_obj = {
+        'competition': competition_details,
+        'users': user_dict,
+        'teams': team_dict,
         'timeseries': {
-            'all': results_all,
-            'user': results_user,
-            'team': results_team,
+            'all': timeseries_all,
+            'user': timeseries_user,
+            'team': timeseries_team,
         },
-        'teams': {value['id']: value for i, value in enumerate(results_team_members)},
-        'competition': results_competition,
         'leaderboard': {
             'team': leaderboard_team,
             'individual': leaderboard_user,

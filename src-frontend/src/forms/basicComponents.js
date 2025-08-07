@@ -209,7 +209,6 @@ export function FormInput({
                                 value={(value === null) ? '' : value}
                                 list={name + "-suggestions"}
                                 onChange={(e) => setValue(e.target.value)}
-                                step={type === "time" ? "60" : undefined}
                             />
                         </>
                     )

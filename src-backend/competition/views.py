@@ -258,6 +258,21 @@ class JoinCompetitionView(APIView):
         competition.save()
         return Response({"message": "Successfully joined competition.", "competition": competition.id}, status=status.HTTP_200_OK)
 
+    def delete(self, request, join_code):
+        id = int(join_code)
+
+        request.user.my_competitions.remove(id)
+        teams = request.user.my_teams.filter(competition=id)
+        for team in teams:
+            team.user.remove(request.user)
+            team.save()
+        request.user.save()
+
+        points = Points.objects.filter((Q(award__competition__id=id) | Q(goal__competition_id=id)) & Q(workout__user=request.user))
+        points.delete()
+
+        return Response({"message": "Successfully left competition.", "competition": id}, status=status.HTTP_200_OK)
+
 
 class JoinTeamView(APIView):
     """ API post view for users to join a team and make sure they are only a member of one team per competition. """

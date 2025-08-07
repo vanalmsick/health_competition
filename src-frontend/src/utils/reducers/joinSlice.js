@@ -11,6 +11,12 @@ export const joinApi = createApi({
                 method: 'POST',
             }),
         }),
+        leaveCompetition: builder.mutation({
+            query: (id) => ({
+                url: `join/competition/${id}/`,
+                method: 'DELETE',
+            }),
+        }),
         joinTeam: builder.mutation({
             query: (id) => ({
                 url: `join/team/${id}/`,
@@ -22,5 +28,6 @@ export const joinApi = createApi({
 
 export const {
     useJoinCompetitionMutation,
+    useLeaveCompetitionMutation,
     useJoinTeamMutation,
 } = joinApi;

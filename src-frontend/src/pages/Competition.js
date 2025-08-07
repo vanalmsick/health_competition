@@ -1,7 +1,7 @@
-import {useParams} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import React, {useEffect, useState} from "react";
 import NavMenu from "../utils/navMenu";
-import {useGetCompetitionByIdQuery} from "../utils/reducers/competitionsSlice";
+import {competitionsApi, useGetCompetitionByIdQuery} from "../utils/reducers/competitionsSlice";
 import {
     ArrowDownToLine,
     ArrowUpToLine,
@@ -38,6 +38,8 @@ import {
 import {BoxSection, ErrorBoxSection, PageWrapper, useDarkMode} from "../utils/miscellaneous";
 import {workoutTypes} from "../forms/workoutForm";
 import CompetitionInviteModal from "../forms/shareModal";
+import {useDispatch} from "react-redux";
+import {useLeaveCompetitionMutation} from "../utils/reducers/joinSlice";
 
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Filler, Tooltip, Legend, BarElement, ChartDataLabels);
 
@@ -58,6 +60,33 @@ function CompetitionHead({competition, feed, isOwner}) {
         const limited = Object.fromEntries(Object.entries(sorted).slice(0, 4));
         setCountGroups(limited);
     }, [feed]);
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const [leaveCompetition, {
+        error: leaveError,
+        isLoading: leaveIsLoading,
+        isSuccess: leaveIsSuccess
+    }] = useLeaveCompetitionMutation();
+
+    async function triggerLeaveCompetition() {
+        const confirmation = window.confirm('Are you sure you want to leave the competition? Your earned points for yourself and your team will be unrecoverably deleted and you loose your spot on the leaderboard.');
+        if (confirmation) {
+            try {
+                const data = await leaveCompetition(competition.id).unwrap();
+                console.log('Successfully left competition:', data);
+                dispatch(competitionsApi.util.invalidateTags([{ type: 'Competition', id: competition.id }]));
+                navigate('/dashboard');
+            } catch (err) {
+                console.error('Error leaving completion:', err);
+                window.alert('Error leaving competition. Please try again.');
+            }
+
+        }
+    }
+
+
 
     return (
         <BoxSection additionalClasses="mb-4">
@@ -82,9 +111,9 @@ function CompetitionHead({competition, feed, isOwner}) {
                 </div>
                 <div className="p-2 sm:p-4">
                     {
-                        (isOwner) && <SettingsButton  additionalClasses="mx-auto sm:ml-auto sm:mr-0 my-1" onClick={() => setShowEditCompetitionModal(competition.id)}/>
+                        (isOwner) ? <SettingsButton  additionalClasses="mx-auto sm:ml-auto sm:mr-0 my-1" onClick={() => setShowEditCompetitionModal(competition.id)}/> :
+                            <LeaveButton additionalClasses="mx-auto sm:ml-auto sm:mr-0 my-1" onClick={() => triggerLeaveCompetition()} isLoading={leaveIsLoading} />
                     }
-                    <LeaveButton additionalClasses="mx-auto sm:ml-auto sm:mr-0 my-1" onClick={() => window.alert('Not yet implemented')} />
                     <ShareButton  additionalClasses="mx-auto sm:ml-auto sm:mr-0 my-1" onClick={() => setShowInviteCompetitionModal(true)} />
                 </div>
             </div>

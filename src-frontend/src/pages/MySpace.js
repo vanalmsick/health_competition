@@ -32,8 +32,9 @@ import {SectionLoader} from "../utils/loaders";
 import {useDispatch} from "react-redux";
 import GoalEqualizerForm from "../forms/equalizerForm";
 import {useLazySyncStravaQuery} from "../utils/reducers/linkSlice";
-import {statsApi} from "../utils/reducers/statsSlice";
+import {statsApi, useGetStatsByIdQuery} from "../utils/reducers/statsSlice";
 import {feedApi} from "../utils/reducers/feedSlice";
+import {BeatLoader} from "react-spinners";
 
 
 function WelcomeBox({user, workouts, setLinkStrava}) {
@@ -202,14 +203,65 @@ function WorkoutsBox({workouts, user, setLinkStrava}) {
 }
 
 
-function CompetitionsBox({competitions, setJoinCompetition}) {
+function CompetitionRow({competition, user}) {
+
+    const {
+        data: stats,
+        error: statsError,
+        isLoading: statsLoading,
+        refetch: refreshStats,
+        isFetching: statsFetching,
+    } = useGetStatsByIdQuery(competition.id, {
+        pollingInterval: 90000, // 90 seconds
+    });
+
+    const [teamId, setTeamId] = useState(undefined);
+    useEffect(() => {
+        if (stats?.teams && user?.my_teams) {
+            const tmpTeamId = Object.keys(stats?.teams).find(item => user?.my_teams.includes(parseInt(item)));
+            setTeamId(tmpTeamId);
+        }
+    }, [stats, user])
+
     const navigate = useNavigate();
-
-    const [showEditCompetitionModal, setShowEditCompetitionModal] = useState(false);
-
     const handleClick = (id) => {
         return navigate(`/competition/${id}`);
     }
+
+    return (
+        <tr onClick={() => handleClick(competition.id)}
+            className="hover:bg-gray-100 dark:hover:bg-gray-900 border-b cursor-pointer">
+            <td className="py-2 px-4">
+                <span className="font-semibold">{competition.name}</span><br/>
+                <span className="text-sm text-gray-400">{competition.start_date_fmt} - {competition.end_date_fmt}</span>
+            </td>
+            <td className="py-2 px-4 text-right text-sm">
+                {(statsLoading) ? (
+                    <div><BeatLoader color="rgb(209 213 219)" /></div>
+                ) : (stats.competition.start_date_count >= 0) ? (
+                        ((stats.users[user.id]?.rank == null) ? (
+                            <span className="text-gray-400">Time to workout!</span>
+                        ) : (
+                            <>No. <span className="text-2xl font-semibold">{stats.users[user.id]?.rank}</span>
+                                {(competition.has_teams) ? (
+                                    <span><br/><span className="font-semibold">{stats.teams[teamId]?.name}:</span> #{stats.teams[teamId]?.rank}</span>
+                                ) : null
+                                }
+                            </>
+                        ))
+                ) :
+                <span className="text-gray-400">Not yet started</span>
+            }
+            </td>
+        </tr>
+    )
+}
+
+
+
+function CompetitionsBox({user, competitions, setJoinCompetition}) {
+
+    const [showEditCompetitionModal, setShowEditCompetitionModal] = useState(false);
 
     return (
         <BoxSection additionalClasses={"mb-4"}>
@@ -234,18 +286,7 @@ function CompetitionsBox({competitions, setJoinCompetition}) {
                     </tr>
                 ) : (
                     competitions.map((competition, iCompetition) => (
-                        <tr key={"comp" + iCompetition} onClick={() => handleClick(competition.id)}
-                            className="hover:bg-gray-100 dark:hover:bg-gray-900 border-b cursor-pointer">
-                            <td className="py-2 px-4"><span
-                                className="font-semibold">{competition.name}</span><br/><span
-                                className="text-sm text-gray-400">{competition.start_date_fmt} - {competition.end_date_fmt}</span>
-                            </td>
-                            <td className="py-2 px-4 text-right text-sm">{(competition.my_rank) ? (<>No. <span
-                                    className="text-2xl font-semibold">{competition.my_rank}</span>{(competition.has_teams) ? (
-                                    <span><br/><span
-                                        className="font-semibold">{competition.team_name}:</span> Rank {competition.team_rank}</span>) : null}</>) :
-                                <span className="text-gray-400">Not yet started</span>}</td>
-                        </tr>
+                        <CompetitionRow key={"comp" + iCompetition} competition={competition} user={user} />
                     ))
                 )}
                 </tbody>
@@ -615,16 +656,16 @@ export default function MySpace() {
         isLoading: workoutsIsLoading,
         refetch: refetchWorkouts,
         isFetching: workoutsIsFetching,
-    } = useGetWorkoutsQuery({
+    } = useGetWorkoutsQuery(undefined, {
         pollingInterval: 10800000, // 3 hours
-    }); //{'user_id': user?.id}
+    });
 
     const {
         data: competitions,
         error: competitionError,
         isLoading: competitionLoading,
         isSuccess: competitionIsSuccess
-    } = useGetCompetitionsQuery({
+    } = useGetCompetitionsQuery(undefined, {
         pollingInterval: 10800000, // 3 hours
     });
 
@@ -723,13 +764,13 @@ export default function MySpace() {
                     <div className="order-1 w-full xl:order-2 xl:w-1/3 xl:ml-2">
 
                         {
-                            (competitionLoading) ? (
+                            (userLoading || competitionLoading) ? (
                                 <SectionLoader/>
                             ) : (competitionError) ? (
                                 <ErrorBoxSection additionalClasses="mb-4"
                                                  errorMsg={competitionError?.status + ' / ' + (competitionError?.error || competitionError?.message || competitionError?.data?.detail)}/>
                             ) : (
-                                <CompetitionsBox competitions={competitions} setJoinCompetition={setJoinCompetition}/>
+                                <CompetitionsBox user={user} competitions={competitions} setJoinCompetition={setJoinCompetition}/>
                             )
                         }
 

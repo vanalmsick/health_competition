@@ -81,7 +81,7 @@ class PasswordResetSerializer(serializers.Serializer):
             token = default_token_generator.make_token(user)
             reset_url = f"{settings.MAIN_HOST}/password/reset/{uid}/{token}/"
 
-            email_subject = "Health Competition - Reset Your Password"
+            email_subject = "Workout Challenge - Reset Your Password"
             email_body = render_to_string(
                 "email_password_reset.html",
                 {

@@ -19,7 +19,7 @@ function BaseHome({children}) {
 
             <div className="relative z-10 flex items-center justify-center min-h-screen px-0 md:px-4">
                 <div className="p-8 rounded-xl shadow-lg max-w-2xl text-center text-white my-4">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-6">Health Competition</h1>
+                    <h1 className="text-4xl md:text-5xl font-bold mb-6">Workout Challenge</h1>
                     <div>
                         <p className="text-l md:text-xl mb-8">
                             Compete with friends and co-workers <b>across devices</b> <small

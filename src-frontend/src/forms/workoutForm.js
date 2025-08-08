@@ -217,7 +217,11 @@ export default function WorkoutForm({id, setModalState}) {
         } else {
             // save and add another
             try {
-                const result = await createEntry(values).unwrap();
+                let tmpValues = {...values};
+                if (tmpValues.duration.length === 5) {
+                    tmpValues.duration += ":00";
+                }
+                const result = await createEntry(tmpValues).unwrap();
                 console.log('Create Workout success:', result);
                 setValues({...defaultValues});
             } catch (err) {
@@ -231,11 +235,14 @@ export default function WorkoutForm({id, setModalState}) {
 
     // form action button right
     async function handleSubmit() {
-        console.log('submit', id, values);
+        let tmpValues = {...values};
+        if (tmpValues.duration.length === 5) {
+            tmpValues.duration += ":00";
+        }
         if (id !== true) {
             // update workout
             try {
-                const result = await updateEntry(values).unwrap();
+                const result = await updateEntry(tmpValues).unwrap();
                 console.log('Update Workout success:', result);
                 setModalState(false);
                 document.body.classList.remove('body-no-scroll');
@@ -246,7 +253,7 @@ export default function WorkoutForm({id, setModalState}) {
         } else {
             // create workout
             try {
-                const result = await createEntry(values).unwrap();
+                const result = await createEntry(tmpValues).unwrap();
                 console.log('Create Workout success:', result);
                 setModalState(false);
                 document.body.classList.remove('body-no-scroll');

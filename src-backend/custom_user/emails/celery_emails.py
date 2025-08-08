@@ -15,7 +15,7 @@ def welcome_email(user_pk):
     CustomUser = apps.get_model('custom_user', 'CustomUser')
     user_obj = CustomUser.objects.get(pk=user_pk)
 
-    email_subject = 'Welcome to the Health Competition!'
+    email_subject = 'Welcome to the Workout Challenge!'
 
     if user_obj.strava_refresh_token is None or user_obj.strava_refresh_token == '':
         strava_block = render_to_string(
@@ -73,7 +73,7 @@ def log_workouts_email(user_pk):
     user_obj = CustomUser.objects.get(pk=user_pk)
     workout_obj_lst = user_obj.workout_set.order_by('-start_datetime')[:3]
 
-    email_subject = 'Health Competition - Log Your Workouts!'
+    email_subject = 'Workout Challenge - Log Your Workouts!'
 
     if user_obj.strava_refresh_token is None or user_obj.strava_refresh_token == '':
         strava_block = render_to_string(
@@ -135,7 +135,7 @@ def leaderboard_email(user_pk):
             'leaderboard': competition_stats['leaderboard'],
         })
 
-    email_subject = 'Health Competition - Your Spot on the Leaderboard!'
+    email_subject = 'Workout Challenge - Your Spot on the Leaderboard!'
 
     email_body = render_to_string(
         "email_leaderboard.html",

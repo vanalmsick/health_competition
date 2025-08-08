@@ -1,4 +1,4 @@
-# Health Competition
+# Workout Challenge
 Compete with friends and co-workers across devices (Apple / Android / Garmin / etc.) using the metrics you want to use (km / minutes / kcal / # of times / etc.) respecting your privacy.
 
 ## How does it work?
@@ -157,5 +157,4 @@ REACT_APP_BACKEND_URL=http://localhost:8000
 ### ToDos:
 - Improve modal to change teams (plus access right issue if not owner)
 - User account deletion causes "maximum recursion depth exceeded" error
-- Leave Competition Button
 - Competition start & finish email

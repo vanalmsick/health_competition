@@ -56,5 +56,5 @@ urlpatterns = [
 
 
 admin.site.site_header = 'Backend Admin Panel'
-admin.site.site_title = 'Health Competition Backend'
-admin.site.index_title = 'Welcome to the Health Competition Backend'
+admin.site.site_title = 'Workout Challenge Backend'
+admin.site.index_title = 'Welcome to the Workout Challenge Backend'

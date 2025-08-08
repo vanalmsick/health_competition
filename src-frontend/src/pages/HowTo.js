@@ -5,7 +5,7 @@ import {useDispatch} from "react-redux";
 import {workoutsApi} from "../utils/reducers/workoutsSlice";
 
 const steps = [
-    {title: "Welcome", content: "Let's find out how to best navigate the Health Competition!", img: null},
+    {title: "Welcome", content: "Let's find out how to best navigate the Workout Challenge!", img: null},
     {
         title: "Navigation",
         content: "At the top, switch between your personal (private) and competition (public) dashboards.",

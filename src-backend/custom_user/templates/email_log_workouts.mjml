@@ -1,0 +1,87 @@
+<mjml>
+  <!-- Written with https://mjml.io/ -->
+  <mj-head>
+    <mj-preview>New week, new gains! But first time to log last week's workouts before we send out the leaderboard this afternoon!</mj-preview>
+    <mj-attributes>
+      <mj-text line-height="1.2" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#E1E8ED">
+    <mj-section background-url="{{ MAIN_HOST }}/running_email.jpg" vertical-align="middle" background-size="cover" background-repeat="no-repeat">
+      <mj-column width="100%" vertical-align="middle">
+        <mj-text css-class="no-invert" align="center" font-size="14px" padding-bottom="10px" padding-top="45px"><span style="font-size: 30px; line-height: 30px; text-shadow: 1.5px 1.5px 3px #404040; color: #ffffff !important;">Workout Challenge</span></mj-text>
+        <mj-button align="center" background-color="#075985" color="#fff" border-radius="24px" href="{{ MAIN_HOST }}/login" font-family="Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif" padding-bottom="45px" padding-top="10px">LOGIN</mj-button>
+      </mj-column>
+    </mj-section>
+    <mj-section padding-top="0px" padding-bottom="0px" background-color="white">
+      <mj-column padding-bottom="0px">
+        <mj-text padding-bottom="0px">
+          <p>Hi {{ first_name }},</p>
+          <p>New week, new gains!</p>
+          <p>But first time to <b>log last week's workouts</b> before we send out the leaderboard this afternoon!</p>
+        </mj-text>
+        <mj-divider border-color="#E1E8ED" border-width="2px"></mj-divider>
+        <mj-text padding-bottom="0px">
+          <h3>Your last workouts:</h3>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    
+    <!-- This week leaderbaord section -->
+    <mj-section padding-top="0px" padding-bottom="0px" background-color="white">
+      <mj-column>
+        <mj-table>
+          <tr style="border-top:1px solid #ecedee;border-bottom:1px solid #ecedee;text-align:left;padding:15px 0;">
+            <th style="padding: 0 15px 0 0;">Time</th>
+            <th style="padding: 0 15px;">Workout</th>
+          </tr>
+          <mj-raw> {% for item in last_workouts %} </mj-raw>
+          <tr style="border-top:1px solid #ecedee;border-bottom:1px solid #ecedee;text-align:left;padding:15px 0;">
+            <td style="padding: 0 15px 0 0;">{{ item.start_datetime|date:"D, M j H:i" }}</td>
+            <td style="padding: 0 15px;">{{ item.duration }} <b>{{ item.sport_type }}</b></td>
+          </tr>
+          <mj-raw> {% endfor %} </mj-raw>
+        </mj-table>
+        <mj-button align="center" background-color="#075985" color="#fff" border-radius="24px" href="{{ MAIN_HOST }}/dashboard" font-family="Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif" padding-bottom="17px" padding-top="7px">Log New Workouts</mj-button>
+      </mj-column> 
+    </mj-section>
+    
+    <!-- Link Strava -->
+    <mj-section background-color="#075985" vertical-align="middle">
+      <mj-column width="100%" vertical-align="middle">
+        <mj-text align="center" color="#ffffff" font-size="18px" padding-bottom="10px" padding-top="20px">Skip the hassle of manual logging – connect Strava for automatic workout imports!</mj-text>
+        <mj-divider border-color="#fff" border-style="solid" border-width="1px" padding-left="100px" padding-right="100px" padding-bottom="20px"></mj-divider>
+        <mj-text align="center" color="#e5e7eb" font-size="11px" padding-bottom="25px" padding-top="0px">
+        	<p>Every day at 4 AM, your workouts are automatically imported, only syncing the most essential data with Strava to respect your privacy:</p>
+          <span>• Sport type</span><br/>
+          <span>• Start time & duration</span><br/>
+          <span>• Workout id</span><br/>
+          <span>• Distance, kcal, kj, avg. watt</span>
+        </mj-text>
+        <mj-button align="center" background-color="#ffffff" color="#075985" border-radius="24px" href="{{ MAIN_HOST }}/strava/link" font-family="Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif" padding-bottom="5px" padding-top="0px">Link Strava</mj-button>
+      </mj-column>
+    </mj-section>
+    
+    <!-- Final remarks -->
+    <mj-section padding-top="0px" padding-bottom="0px" background-color="white">
+      <mj-column>       
+        <mj-text padding-bottom="10px" padding-top="5px">
+          <p>Enjoy the Competition.</p>
+          <p>Good luck!</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    
+    <!-- Footnote -->
+    </mj-section>
+    <mj-section full-width="full-width">
+      <mj-column width="100%" vertical-align="middle">
+        <mj-text align="center" color="#9a9ea6" font-size="11px" padding-bottom="0px" padding-top="0">
+          <span class="apple-link">Workout Challenge</span>
+          <br/> Any issues? <a href="mailto:{{ EMAIL_REPLY_TO }}">Send us an Email</a>. <br/> See the <a href="https://github.com/vanalmsick/health_competition">Source Code</a>.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+        
+  </mj-body>
+</mjml>

@@ -17,23 +17,13 @@ def welcome_email(user_pk):
 
     email_subject = 'Welcome to the Workout Challenge!'
 
-    if user_obj.strava_refresh_token is None or user_obj.strava_refresh_token == '':
-        strava_block = render_to_string(
-            "email_link_strava.html",
-            {
-                'MAIN_HOST': settings.MAIN_HOST,
-            }
-        )
-    else:
-        strava_block = ""
-
     email_body = render_to_string(
         "email_welcome.html",
         {
             'first_name': user_obj.first_name,
             'MAIN_HOST': settings.MAIN_HOST,
-            'LINK_STRAVA_BLOCK': strava_block,
             'EMAIL_REPLY_TO': settings.EMAIL_REPLY_TO,
+            'link_strava_note': user_obj.strava_refresh_token is None or user_obj.strava_refresh_token == '',
         }
     )
 
@@ -75,23 +65,12 @@ def log_workouts_email(user_pk):
 
     email_subject = 'Workout Challenge - Log Your Workouts!'
 
-    if user_obj.strava_refresh_token is None or user_obj.strava_refresh_token == '':
-        strava_block = render_to_string(
-            "email_link_strava.html",
-            {
-                'MAIN_HOST': settings.MAIN_HOST,
-            }
-        )
-    else:
-        strava_block = ""
-
     email_body = render_to_string(
         "email_log_workouts.html",
         {
             'first_name': user_obj.first_name,
             'last_workouts': workout_obj_lst,
             'MAIN_HOST': settings.MAIN_HOST,
-            'LINK_STRAVA_BLOCK': strava_block,
             'EMAIL_REPLY_TO': settings.EMAIL_REPLY_TO,
         }
     )
@@ -144,6 +123,7 @@ def leaderboard_email(user_pk):
             'MAIN_HOST': settings.MAIN_HOST,
             'competitions': competition_data,
             'EMAIL_REPLY_TO': settings.EMAIL_REPLY_TO,
+            'goal_equalizer_note': user_obj.scaling_kcal == 1 and user_obj.scaling_distance == 1,
         }
     )
 

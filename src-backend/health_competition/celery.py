@@ -44,6 +44,12 @@ app.conf.beat_schedule = {
         "schedule": crontab(day_of_week="1", minute="5", hour="15"),
         "args": (),
     },
+    # every Thursday afternoon send weekly check-ins out
+    "send_all_weekly_emails": {
+        "task": "custom_user.emails.celery_emails.send_all_weekly_emails",
+        "schedule": crontab(day_of_week="4", minute="5", hour="15"),
+        "args": (),
+    },
 }
 
 

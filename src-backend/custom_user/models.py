@@ -71,7 +71,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     # personal 7 day goals
     goal_active_days = models.IntegerField(null=True, blank=True, default=3)
-    goal_workout_minutes = models.IntegerField(null=True, blank=True, default=180)
+    goal_workout_minutes = models.IntegerField(null=True, blank=True, default=150)
     goal_distance = models.IntegerField(null=True, blank=True, default=None)
 
     # personal scaling factors

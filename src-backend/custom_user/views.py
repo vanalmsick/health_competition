@@ -7,6 +7,7 @@ from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from celery.exceptions import TimeoutError
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
@@ -136,7 +137,11 @@ class LinkStravaView(APIView):
 
         cache.set(f"strava_access_token_{user.id}", strava_tokens.get('access_token', None), int(strava_tokens.get('expires_in', 21600)) - 60)
         try:
-            sync_strava(user__id=user.id)
+            running_task = sync_strava.delay(user__id=user.id)
+            try:
+                running_task.get(timeout=100)
+            except TimeoutError:
+                print(f"Strava sync task is still running ({running_task.id}). Don't let the user wait so long.")
         except requests.exceptions.HTTPError as err:
             if err.response.status_code == 401:
                 return Response({'message': 'Access to activities denied by Strava. Not sufficient permissions to download activities.', 'original': err.response.json()}, status=status.HTTP_403_FORBIDDEN)

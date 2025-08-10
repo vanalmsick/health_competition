@@ -29,7 +29,7 @@ def _add_rank(data, key, enhance_dict, id_field, rank_field='rank', reverse=True
     return sorted_data
 
 
-def get_competition_stats(competition):
+def get_competition_stats(competition, last_seven_days=False):
     CustomUser = apps.get_model('custom_user', 'CustomUser')
     Competition = apps.get_model('competition', 'Competition')
     Points = apps.get_model('competition', 'Points')
@@ -41,6 +41,12 @@ def get_competition_stats(competition):
     except Competition.DoesNotExist:
         return Response({"detail": "Competition not found."}, status=status.HTTP_404_NOT_FOUND)
     all_points = Points.objects.filter(Q(award__competition__id=competition) | Q(goal__competition_id=competition))
+
+    if last_seven_days:
+        today = datetime.date.today()
+        last_sunday = today - datetime.timedelta(days=today.weekday() + 1) if today.weekday() != 6 else today
+        monday_before = last_sunday - datetime.timedelta(days=6)
+        all_points = all_points.filter(workout__start_datetime__gte=monday_before, workout__start_datetime__lt=last_sunday + datetime.timedelta(days=1))
 
     # For SQLite
     if settings.DATABASES.get('default', {}).get('ENGINE') == 'django.db.backends.sqlite3':

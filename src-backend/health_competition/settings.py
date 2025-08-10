@@ -255,3 +255,7 @@ EMAIL_USE_TLS = None if (use_ssl := os.environ.get("EMAIL_USE_TLS", None)) is No
 EMAIL_USE_SSL = None if (use_ssl := os.environ.get("EMAIL_USE_SSL", None)) is None else bool(use_ssl)
 EMAIL_FROM = DEFAULT_FROM_EMAIL = os.environ.get("EMAIL_FROM", None)
 EMAIL_REPLY_TO = None if (reply_email := os.environ.get("EMAIL_REPLY_TO", None)) is None else reply_email.split(",")
+
+
+# OpenAI for AI quotes
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", None)

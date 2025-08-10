@@ -14,3 +14,4 @@ django-redis
 django-celery-beat
 sentry-sdk[django]
 sentry-sdk[celery]
+openai>=1.0.0

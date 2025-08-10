@@ -1,0 +1,250 @@
+<mjml>
+  <!-- Written with https://mjml.io/ -->
+  <mj-head>
+    <mj-preview>Thanks for signing up to the Workout Challenge! Bookmark the page in your browser. How does the competition work? How to earn activity points? You'll find out now!</mj-preview>
+    <mj-attributes>
+      <mj-text line-height="1.2" />
+    </mj-attributes>
+    <mj-style inline="inline"> 
+td div .streak {
+    height: 25px;
+    width: 25px;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    border: 2px solid rgb(7 89 133);
+    border-radius: 9999px;
+    color: rgb(7 89 133);
+    font-weight: bold;
+}
+
+td div .day {
+    height: 25px;
+    width: 25px;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    border-radius: 9999px;
+}
+
+.calendar {
+    width: 35px;
+    height: 35px;
+    text-align: center;
+    padding: 0px;
+}
+
+.goal-title {
+    padding: 10px 25px 0;
+    word-break: break-word;
+    font: bold 15px/1.2 Ubuntu, Helvetica, Arial, sans-serif;
+    text-align: left;
+    color: #000;
+}
+
+.goal-container {
+    font: 14px/1.2 Ubuntu, Helvetica, Arial, sans-serif;
+    text-align: left;
+    color: #000;
+    background: #f3f4f6;
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+    margin: 1rem 1rem 0.25rem;
+    position: relative;
+    width: 70%;
+}
+
+.goal-flex-column {
+    display: flex;
+    flex-direction: column;
+    padding: 0 1rem;
+    text-align: left;
+}
+
+.goal-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #6b7280;
+    margin-bottom: 0.125rem;
+}
+
+.goal-header-row span {
+    font-weight: 600;
+}
+
+.goal-header-row div span {
+    font-weight: 100;
+    font-size: 0.65rem;
+}
+
+.goal-progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.625rem 0 0.25rem;
+}
+
+.goal-progress-bar-bg {
+    flex-grow: 1;
+    background: #e5e7eb;
+    border-radius: 9999px;
+    height: 1rem;
+}
+
+.goal-progress-bar-fill {
+    height: 1rem;
+    border-radius: 9999px;
+    background: #6387bc;
+}
+  </mj-style>
+  </mj-head>
+  <mj-body background-color="#E1E8ED">
+    <mj-section background-url="{{ MAIN_HOST }}/running_email.jpg" vertical-align="middle" background-size="cover" background-repeat="no-repeat">
+      <mj-column width="100%" vertical-align="middle">
+        <mj-text css-class="no-invert" align="center" font-size="14px" padding-bottom="10px" padding-top="45px"><span style="font-size: 30px; line-height: 30px; text-shadow: 1.5px 1.5px 3px #404040; color: #ffffff !important;">Workout Challenge</span></mj-text>
+        <mj-button align="center" background-color="#075985" color="#fff" border-radius="24px" href="{{ MAIN_HOST }}/login" font-family="Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif" padding-bottom="45px" padding-top="10px">LOGIN</mj-button>
+      </mj-column>
+    </mj-section>
+    <mj-section padding-top="0px" padding-bottom="0px" background-color="white">
+      <mj-column padding-bottom="0px">
+        <mj-text padding-bottom="0px">
+          <p>Hi {{ first_name }},</p>
+          <p>Let’s check in on your week!</p>
+          <p>Keep the momentum going – keep the streak alive!</p>
+          <p>Aim for 150-300 minutes of moderate or 75-150 minutes of vigorous activity weekly (or an equivalent mix) spread over at least 2 days, as recommended by the WHO.</p>
+        </mj-text>
+        <mj-divider border-color="#E1E8ED" border-width="2px"></mj-divider>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="white" padding-top="5px">
+      <mj-column padding-top="0px">
+        <mj-text padding-bottom="0px">
+          <h3>Your Streak:</h3>
+        </mj-text>
+        <mj-table padding-top="0px">
+          <tr class="calendar">
+            <th>M</th>
+            <th>T</th>
+            <th>W</th>
+            <th>T</th>
+            <th>F</th>
+            <th>S</th>
+            <th>S</th>
+          </tr>
+          <mj-raw> {% for week in calendar %} </mj-raw>
+          <tr class="calendar">
+            <mj-raw> {% for day in week %} </mj-raw>
+              <td>
+                <div class="day" style="background-color: {{ day.background_color }};color: {{ day.color }};">{{ day.day }}</div>
+              </td>
+            <mj-raw> {% endfor %} </mj-raw>
+          </tr>
+          <mj-raw> {% endfor %} </mj-raw>
+
+          <tr>
+            <td colspan=7 style="padding-top: 7px;text-align: center;">
+              <div class="streak" style="display: inline-block; text-align: center; font-weight: bold;">{{ week_streak }}</div><div style="display: inline-block; text-align: center;font-weight: bold;padding-left: 5px;">Week Streak</div></td>
+          </tr>
+        </mj-table>
+      </mj-column>
+      <mj-column>
+        <mj-raw>
+          <div class="goal-title">Your Personal 7-Day Goals:</div>
+          
+          {% if goals.active_days is not None %}
+          <div class="goal-container">
+            <div class="goal-flex-column">
+              <div class="goal-header-row">
+                <span style="letter-spacing: 0.05em;">Active Days</span>
+                <div>{{ goals.active_days.recorded }} days <span>/ {{ goals.active_days.target }} days</span></div>
+              </div>
+              <div class="goal-progress-row">
+                <div class="goal-progress-bar-bg">
+                  <div class="goal-progress-bar-fill" style="width: {{ goals.active_days.percent }}%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          
+          {% if goals.minutes is not None %}
+          <div class="goal-container">
+            <div class="goal-flex-column">
+              <div class="goal-header-row">
+                <span style="letter-spacing: 0.05em;">Exercise</span>
+                <div>{{ goals.minutes.recorded }} min <span>/ {{ goals.minutes.target }} min</span></div>
+              </div>
+              <div class="goal-progress-row">
+                <div class="goal-progress-bar-bg">
+                  <div class="goal-progress-bar-fill" style="width: {{ goals.minutes.percent }}%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          
+          {% if goals.distance is not None %}
+          <div class="goal-container">
+            <div class="goal-flex-column">
+              <div class="goal-header-row">
+                <span style="letter-spacing: 0.05em;">Distance</span>
+                <div>{{ goals.distance.recorded }} km <span>/ {{ goals.distance.target }} km</span></div>
+              </div>
+              <div class="goal-progress-row">
+                <div class="goal-progress-bar-bg">
+                  <div class="goal-progress-bar-fill" style="width: {{ goals.distance.percent }}%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          
+        </mj-raw>
+      </mj-column>
+    </mj-section>
+    
+    <mj-raw> {% if openai_quote is not None %} </mj-raw>
+    <!-- AI Health Quote -->
+    <mj-section background-color="#075985" vertical-align="middle">
+      <mj-column width="100%" vertical-align="middle">
+        <mj-text align="center" color="#ffffff" font-size="16px" padding-bottom="10px" padding-top="20px">{{ openai_quote }}</mj-text>
+        <mj-divider border-color="#fff" border-style="solid" border-width="1px" padding-left="100px" padding-right="100px" padding-bottom="10px"></mj-divider>
+        <mj-text align="center" color="#e5e7eb" font-size="11px" padding-bottom="0px" padding-top="0px">
+          <p>by OpenAI's ChatGPT 4o</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-raw> {% endif %} </mj-raw>
+    
+    <!-- Final remarks -->
+    <mj-section padding-top="0px" padding-bottom="0px" background-color="white">
+      <mj-column>
+        <mj-raw> {% if openai_quote is None %} </mj-raw>
+          <mj-divider border-color="#E1E8ED" border-width="2px"></mj-divider>
+        <mj-raw> {% endif %} </mj-raw>
+        <mj-text padding-top="20px">Login to see more detailed analyses, charts, and breakdowns:</mj-text>
+        <mj-button align="center" background-color="#075985" color="#fff" border-radius="24px" href="{{ MAIN_HOST }}/login" font-family="Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif" padding-bottom="2px" padding-top="5px">LOGIN</mj-button>
+        <mj-text padding-bottom="10px" padding-top="0px">
+          <p>Enjoy the Competition.</p>
+          <p>Good luck!</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    
+    <!-- Footnote -->
+    </mj-section>
+    <mj-section full-width="full-width">
+      <mj-column width="100%" vertical-align="middle">
+        <mj-text align="center" color="#9a9ea6" font-size="11px" padding-bottom="0px" padding-top="0">
+          <span class="apple-link">Workout Challenge</span>
+          <br> Any issues? <a href="mailto:{{ EMAIL_REPLY_TO }}">Send us an Email</a>. <br> See the <a href="https://github.com/vanalmsick/health_competition">Source Code</a>.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

@@ -95,14 +95,6 @@ export function FormInput({
                               errorMsg = null,
                           }) {
 
-    // detect Andriod phones as time input filed does not work for them reliably
-    const [isAndroid, setIsAndroid] = useState(false);
-    // useEffect(() => {
-    //     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-    //     if (/android/i.test(userAgent)) {
-    //         setIsAndroid(true);
-    //     }
-    // }, []);
 
     let additionalClasses = "";
     if (readOnly) {
@@ -144,7 +136,7 @@ export function FormInput({
                     (type === "checkbox") ? (
                         <> {/* Checkbox Input Element has to go before the label */} </>
                     ) :
-                    (type === "time" && isAndroid) ? (
+                    (type === "time-cursor") ? (
                         <TimeField
                             value={value}
                             onChange={(e) => setValue(e.target.value)}

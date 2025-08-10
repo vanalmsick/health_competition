@@ -7,7 +7,7 @@
     </mj-attributes>
   </mj-head>
   <mj-body background-color="#E1E8ED">
-    <mj-section background-url="{{ MAIN_HOST }}/running_email.jpg" vertical-align="middle" background-size="cover" background-repeat="no-repeat">
+    <mj-section background-color="#075985" background-url="{{ MAIN_HOST }}/running_email.jpg" vertical-align="middle" background-size="cover" background-repeat="no-repeat">
       <mj-column width="100%" vertical-align="middle">
         <mj-text css-class="no-invert" align="center" font-size="14px" padding-bottom="45px" padding-top="45px"><span style="font-size: 30px; line-height: 30px; text-shadow: 1.5px 1.5px 3px #404040; color: #ffffff !important;">Workout Challenge</span></mj-text>
       </mj-column>

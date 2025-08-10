@@ -162,16 +162,16 @@ class Workout(models.Model):
     def __init__(self, *args, **kwargs):
         """ save initial field values to be able to detect changes """
         super().__init__(*args, **kwargs)
-        self._original = self._dict
+        self._original = self._dict()
 
-    @property
+    #@property
     def _dict(self):
         """ dict of current fields and values - to detect changes """
-        return {f.name: (round(float(getattr(self, f.name)), 2) if isinstance(getattr(self, f.name), Decimal) or isinstance(getattr(self, f.name), float) else getattr(self, f.name)) for f in self._meta.fields}
+        return {f.name: round(float(self.__dict__[f.attname]), 2) if isinstance(self.__dict__.get(f.attname), (Decimal, float)) else self.__dict__.get(f.attname) for f in self._meta.fields}
 
     def get_changed_fields(self):
         """ check which fields have changed """
-        current = self._dict
+        current = self._dict()
         return {
             k: (v, current.get(k))
             for k, v in self._original.items()
@@ -193,7 +193,7 @@ class Workout(models.Model):
             new=is_create,
             changes=changed
         )
-        self._original = self._dict  # reset
+        self._original = self._dict()  # reset
 
     def delete(self, *args, **kwargs):
         """ trigger recalculation of points_capped if workout deleted """

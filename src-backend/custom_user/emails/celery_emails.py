@@ -108,13 +108,19 @@ def leaderboard_email(user_pk):
     CustomUser = apps.get_model('custom_user', 'CustomUser')
     user_obj = CustomUser.objects.get(pk=user_pk)
 
-    competition_data = []
+    competition_all_data = []
+    competition_7d_data = []
 
     for competition in user_obj.my_competitions.filter(start_date__lte=datetime.date.today(), end_date__gte=datetime.date.today()).order_by('-start_date'):
-        competition_stats = get_competition_stats(competition.pk)
-        competition_data.append({
-            'competition': competition_stats['competition'],
-            'leaderboard': competition_stats['leaderboard'],
+        competition_all_stats = get_competition_stats(competition.pk)
+        competition_all_data.append({
+            'competition': competition_all_stats['competition'],
+            'leaderboard': competition_all_stats['leaderboard'],
+        })
+        competition_7d_stats = get_competition_stats(competition.pk, last_seven_days=True)
+        competition_7d_data.append({
+            'competition': competition_7d_stats['competition'],
+            'leaderboard': competition_7d_stats['leaderboard'],
         })
 
     email_subject = 'Workout Challenge - Your Spot on the Leaderboard!'
@@ -124,7 +130,8 @@ def leaderboard_email(user_pk):
         {
             'first_name': user_obj.first_name,
             'MAIN_HOST': settings.MAIN_HOST,
-            'competitions': competition_data,
+            'competitions_all': competition_all_data,
+            'competitions_7d': competition_7d_data,
             'EMAIL_REPLY_TO': settings.EMAIL_REPLY_TO,
             'goal_equalizer_note': user_obj.scaling_kcal == 1 and user_obj.scaling_distance == 1,
         }

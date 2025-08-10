@@ -216,7 +216,7 @@ def calendar_stats(user_pk):
             'day': date.day,
             'workout_num': workout_num,
             'color': 'rgb(255 255 255)' if date == today or workout_num > 0 else ('rgb(153 27 27)' if date > today else 'rgb(0 0 0)'),
-            'background_color': 'rgb(220 38 38)' if date == today else ('rgb(7 89 133)' if workout_num > 0 else 'rgb(255 255 255)')
+            'background_color': 'rgb(127 29 29)' if date == today else ('rgb(7 89 133)' if workout_num > 0 else 'rgb(255 255 255)')
         })
 
     return streak_weeks, [return_calendar[i:i+7] for i in range(0, len(return_calendar), 7)]

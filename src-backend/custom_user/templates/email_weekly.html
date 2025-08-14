@@ -217,14 +217,17 @@
                                   <tr class="calendar" style="width: 35px; height: 35px; text-align: center; padding: 0px;" align="center">
                                     <mj-raw> {% for day in week %} </mj-raw>
                                     <td>
+                                      <!--[if mso]><v:oval xmlns:v="urn:schemas-microsoft-com:vml" style="height:30px;width:30px;" strokecolor="white" strokeweight="1px" fillcolor="{{ day.background_color }}"><v:textbox inset="0,0,0,0"><table width="100%" height="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" valign="middle"><font style="font-size:14px; color:{{ day.color }};">{{ day.day }}</font></td></tr></table></v:textbox></v:oval><![endif]-->
+                                      <!--[if !mso]><!-->
                                       <div class="day" style="height: 25px; width: 25px; margin-left: auto; margin-right: auto; justify-content: center; align-items: center; display: flex; border-radius: 9999px; background-color: {{ day.background_color }}; color: {{ day.color }};">{{ day.day }}</div>
+                                      <!--<![endif]-->
                                     </td>
                                     <mj-raw> {% endfor %} </mj-raw>
                                   </tr>
                                   <mj-raw> {% endfor %} </mj-raw>
                                   <tr>
                                     <td colspan="7" style="padding-top: 7px;text-align: center;">
-                                      <div class="streak" style="height: 25px; width: 25px; margin-left: auto; margin-right: auto; justify-content: center; align-items: center; border: 2px solid rgb(7 89 133); border-radius: 9999px; color: rgb(7 89 133); display: inline-block; text-align: center; font-weight: bold;">{{ week_streak }}</div>
+                                      <div class="streak" style="height: 25px; width: 25px; margin-left: auto; margin-right: auto; justify-content: center; align-items: center; border: 2px solid #075971; border-radius: 9999px; color: #075971; display: inline-block; text-align: center; font-weight: bold;">{{ week_streak }}</div>
                                       <div style="display: inline-block; text-align: center;font-weight: bold;padding-left: 5px;">Week Streak</div>
                                     </td>
                                   </tr>
@@ -242,43 +245,92 @@
               <div class="mj-column-per-50 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
                 <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
                   <tbody>
-                    <div class="goal-title" style="padding: 10px 25px 0; word-break: break-word; font: bold 15px/1.2 Ubuntu, Helvetica, Arial, sans-serif; text-align: left; color: #000;">Your Personal 7-Day Goals:</div> {% if goals.active_days is not None %} <div class="goal-container" style="font: 14px/1.2 Ubuntu, Helvetica, Arial, sans-serif; text-align: left; color: #000; background: #f3f4f6; border-radius: 0.5rem; padding: 1.25rem; margin: 1rem 1rem 0.25rem; position: relative; width: 70%;">
-                      <div class="goal-flex-column" style="display: flex; flex-direction: column; padding: 0 1rem; text-align: left;">
-                        <div class="goal-header-row" style="display: flex; justify-content: space-between; align-items: center; color: #6b7280; margin-bottom: 0.125rem;">
-                          <span style="font-weight: 600; letter-spacing: 0.05em;">Active Days</span>
-                          <div>{{ goals.active_days.recorded }} days <span style="font-weight: 100; font-size: 0.65rem;">/ {{ goals.active_days.target }} days</span></div>
-                        </div>
-                        <div class="goal-progress-row" style="display: flex; justify-content: space-between; align-items: center; padding: 0.625rem 0 0.25rem;">
-                          <div class="goal-progress-bar-bg" style="flex-grow: 1; background: #e5e7eb; border-radius: 9999px; height: 1rem;">
-                            <div class="goal-progress-bar-fill" style="height: 1rem; border-radius: 9999px; background: #6387bc; width: {{ goals.active_days.percent }}%;"></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div> {% endif %} {% if goals.minutes is not None %} <div class="goal-container" style="font: 14px/1.2 Ubuntu, Helvetica, Arial, sans-serif; text-align: left; color: #000; background: #f3f4f6; border-radius: 0.5rem; padding: 1.25rem; margin: 1rem 1rem 0.25rem; position: relative; width: 70%;">
-                      <div class="goal-flex-column" style="display: flex; flex-direction: column; padding: 0 1rem; text-align: left;">
-                        <div class="goal-header-row" style="display: flex; justify-content: space-between; align-items: center; color: #6b7280; margin-bottom: 0.125rem;">
-                          <span style="font-weight: 600; letter-spacing: 0.05em;">Exercise</span>
-                          <div>{{ goals.minutes.recorded }} min <span style="font-weight: 100; font-size: 0.65rem;">/ {{ goals.minutes.target }} min</span></div>
-                        </div>
-                        <div class="goal-progress-row" style="display: flex; justify-content: space-between; align-items: center; padding: 0.625rem 0 0.25rem;">
-                          <div class="goal-progress-bar-bg" style="flex-grow: 1; background: #e5e7eb; border-radius: 9999px; height: 1rem;">
-                            <div class="goal-progress-bar-fill" style="height: 1rem; border-radius: 9999px; background: #6387bc; width: {{ goals.minutes.percent }}%;"></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div> {% endif %} {% if goals.distance is not None %} <div class="goal-container" style="font: 14px/1.2 Ubuntu, Helvetica, Arial, sans-serif; text-align: left; color: #000; background: #f3f4f6; border-radius: 0.5rem; padding: 1.25rem; margin: 1rem 1rem 0.25rem; position: relative; width: 70%;">
-                      <div class="goal-flex-column" style="display: flex; flex-direction: column; padding: 0 1rem; text-align: left;">
-                        <div class="goal-header-row" style="display: flex; justify-content: space-between; align-items: center; color: #6b7280; margin-bottom: 0.125rem;">
-                          <span style="font-weight: 600; letter-spacing: 0.05em;">Distance</span>
-                          <div>{{ goals.distance.recorded }} km <span style="font-weight: 100; font-size: 0.65rem;">/ {{ goals.distance.target }} km</span></div>
-                        </div>
-                        <div class="goal-progress-row" style="display: flex; justify-content: space-between; align-items: center; padding: 0.625rem 0 0.25rem;">
-                          <div class="goal-progress-bar-bg" style="flex-grow: 1; background: #e5e7eb; border-radius: 9999px; height: 1rem;">
-                            <div class="goal-progress-bar-fill" style="height: 1rem; border-radius: 9999px; background: #6387bc; width: {{ goals.distance.percent }}%;"></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div> {% endif %}
+                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" style width="100%">
+                      <tbody>
+                        <tr>
+                          <td align="left" style="font-size:0px;padding:10px 25px;padding-bottom:0px;word-break:break-word;">
+                            <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.2;text-align:left;color:#000000;">
+                              <h3>Your Personal 7-Day Goals:</h3>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align="left" style="font-size:0px;padding:10px 25px;padding-top:0px;word-break:break-word;"> {% if goals.active_days is not None %} <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                              <tr>
+                                <td style="height:10px; font-size:0; line-height:0;">&nbsp;</td>
+                              </tr>
+                              <tr>
+                                <td style="background-color:#f9f9f9; border-radius:8px; padding:18px;">
+                                  <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                                    <tr>
+                                      <td style="font-size:14px; font-weight:bold; color: #6b7280;">Active Days</td>
+                                      <td align="right" style="font-size:14px; color: #6b7280;">{{ goals.active_days.recorded }} days <span style="font-size:10px;">/ {{ goals.active_days.target }} days</span></td>
+                                    </tr>
+                                    <tr>
+                                      <td colspan="2" height="10" style="padding-top:8px; line-height:0; font-size:0;">
+                                        <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" arcsize="50%" strokecolor="#e5e5e5" strokeweight="1px" style="width:{{ goals.active_days.percent_vml }}%;height:10px;" fillcolor="#4a78b5"><v:fill color="#4a78b5" /></v:roundrect><![endif]-->
+                                        <!--[if !mso]><!-- -->
+                                        <div style="background:#e5e5e5; border-radius:4px; width:100%; height:10px;">
+                                          <div style="background:#4a78b5; height:10px; border-radius:4px; width:{{ goals.active_days.percent }}%;"></div>
+                                        </div>
+                                        <!--<![endif]-->
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table> {% endif %} {% if goals.minutes is not None %} <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                              <tr>
+                                <td style="height:10px; font-size:0; line-height:0;">&nbsp;</td>
+                              </tr>
+                              <tr>
+                                <td style="background-color:#f9f9f9; border-radius:8px; padding:18px;">
+                                  <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                                    <tr>
+                                      <td style="font-size:14px; font-weight:bold; color: #6b7280;">Exercise</td>
+                                      <td align="right" style="font-size:14px; color: #6b7280;">{{ goals.minutes.recorded }} min <span style="font-size:10px;">/ {{ goals.minutes.target }} min</span></td>
+                                    </tr>
+                                    <tr>
+                                      <td colspan="2" height="10" style="padding-top:8px; line-height:0; font-size:0;">
+                                        <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" arcsize="50%" strokecolor="#e5e5e5" strokeweight="1px" style="width:{{ goals.minutes.percent_vml }}%;height:10px;" fillcolor="#4a78b5"><v:fill color="#4a78b5" /></v:roundrect><![endif]-->
+                                        <!--[if !mso]><!-- -->
+                                        <div style="background:#e5e5e5; border-radius:4px; width:100%; height:10px;">
+                                          <div style="background:#4a78b5; height:10px; border-radius:4px; width:{{ goals.minutes.percent }}%;"></div>
+                                        </div>
+                                        <!--<![endif]-->
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table> {% endif %} {% if goals.distance is not None %} <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                              <tr>
+                                <td style="height:10px; font-size:0; line-height:0;">&nbsp;</td>
+                              </tr>
+                              <tr>
+                                <td style="background-color:#f9f9f9; border-radius:8px; padding:18px;">
+                                  <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                                    <tr>
+                                      <td style="font-size:14px; font-weight:bold; color: #6b7280;">Distance</td>
+                                      <td align="right" style="font-size:14px; color: #6b7280;">{{ goals.distance.recorded }} km <span style="font-size:10px;">/ {{ goals.distance.target }} km</span></td>
+                                    </tr>
+                                    <tr>
+                                      <td colspan="2" height="10" style="padding-top:8px; line-height:0; font-size:0;">
+                                        <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" arcsize="50%" strokecolor="#e5e5e5" strokeweight="1px" style="width:{{ goals.distance.percent_vml }}%;height:10px;" fillcolor="#4a78b5"><v:fill color="#4a78b5" /></v:roundrect><![endif]-->
+                                        <!--[if !mso]><!-- -->
+                                        <div style="background:#e5e5e5; border-radius:4px; width:100%; height:10px;">
+                                          <div style="background:#4a78b5; height:10px; border-radius:4px; width:{{ goals.distance.percent }}%;"></div>
+                                        </div>
+                                        <!--<![endif]-->
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table> {% endif %} </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </tbody>
                 </table>
               </div>

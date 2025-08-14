@@ -14,9 +14,9 @@ td div .streak {
     justify-content: center;
     align-items: center;
     display: flex;
-    border: 2px solid rgb(7 89 133);
+    border: 2px solid #075971;
     border-radius: 9999px;
-    color: rgb(7 89 133);
+    color: #075971;
     font-weight: bold;
 }
 
@@ -37,76 +37,14 @@ td div .day {
     text-align: center;
     padding: 0px;
 }
-
-.goal-title {
-    padding: 10px 25px 0;
-    word-break: break-word;
-    font: bold 15px/1.2 Ubuntu, Helvetica, Arial, sans-serif;
-    text-align: left;
-    color: #000;
-}
-
-.goal-container {
-    font: 14px/1.2 Ubuntu, Helvetica, Arial, sans-serif;
-    text-align: left;
-    color: #000;
-    background: #f3f4f6;
-    border-radius: 0.5rem;
-    padding: 1.25rem;
-    margin: 1rem 1rem 0.25rem;
-    position: relative;
-    width: 70%;
-}
-
-.goal-flex-column {
-    display: flex;
-    flex-direction: column;
-    padding: 0 1rem;
-    text-align: left;
-}
-
-.goal-header-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #6b7280;
-    margin-bottom: 0.125rem;
-}
-
-.goal-header-row span {
-    font-weight: 600;
-}
-
-.goal-header-row div span {
-    font-weight: 100;
-    font-size: 0.65rem;
-}
-
-.goal-progress-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.625rem 0 0.25rem;
-}
-
-.goal-progress-bar-bg {
-    flex-grow: 1;
-    background: #e5e7eb;
-    border-radius: 9999px;
-    height: 1rem;
-}
-
-.goal-progress-bar-fill {
-    height: 1rem;
-    border-radius: 9999px;
-    background: #6387bc;
-}
   </mj-style>
   </mj-head>
   <mj-body background-color="#E1E8ED">
     <mj-section background-color="#075985" background-url="{{ MAIN_HOST }}/running_email.jpg" vertical-align="middle" background-size="cover" background-repeat="no-repeat">
       <mj-column width="100%" vertical-align="middle">
-        <mj-text css-class="no-invert" align="center" font-size="14px" padding-bottom="10px" padding-top="45px"><span style="font-size: 30px; line-height: 30px; text-shadow: 1.5px 1.5px 3px #404040; color: #ffffff !important;">Workout Challenge</span></mj-text>
+        <mj-text css-class="no-invert" align="center" font-size="14px" padding-bottom="10px" padding-top="45px">
+          <span style="font-size: 30px; line-height: 30px; text-shadow: 1.5px 1.5px 3px #404040; color: #ffffff !important;">Workout Challenge</span>
+        </mj-text>
         <mj-button align="center" background-color="#075985" color="#fff" border-radius="24px" border="1px solid #fff" href="{{ MAIN_HOST }}/login" font-family="Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif" padding-bottom="45px" padding-top="10px">LOGIN</mj-button>
       </mj-column>
     </mj-section>
@@ -140,70 +78,148 @@ td div .day {
           <tr class="calendar">
             <mj-raw> {% for day in week %} </mj-raw>
               <td>
-                <div class="day" style="background-color: {{ day.background_color }};color: {{ day.color }};">{{ day.day }}</div>
+                <!--[if mso]>
+                  <v:oval xmlns:v="urn:schemas-microsoft-com:vml" style="height:30px;width:30px;" strokecolor="white" strokeweight="1px" fillcolor="{{ day.background_color }}">
+                    <v:textbox inset="0,0,0,0">
+                      <table width="100%" height="100%" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                          <td align="center" valign="middle">
+                            <font style="font-size:14px; color:{{ day.color }};">{{ day.day }}</font>
+                          </td>
+                        </tr>
+                      </table>
+                    </v:textbox>
+                  </v:oval>
+                <![endif]-->
+
+                <!--[if !mso]><!-->
+                  <div class="day" style="background-color: {{ day.background_color }}; color: {{ day.color }};">{{ day.day }}</div>
+                <!--<![endif]-->
               </td>
             <mj-raw> {% endfor %} </mj-raw>
           </tr>
           <mj-raw> {% endfor %} </mj-raw>
 
           <tr>
-            <td colspan=7 style="padding-top: 7px;text-align: center;">
+            <td colspan="7" style="padding-top: 7px;text-align: center;">
               <div class="streak" style="display: inline-block; text-align: center; font-weight: bold;">{{ week_streak }}</div><div style="display: inline-block; text-align: center;font-weight: bold;padding-left: 5px;">Week Streak</div></td>
           </tr>
         </mj-table>
       </mj-column>
       <mj-column>
         <mj-raw>
-          <div class="goal-title">Your Personal 7-Day Goals:</div>
           
-          {% if goals.active_days is not None %}
-          <div class="goal-container">
-            <div class="goal-flex-column">
-              <div class="goal-header-row">
-                <span style="letter-spacing: 0.05em;">Active Days</span>
-                <div>{{ goals.active_days.recorded }} days <span>/ {{ goals.active_days.target }} days</span></div>
-              </div>
-              <div class="goal-progress-row">
-                <div class="goal-progress-bar-bg">
-                  <div class="goal-progress-bar-fill" style="width: {{ goals.active_days.percent }}%;"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          {% endif %}
-          
-          {% if goals.minutes is not None %}
-          <div class="goal-container">
-            <div class="goal-flex-column">
-              <div class="goal-header-row">
-                <span style="letter-spacing: 0.05em;">Exercise</span>
-                <div>{{ goals.minutes.recorded }} min <span>/ {{ goals.minutes.target }} min</span></div>
-              </div>
-              <div class="goal-progress-row">
-                <div class="goal-progress-bar-bg">
-                  <div class="goal-progress-bar-fill" style="width: {{ goals.minutes.percent }}%;"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          {% endif %}
-          
-          {% if goals.distance is not None %}
-          <div class="goal-container">
-            <div class="goal-flex-column">
-              <div class="goal-header-row">
-                <span style="letter-spacing: 0.05em;">Distance</span>
-                <div>{{ goals.distance.recorded }} km <span>/ {{ goals.distance.target }} km</span></div>
-              </div>
-              <div class="goal-progress-row">
-                <div class="goal-progress-bar-bg">
-                  <div class="goal-progress-bar-fill" style="width: {{ goals.distance.percent }}%;"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          {% endif %}
-          
+          <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="" width="100%">
+            <tbody>
+              <tr>
+                <td align="left" style="font-size:0px;padding:10px 25px;padding-bottom:0px;word-break:break-word;">
+                  <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.2;text-align:left;color:#000000;">
+                    <h3>Your Personal 7-Day Goals:</h3>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td align="left" style="font-size:0px;padding:10px 25px;padding-top:0px;word-break:break-word;">
+
+                  {% if goals.active_days is not None %}
+                  <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr>
+                      <td style="height:10px; font-size:0; line-height:0;">&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td style="background-color:#f9f9f9; border-radius:8px; padding:18px;">
+                        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                          <tr>
+                            <td style="font-size:14px; font-weight:bold; color: #6b7280;">Active Days</td>
+                            <td align="right" style="font-size:14px; color: #6b7280;">{{ goals.active_days.recorded }} days <span style="font-size:10px;">/ {{ goals.active_days.target }} days</span></td>
+                          </tr>
+                          <tr>
+                            <td colspan="2" height="10" style="padding-top:8px; line-height:0; font-size:0;">
+                              <!--[if mso]>
+                              <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" arcsize="50%" strokecolor="#e5e5e5" strokeweight="1px" style="width:{{ goals.active_days.percent_vml }}%;height:10px;" fillcolor="#4a78b5">
+                                <v:fill color="#4a78b5" />
+                              </v:roundrect>
+                              <![endif]-->
+                              <!--[if !mso]><!-- -->
+                              <div style="background:#e5e5e5; border-radius:4px; width:100%; height:10px;">
+                                <div style="background:#4a78b5; height:10px; border-radius:4px; width:{{ goals.active_days.percent }}%;"></div>
+                              </div>
+                              <!--<![endif]-->
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  {% endif %}
+
+                  {% if goals.minutes is not None %}
+                  <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr>
+                      <td style="height:10px; font-size:0; line-height:0;">&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td style="background-color:#f9f9f9; border-radius:8px; padding:18px;">
+                        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                          <tr>
+                            <td style="font-size:14px; font-weight:bold; color: #6b7280;">Exercise</td>
+                            <td align="right" style="font-size:14px; color: #6b7280;">{{ goals.minutes.recorded }} min <span style="font-size:10px;">/ {{ goals.minutes.target }} min</span></td>
+                          </tr>
+                          <tr>
+                            <td colspan="2" height="10" style="padding-top:8px; line-height:0; font-size:0;">
+                              <!--[if mso]>
+                              <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" arcsize="50%" strokecolor="#e5e5e5" strokeweight="1px" style="width:{{ goals.minutes.percent_vml }}%;height:10px;" fillcolor="#4a78b5">
+                                <v:fill color="#4a78b5" />
+                              </v:roundrect>
+                              <![endif]-->
+                              <!--[if !mso]><!-- -->
+                              <div style="background:#e5e5e5; border-radius:4px; width:100%; height:10px;">
+                                <div style="background:#4a78b5; height:10px; border-radius:4px; width:{{ goals.minutes.percent }}%;"></div>
+                              </div>
+                              <!--<![endif]-->
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  {% endif %}
+
+                  {% if goals.distance is not None %}
+                  <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr>
+                      <td style="height:10px; font-size:0; line-height:0;">&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td style="background-color:#f9f9f9; border-radius:8px; padding:18px;">
+                        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                          <tr>
+                            <td style="font-size:14px; font-weight:bold; color: #6b7280;">Distance</td>
+                            <td align="right" style="font-size:14px; color: #6b7280;">{{ goals.distance.recorded }} km <span style="font-size:10px;">/ {{ goals.distance.target }} km</span></td>
+                          </tr>
+                          <tr>
+                            <td colspan="2" height="10" style="padding-top:8px; line-height:0; font-size:0;">
+                              <!--[if mso]>
+                              <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" arcsize="50%" strokecolor="#e5e5e5" strokeweight="1px" style="width:{{ goals.distance.percent_vml }}%;height:10px;" fillcolor="#4a78b5">
+                                <v:fill color="#4a78b5" />
+                              </v:roundrect>
+                              <![endif]-->
+                              <!--[if !mso]><!-- -->
+                              <div style="background:#e5e5e5; border-radius:4px; width:100%; height:10px;">
+                                <div style="background:#4a78b5; height:10px; border-radius:4px; width:{{ goals.distance.percent }}%;"></div>
+                              </div>
+                              <!--<![endif]-->
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  {% endif %}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </mj-raw>
       </mj-column>
     </mj-section>
@@ -213,7 +229,7 @@ td div .day {
     <mj-section background-color="#075985" vertical-align="middle">
       <mj-column width="100%" vertical-align="middle">
         <mj-text align="center" color="#ffffff" font-size="16px" padding-bottom="10px" padding-top="20px">{{ openai_quote }}</mj-text>
-        <mj-divider border-color="#fff" border-style="solid" border-width="1px" padding-left="100px" padding-right="100px" padding-bottom="10px"></mj-divider>
+        <mj-divider border-color="#ffffff" border-style="solid" border-width="1px" padding-left="100px" padding-right="100px" padding-bottom="10px"></mj-divider>
         <mj-text align="center" color="#e5e7eb" font-size="11px" padding-bottom="0px" padding-top="0px">
           <p>by OpenAI's ChatGPT 4o</p>
         </mj-text>
@@ -228,7 +244,7 @@ td div .day {
           <mj-divider border-color="#E1E8ED" border-width="2px"></mj-divider>
         <mj-raw> {% endif %} </mj-raw>
         <mj-text padding-top="20px">Login to see more detailed analyses, charts, and breakdowns:</mj-text>
-        <mj-button align="center" background-color="#075985" color="#fff" border-radius="24px" href="{{ MAIN_HOST }}/login" font-family="Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif" padding-bottom="2px" padding-top="5px">LOGIN</mj-button>
+        <mj-button align="center" background-color="#075985" color="#ffffff" border-radius="24px" href="{{ MAIN_HOST }}/login" font-family="Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif" padding-bottom="2px" padding-top="5px">LOGIN</mj-button>
         <mj-text padding-bottom="10px" padding-top="0px">
           <p>Enjoy the Competition.</p>
           <p>Good luck!</p>
@@ -237,7 +253,6 @@ td div .day {
     </mj-section>
     
     <!-- Footnote -->
-    </mj-section>
     <mj-section full-width="full-width">
       <mj-column width="100%" vertical-align="middle">
         <mj-text align="center" color="#9a9ea6" font-size="11px" padding-bottom="0px" padding-top="0">

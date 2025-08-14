@@ -101,6 +101,7 @@ services:
 | EMAIL_USE_TLS         | False                               | SMTP server - if TLS ise used for authentication.                                                                                                                                                                                                                                                               | 
 | EMAIL_FROM            | None                                | Sender email address of automated emails.                                                                                                                                                                                                                                                                       | 
 | EMAIL_REPLY_TO        | None                                | Reply-To email address of automated emails.                                                                                                                                                                                                                                                                     | 
+| OPENAI_API_KEY        | None                                | OpenAI API key to generate workout / health / nutritional facts for the weekly update email.                                                                                                                                                                                                                    | 
 
 ### How to get the Strava API Client id & secret
 1. Login to your Strava account [strava.com/login](https://www.strava.com/login)
@@ -122,6 +123,7 @@ services:
 - [**Celery**](/src-backend/health_competition/celery.py) as task que for Django
 - [**Celery Beat**](supervisord.conf) for task scheduling for Django
 - [**Celery Flower**](supervisord.conf) UI to inspect task que and task status
+- [**mjml**](src-backend/custom_user/templates) Framework / app to write responsive email html ([mjml.io](https://mjml.io))
 
 ### How to run it in dev
 #### Backend - Task-Scheduling (Celery)
@@ -156,5 +158,4 @@ REACT_APP_BACKEND_URL=http://localhost:8000
 
 ### ToDos:
 - Improve modal to change teams (plus access right issue if not owner)
-- User account deletion causes "maximum recursion depth exceeded" error
 - Competition start & finish email

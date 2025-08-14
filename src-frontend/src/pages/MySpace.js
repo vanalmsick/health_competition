@@ -117,13 +117,15 @@ function WorkoutsBox({workouts, user, setLinkStrava}) {
 
     useEffect(() => {
         if (stravaSyncIsFetching !== undefined && stravaSyncIsFetching !== true) {
-            dispatch(workoutsApi.util.invalidateTags(['Workout']));
-            dispatch(usersApi.util.invalidateTags(['User']));
             if (stravaSyncIsSuccess) {
+                dispatch(workoutsApi.util.invalidateTags(['Workout']));
+                dispatch(usersApi.util.invalidateTags(['User']));
                 dispatch(statsApi.util.invalidateTags(['Stats']));
                 dispatch(feedApi.util.invalidateTags(['Feed']));
                 console.log("Strava sync successful!");
             } else if (stravaSyncError) {
+                dispatch(workoutsApi.util.invalidateTags(['Workout']));
+                dispatch(usersApi.util.invalidateTags(['User']));
                 if (stravaSyncError?.status === 429) {
                     console.log("Strava sync denied! Too many requests!");
                     window.alert(`${stravaSyncError?.data?.message}`);

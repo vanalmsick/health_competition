@@ -222,8 +222,8 @@ def calendar_stats(user_pk):
             'datetime': date,
             'day': date.day,
             'workout_num': workout_num,
-            'color': 'rgb(255 255 255)' if date == today or workout_num > 0 else ('rgb(153 27 27)' if date > today else 'rgb(0 0 0)'),
-            'background_color': 'rgb(127 29 29)' if date == today else ('rgb(7 89 133)' if workout_num > 0 else 'rgb(255 255 255)')
+            'color': '#FFFFFF' if date == today or workout_num > 0 else ('#e5e5e5' if date > today else '#000000'),
+            'background_color': '#7F1D1D' if date == today else ('#075971' if workout_num > 0 else '#FFFFFF')
         })
 
     return streak_weeks, [return_calendar[i:i+7] for i in range(0, len(return_calendar), 7)]
@@ -265,9 +265,9 @@ def weekly_email(user_pk):
             'calendar': calendar,
             'week_streak': week_streak,
             'goals': {
-                'active_days': None if user_obj.goal_active_days is None or user_obj.goal_active_days == '' else {'recorded': recorded_distinct_days,'target': user_obj.goal_active_days, 'percent': min(1, recorded_distinct_days / user_obj.goal_active_days) * 100},
-                'distance': None if user_obj.goal_distance is None or user_obj.goal_distance == '' else {'recorded': recorded_total_distance,'target': user_obj.goal_distance, 'percent': min(1, recorded_total_distance / user_obj.goal_distance) * 100},
-                'minutes': None if user_obj.goal_workout_minutes is None or user_obj.goal_workout_minutes == '' else {'recorded': recorded_total_duration,'target': user_obj.goal_workout_minutes, 'percent': min(1, recorded_total_duration / user_obj.goal_workout_minutes) * 100},
+                'active_days': None if user_obj.goal_active_days is None or user_obj.goal_active_days == '' else {'recorded': recorded_distinct_days,'target': user_obj.goal_active_days, 'percent': min(1, recorded_distinct_days / user_obj.goal_active_days) * 100, 'percent_vml': int(min(1, recorded_distinct_days / user_obj.goal_active_days) * 100 * 2.5)},
+                'distance': None if user_obj.goal_distance is None or user_obj.goal_distance == '' else {'recorded': recorded_total_distance,'target': user_obj.goal_distance, 'percent': min(1, recorded_total_distance / user_obj.goal_distance) * 100, 'percent_vml': int(min(1, recorded_total_distance / user_obj.goal_distance) * 100 * 2.5)},
+                'minutes': None if user_obj.goal_workout_minutes is None or user_obj.goal_workout_minutes == '' else {'recorded': recorded_total_duration,'target': user_obj.goal_workout_minutes, 'percent': min(1, recorded_total_duration / user_obj.goal_workout_minutes) * 100, 'percent_vml': int(min(1, recorded_total_duration / user_obj.goal_workout_minutes) * 100 * 2.5)},
             },
             'openai_quote': todays_ai_quote,
             'EMAIL_REPLY_TO': settings.EMAIL_REPLY_TO,

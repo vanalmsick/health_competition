@@ -16,7 +16,7 @@ import {useGetCompetitionsQuery} from "../utils/reducers/competitionsSlice";
 import CompetitionForm from "../forms/competitionForm";
 import PersonalGoalsForm from "../forms/personalGoalsForm";
 import SettingsForm from "../forms/settingsForm";
-import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
+import {useLocation, useNavigate, useNavigationType, useSearchParams} from "react-router-dom";
 import NavMenu from "../utils/navMenu";
 import JoinCompetitionForm from "../forms/joinCompetitionForm";
 import {HowToScreen, LinkStravaScreen} from "./HowTo";
@@ -242,7 +242,7 @@ function CompetitionRow({competition, user}) {
                     <div><BeatLoader color="rgb(209 213 219)" /></div>
                 ) : (stats.competition.start_date_count >= 0) ? (
                         ((stats.users[user.id]?.rank == null) ? (
-                            <span className="text-gray-400">Time to workout!</span>
+                            <span className="text-gray-400">Time to work out!</span>
                         ) : (
                             <>No. <span className="text-xl font-semibold">{stats.users[user.id]?.rank}</span>
                                 {(competition.has_teams) ? (
@@ -645,6 +645,12 @@ function StatsBox({workouts, user}) {
 
 
 export default function MySpace() {
+    const navType = useNavigationType();
+    useEffect(() => {
+        if (navType === "POP") {
+            document.body.classList.remove("body-no-scroll");
+        }
+    }, [navType]);
 
     const {
         data: user,

@@ -107,8 +107,8 @@ services:
 1. Login to your Strava account [strava.com/login](https://www.strava.com/login)
 2. Profile picture -> Settings
 3. "My API Application"
-4. Test the competition (only works with your own Strava account)
-5. If you like the competition, apply to the [Strava developer program](https://share.hsforms.com/1VXSwPUYqSH6IxK0y51FjHwcnkd8) here to also allow other users to link their Strava
+4. Test the workout challenge (only works with your own Strava account)
+5. If you like the workout challenge, apply to the [Strava developer program](https://share.hsforms.com/1VXSwPUYqSH6IxK0y51FjHwcnkd8) here to also allow other users to link their Strava
 
 ## Do you want to help / contribute?
 ### Code Overview / Structure
@@ -119,23 +119,24 @@ services:
 - [**React**](/src-frontend/src/App.js)
 #### Backend *([src-backend](/src-backend))*
 - [**Django**](/src-backend/health_competition/settings.py) (RestAPI) via gunicorn for production
-- [**Redis**](supervisord.conf) as cache/memory and for Celery
+- [**Redis**](supervisord.conf) as cache and for Celery
 - [**Celery**](/src-backend/health_competition/celery.py) as task que for Django
 - [**Celery Beat**](supervisord.conf) for task scheduling for Django
 - [**Celery Flower**](supervisord.conf) UI to inspect task que and task status
 - [**mjml**](src-backend/custom_user/templates) Framework / app to write responsive email html ([mjml.io](https://mjml.io))
 
-### How to run it in dev
+### How to run locally for development
 #### Backend - Task-Scheduling (Celery)
-**working dir:** `/health_competition/src-backend`  
-**executable for Redis:** `redis-server`  
-**executable for Celery Worker:** `celery -A health_competition worker --loglevel INFO --without-mingle --without-gossip`  
-**executable for Celery Beat:** `celery -A health_competition beat --scheduler django_celery_beat.schedulers:DatabaseScheduler --loglevel INFO`  
-**executable for Celery Flower:** `celery -A health_competition flower`  
+working dir: `/health_competition/src-backend`  
+run Redis: `redis-server`  
+run Celery Worker: `celery -A health_competition worker --loglevel INFO --without-mingle --without-gossip`  
+run Celery Beat: `celery -A health_competition beat --scheduler django_celery_beat.schedulers:DatabaseScheduler --loglevel INFO`  
+run Celery Flower: `celery -A health_competition flower`  
+***Note:** For testing email celery tasks, please set the Email env variables. For testing Strava sync celery tasks, please set the Strava env variables. For celery beat, don't forget to set the timezone env variable.*
 
 #### Backend - RESTApi Server (Django)
-**working dir:** `/health_competition/src-backend`  
-**additional env variables:**
+working dir: `/health_competition/src-backend`  
+suggested env variables:
 ```
 PYTHONUNBUFFERED=1
 DJANGO_SETTINGS_MODULE=health_competition.settings
@@ -146,16 +147,13 @@ TIME_ZONE=Europe/London
 STRAVA_CLIENT_ID=000000
 STRAVA_CLIENT_SECRET=<secret_key>
 ```
-**executable for Django Setup:** `python manage.py makemigrations && python manage.py migrate`  
-**executable for Django:** `python manage.py runserver`  
+initial Django setup: `python manage.py makemigrations && python manage.py migrate`  
+run Django: `python manage.py runserver`  
+
 #### Frontend (React)
-**working dir:** `/health_competition/src-frontend`  
-**env variables:**
+working dir: `/health_competition/src-frontend`  
+suggested env variables:
 ```
 REACT_APP_BACKEND_URL=http://localhost:8000
 ```
-**executable:** `npm start`
-
-### ToDos:
-- Improve modal to change teams (plus access right issue if not owner)
-- Competition start & finish email
+run React: `npm start`

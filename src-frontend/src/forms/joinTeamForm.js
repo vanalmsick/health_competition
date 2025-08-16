@@ -34,10 +34,10 @@ export default function JoinTeamForm({competition, setModalState, user, isOwner}
         isSuccess: joinIsSuccess
     }] = useJoinTeamMutation();
 
-    const filteredTeams = teams?.filter(item => item.competition === competition.id);
-    const myTeamId = filteredTeams.find(t => t.user.includes(user?.id))?.id;
-    const usedIds = new Set(filteredTeams?.flatMap(team => team.user));
-    const usersWithoutTeams = competition?.user_info.filter(u => !usedIds.has(u.id));
+    const filteredTeams = teams?.filter(item => item.competition === competition?.id);
+    const myTeamId = filteredTeams?.find(t => t.user.includes(user?.id))?.id;
+    const usedIds = new Set(filteredTeams?.flatMap(team => team?.user));
+    const usersWithoutTeams = competition?.user_info?.filter(u => !usedIds.has(u.id));
 
     async function handleTeamChange(kwargs) {
         await joinTeam(kwargs);
@@ -105,7 +105,7 @@ export default function JoinTeamForm({competition, setModalState, user, isOwner}
                                 {userI.username}
                                 {(isOwner) ? (
                                     <FormInput width="inline-block w-1/3 text-sm" type="select" selectList={filteredTeams?.map(team => ({value: team.id, label: team.name}))} setValue={(team_id) => handleTeamChange({user: userI.id, team: team_id})} />
-                                ) : (userI.id === user?.id) ? null : (
+                                ) : (userI.id === user?.id || myTeamId === undefined) ? null : (
                                     <button onClick={() => handleTeamChange({user: userI.id, team: myTeamId})} className="inline-flex items-center gap-2 px-4 ml-4 py-2 bg-gray-100 dark:bg-gray-900 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 transition">
                                         <UsersRound className="w-3 h-3"/>
                                         <span className="text-sm break-keep">Add to my team</span>
@@ -132,9 +132,7 @@ export default function JoinTeamForm({competition, setModalState, user, isOwner}
                     {(teamsLoading || teamsIsFetching) ? (
                         <BeatLoader color="rgb(209 213 219)"/>
                     ) : (
-                        <button type="button" type="submit"
-                                disabled={teamsLoading}
-                                className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-900 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 transition">
+                        <button type="button" disabled={teamsLoading} className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-900 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 transition">
                             <PlusIcon className="w-3 h-3"/>
                             <span className="text-sm break-keep">
                                 {(isOwner) ? 'Create Team': 'Create & Join'}

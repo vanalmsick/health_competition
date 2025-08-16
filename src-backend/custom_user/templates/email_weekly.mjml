@@ -66,139 +66,13 @@ td div .day {
         </mj-text>
         <mj-table padding-top="0px">
           <tr class="calendar">
-            <td style="font-weight: bold;">
-              <!--[if mso]>
-                <v:oval xmlns:v="urn:schemas-microsoft-com:vml" style="height:30px;width:30px;" strokecolor="white" strokeweight="1px" fillcolor="FFFFFF">
-                  <v:textbox inset="0,0,0,0">
-                    <table width="100%" height="100%" cellpadding="0" cellspacing="0" border="0">
-                      <tr>
-                        <td align="center" valign="middle">
-                          <font style="font-size:14px; color:#000000;">M</font>
-                        </td>
-                      </tr>
-                    </table>
-                  </v:textbox>
-                </v:oval>
-              <![endif]-->
-
-              <!--[if !mso]><!-->
-                <div class="day" style="background-color: #FFFFFF; color: #000000;">M</div>
-              <!--<![endif]-->
-            </td>
-            <td style="font-weight: bold;">
-              <!--[if mso]>
-                <v:oval xmlns:v="urn:schemas-microsoft-com:vml" style="height:30px;width:30px;" strokecolor="white" strokeweight="1px" fillcolor="FFFFFF">
-                  <v:textbox inset="0,0,0,0">
-                    <table width="100%" height="100%" cellpadding="0" cellspacing="0" border="0">
-                      <tr>
-                        <td align="center" valign="middle">
-                          <font style="font-size:14px; color:#000000;">T</font>
-                        </td>
-                      </tr>
-                    </table>
-                  </v:textbox>
-                </v:oval>
-              <![endif]-->
-
-              <!--[if !mso]><!-->
-                <div class="day" style="background-color: #FFFFFF; color: #000000;">T</div>
-              <!--<![endif]-->
-            </td>
-            <td style="font-weight: bold;">
-              <!--[if mso]>
-                <v:oval xmlns:v="urn:schemas-microsoft-com:vml" style="height:30px;width:30px;" strokecolor="white" strokeweight="1px" fillcolor="FFFFFF">
-                  <v:textbox inset="0,0,0,0">
-                    <table width="100%" height="100%" cellpadding="0" cellspacing="0" border="0">
-                      <tr>
-                        <td align="center" valign="middle">
-                          <font style="font-size:14px; color:#000000;">W</font>
-                        </td>
-                      </tr>
-                    </table>
-                  </v:textbox>
-                </v:oval>
-              <![endif]-->
-
-              <!--[if !mso]><!-->
-                <div class="day" style="background-color: #FFFFFF; color: #000000;">W</div>
-              <!--<![endif]-->
-            </td>
-            <td style="font-weight: bold;">
-              <!--[if mso]>
-                <v:oval xmlns:v="urn:schemas-microsoft-com:vml" style="height:30px;width:30px;" strokecolor="white" strokeweight="1px" fillcolor="FFFFFF">
-                  <v:textbox inset="0,0,0,0">
-                    <table width="100%" height="100%" cellpadding="0" cellspacing="0" border="0">
-                      <tr>
-                        <td align="center" valign="middle">
-                          <font style="font-size:14px; color:#000000;">T</font>
-                        </td>
-                      </tr>
-                    </table>
-                  </v:textbox>
-                </v:oval>
-              <![endif]-->
-
-              <!--[if !mso]><!-->
-                <div class="day" style="background-color: #FFFFFF; color: #000000;">T</div>
-              <!--<![endif]-->
-            </td>
-            <td style="font-weight: bold;">
-              <!--[if mso]>
-                <v:oval xmlns:v="urn:schemas-microsoft-com:vml" style="height:30px;width:30px;" strokecolor="white" strokeweight="1px" fillcolor="FFFFFF">
-                  <v:textbox inset="0,0,0,0">
-                    <table width="100%" height="100%" cellpadding="0" cellspacing="0" border="0">
-                      <tr>
-                        <td align="center" valign="middle">
-                          <font style="font-size:14px; color:#000000;">F</font>
-                        </td>
-                      </tr>
-                    </table>
-                  </v:textbox>
-                </v:oval>
-              <![endif]-->
-
-              <!--[if !mso]><!-->
-                <div class="day" style="background-color: #FFFFFF; color: #000000;">F</div>
-              <!--<![endif]-->
-            </td>
-            <td style="font-weight: bold;">
-              <!--[if mso]>
-                <v:oval xmlns:v="urn:schemas-microsoft-com:vml" style="height:30px;width:30px;" strokecolor="white" strokeweight="1px" fillcolor="FFFFFF">
-                  <v:textbox inset="0,0,0,0">
-                    <table width="100%" height="100%" cellpadding="0" cellspacing="0" border="0">
-                      <tr>
-                        <td align="center" valign="middle">
-                          <font style="font-size:14px; color:#000000;">S</font>
-                        </td>
-                      </tr>
-                    </table>
-                  </v:textbox>
-                </v:oval>
-              <![endif]-->
-
-              <!--[if !mso]><!-->
-                <div class="day" style="background-color: #FFFFFF; color: #000000;">S</div>
-              <!--<![endif]-->
-            </td>
-            <td style="font-weight: bold;">
-              <!--[if mso]>
-                <v:oval xmlns:v="urn:schemas-microsoft-com:vml" style="height:30px;width:30px;" strokecolor="white" strokeweight="1px" fillcolor="FFFFFF">
-                  <v:textbox inset="0,0,0,0">
-                    <table width="100%" height="100%" cellpadding="0" cellspacing="0" border="0">
-                      <tr>
-                        <td align="center" valign="middle">
-                          <font style="font-size:14px; color:#000000;">S</font>
-                        </td>
-                      </tr>
-                    </table>
-                  </v:textbox>
-                </v:oval>
-              <![endif]-->
-
-              <!--[if !mso]><!-->
-                <div class="day" style="background-color: #FFFFFF; color: #000000;">S</div>
-              <!--<![endif]-->
-            </td>
+            <th>M</th>
+            <th>T</th>
+            <th>W</th>
+            <th>T</th>
+            <th>F</th>
+            <th>S</th>
+            <th>S</th>
           </tr>
           <mj-raw> {% for week in calendar %} </mj-raw>
           <tr class="calendar">
@@ -261,8 +135,8 @@ td div .day {
                       <td style="background-color:#f9f9f9; border-radius:8px; padding:18px;">
                         <table cellpadding="0" cellspacing="0" border="0" width="100%">
                           <tr>
-                            <td style="font-size:16px; font-weight:bold; color: #6b7280;">Active Days</td>
-                            <td align="right" style="font-size:16px; color: #6b7280;">{{ goals.active_days.recorded }} days <span style="font-size:10px;">/ {{ goals.active_days.target }} days</span></td>
+                            <td style="font-size:14px; line-height:16px; mso-line-height-rule:exactly; font-weight:bold; color: #6b7280;">Active Days</td>
+                            <td align="right" style="font-size:14px; line-height:16px; mso-line-height-rule:exactly; color: #6b7280;">{{ goals.active_days.recorded }} days <span style="font-size:10px;">/ {{ goals.active_days.target }} days</span></td>
                           </tr>
                           <tr>
                             <td colspan="2" height="12" style="padding-top:8px; line-height:0; font-size:0;">
@@ -293,8 +167,8 @@ td div .day {
                       <td style="background-color:#f9f9f9; border-radius:8px; padding:18px;">
                         <table cellpadding="0" cellspacing="0" border="0" width="100%">
                           <tr>
-                            <td style="font-size:16px; font-weight:bold; color: #6b7280;">Exercise</td>
-                            <td align="right" style="font-size:16px; color: #6b7280;">{{ goals.minutes.recorded }} min <span style="font-size:10px;">/ {{ goals.minutes.target }} min</span></td>
+                            <td style="font-size:14px; line-height:16px; mso-line-height-rule:exactly; font-weight:bold; color: #6b7280;">Exercise</td>
+                            <td align="right" style="font-size:14px; line-height:16px; mso-line-height-rule:exactly; color: #6b7280;">{{ goals.minutes.recorded }} min <span style="font-size:10px;">/ {{ goals.minutes.target }} min</span></td>
                           </tr>
                           <tr>
                             <td colspan="2" height="12" style="padding-top:8px; line-height:0; font-size:0;">
@@ -325,8 +199,8 @@ td div .day {
                       <td style="background-color:#f9f9f9; border-radius:8px; padding:18px;">
                         <table cellpadding="0" cellspacing="0" border="0" width="100%">
                           <tr>
-                            <td style="font-size:16px; font-weight:bold; color: #6b7280;">Distance</td>
-                            <td align="right" style="font-size:16px; color: #6b7280;">{{ goals.distance.recorded }} km <span style="font-size:10px;">/ {{ goals.distance.target }} km</span></td>
+                            <td style="font-size:14px; line-height:16px; mso-line-height-rule:exactly; font-weight:bold; color: #6b7280;">Distance</td>
+                            <td align="right" style="font-size:14px; line-height:16px; mso-line-height-rule:exactly; color: #6b7280;">{{ goals.distance.recorded }} km <span style="font-size:10px;">/ {{ goals.distance.target }} km</span></td>
                           </tr>
                           <tr>
                             <td colspan="2" height="12" style="padding-top:8px; line-height:0; font-size:0;">

@@ -20,7 +20,7 @@ import {
     Filler,
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import {useGetStatsByIdQuery} from "../utils/reducers/statsSlice";
+import {statsApi, useGetStatsByIdQuery} from "../utils/reducers/statsSlice";
 import {useGetUserByIdQuery} from "../utils/reducers/usersSlice";
 import _ from "lodash";
 import {SectionLoader} from "../utils/loaders";
@@ -40,6 +40,7 @@ import {workoutTypes} from "../forms/workoutForm";
 import CompetitionInviteModal from "../forms/shareModal";
 import {useDispatch} from "react-redux";
 import {useLeaveCompetitionMutation} from "../utils/reducers/joinSlice";
+import TransferOwnershipForm from "../forms/transferOwnershipForm";
 
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Filler, Tooltip, Legend, BarElement, ChartDataLabels);
 
@@ -48,6 +49,7 @@ function CompetitionHead({competition, feed, isOwner}) {
 
     const [showEditCompetitionModal, setShowEditCompetitionModal] = useState(false);
     const [showInviteCompetitionModal, setShowInviteCompetitionModal] = useState(false);
+    const [showTransferCompetitionModal, setShowTransferCompetitionModal] = useState(false);
     const [countTotal, setCountTotal] = useState(0);
     const [countGroups, setCountGroups] = useState({});
 
@@ -118,8 +120,9 @@ function CompetitionHead({competition, feed, isOwner}) {
                 </div>
             </div>
 
-            {(showEditCompetitionModal) && <CompetitionForm setModalState={setShowEditCompetitionModal} competition={competition}/>}
+            {(showEditCompetitionModal) && <CompetitionForm setModalState={setShowEditCompetitionModal} setShowTransferCompetitionModal={setShowTransferCompetitionModal} competition={competition}/>}
             {(showInviteCompetitionModal) && <CompetitionInviteModal setModalState={setShowInviteCompetitionModal} competition={competition}/>}
+            {(showTransferCompetitionModal) && <TransferOwnershipForm setModalState={setShowTransferCompetitionModal} competition={competition}/>}
 
         </BoxSection>
     )
@@ -290,18 +293,27 @@ function AwardsBox({competition}) {
     )
 }
 
-function TeamLeaderboardBox({stats, competition}) {
+function TeamLeaderboardBox({stats, competition, user, isOwner}) {
+    const dispatch = useDispatch();
 
     const [showChangeTeamModal, setShowChangeTeamModal] = useState(false);
+    function setShowChangeTeamModalMiddleware(state) {
+        if (state === false) {
+            dispatch(statsApi.util.invalidateTags([{ type: 'Stats', id: competition.id }]));
+        }
+        setShowChangeTeamModal(state);
+    }
 
     return (
         <>
             <BoxSection>
                 <div className="flex flex-col items-center justify-between sm:flex-row sm:items-center border-b-2 pb-3">
                     <span className="mx-4 text-gray-500 uppercase font-bold">Team Leaderboard</span>
-                    <div className="p-0 mt-2.5 sm:mt-0">
-                        <ChangeTeamButton onClick={() => setShowChangeTeamModal(true)} larger={false}/>
-                    </div>
+                    {(!competition.organizer_assigns_teams || isOwner) && (
+                        <div className="p-0 mt-2.5 sm:mt-0">
+                            <ChangeTeamButton onClick={() => setShowChangeTeamModalMiddleware(true)} larger={false}/>
+                        </div>
+                    )}
                 </div>
 
 
@@ -348,10 +360,9 @@ function TeamLeaderboardBox({stats, competition}) {
                 </table>
                 {(competition.organizer_assigns_teams) ? <div className="pt-1 w-full text-center text-sm text-gray-500 italic"><b>Note:</b> The organizer assigns teams!</div> : null}
             </BoxSection>
-            {(showChangeTeamModal) ? (
-                <JoinTeamForm setModalState={setShowChangeTeamModal} competition={competition}
-                              id={showChangeTeamModal}/>
-            ) : null}
+
+            {(showChangeTeamModal) && <JoinTeamForm setModalState={setShowChangeTeamModalMiddleware} competition={competition} user={user} isOwner={isOwner}/>}
+
         </>
     )
 }
@@ -902,7 +913,7 @@ export default function Competition() {
                                     <ErrorBoxSection
                                         errorMsg={statsError?.status + ' / ' + (statsError?.error || statsError?.message || statsError?.data?.detail)}/>
                                 ) : (
-                                    <TeamLeaderboardBox stats={stats} competition={competition}/>
+                                    <TeamLeaderboardBox stats={stats} competition={competition} user={user} isOwner={isOwner}/>
                                 )
                             }
                         </div>

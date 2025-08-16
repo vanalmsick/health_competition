@@ -14,6 +14,7 @@ import {
     ExternalLink,
     DoorOpen,
     Scale,
+    UserRoundPen,
 } from "lucide-react";
 import {BeatLoader} from "react-spinners";
 import TimeField from 'react-simple-timefield';
@@ -176,7 +177,7 @@ export function FormInput({
                                 value={(value === null) ? '' : value}
                                 onChange={(e) => setValue(e.target.value)}
                             >
-                                <option value="">{(placeholder) ? placeholder : "Select an option"}</option>
+                                {(placeholder !== false) && <option value="">{(placeholder) ? placeholder : "Select an option"}</option>}
                                 {selectList.map((item, index) => (
                                     <option key={index} value={item.value}>{item.label}</option>
                                 ))}
@@ -331,7 +332,7 @@ export function SaveButton({
                                highlighted = false,
                                larger = false,
                                isLoading = false,
-                                additionalClasses = "",
+                               additionalClasses = "",
                            }) {
     return <GenericButton onClick={onClick} icon={icon} label={label} highlighted={highlighted} larger={larger}
                           IconObject={Save} isLoading={isLoading} additionalClasses={additionalClasses}/>
@@ -344,7 +345,7 @@ export function SaveAndAddButton({
                                      highlighted = false,
                                      larger = false,
                                      isLoading = false,
-    additionalClasses = "",
+                                     additionalClasses = "",
                                  }) {
     return <GenericButton onClick={onClick} icon={icon} label={label} highlighted={highlighted} larger={larger}
                           IconObject={CopyPlus} isLoading={isLoading} additionalClasses={additionalClasses}/>
@@ -357,10 +358,11 @@ export function DeleteButton({
                                  highlighted = false,
                                  larger = false,
                                  isLoading = false,
-    additionalClasses = "",
+                                 additionalClasses = "",
                              }) {
     return <GenericButton onClick={onClick} icon={icon} label={label} highlighted={highlighted} larger={larger}
-                          IconObject={Trash2} isLoading={isLoading} additionalClasses={" hover:text-red-800 " + additionalClasses}/>
+                          IconObject={Trash2} isLoading={isLoading}
+                          additionalClasses={" hover:text-red-800 " + additionalClasses}/>
 }
 
 export function AddButton({
@@ -370,7 +372,7 @@ export function AddButton({
                               highlighted = false,
                               larger = false,
                               isLoading = false,
-    additionalClasses = "",
+                              additionalClasses = "",
                           }) {
     return <GenericButton onClick={onClick} icon={icon} label={label} highlighted={highlighted} larger={larger}
                           IconObject={Plus} isLoading={isLoading} additionalClasses={additionalClasses}/>
@@ -383,10 +385,23 @@ export function EditButton({
                                highlighted = false,
                                larger = false,
                                isLoading = false,
-    additionalClasses = "",
+                               additionalClasses = "",
                            }) {
     return <GenericButton onClick={onClick} icon={icon} label={label} highlighted={highlighted} larger={larger}
                           IconObject={Pencil} isLoading={isLoading} additionalClasses={additionalClasses}/>
+}
+
+export function ChangeOwnerButton({
+                                      onClick,
+                                      icon = true,
+                                      label = "Transfer Ownership",
+                                      highlighted = false,
+                                      larger = false,
+                                      isLoading = false,
+                                      additionalClasses = "",
+                                  }) {
+    return <GenericButton onClick={onClick} icon={icon} label={label} highlighted={highlighted} larger={larger}
+                          IconObject={UserRoundPen} isLoading={isLoading} additionalClasses={additionalClasses}/>
 }
 
 export function ChangeTeamButton({
@@ -396,7 +411,7 @@ export function ChangeTeamButton({
                                      highlighted = false,
                                      larger = false,
                                      isLoading = false,
-    additionalClasses = "",
+                                     additionalClasses = "",
                                  }) {
     return <GenericButton onClick={onClick} icon={icon} label={label} highlighted={highlighted} larger={larger}
                           IconObject={UsersRound} isLoading={isLoading} additionalClasses={additionalClasses}/>
@@ -409,34 +424,34 @@ export function JoinButton({
                                highlighted = false,
                                larger = false,
                                isLoading = false,
-    additionalClasses = "",
+                               additionalClasses = "",
                            }) {
     return <GenericButton onClick={onClick} icon={icon} label={label} highlighted={highlighted} larger={larger}
                           IconObject={UserRoundPlus} isLoading={isLoading} additionalClasses={additionalClasses}/>
 }
 
 export function LeaveButton({
-                               onClick,
-                               icon = true,
-                               label = "Leave Competition",
-                               highlighted = false,
-                               larger = false,
-                               isLoading = false,
-    additionalClasses = "",
-                           }) {
+                                onClick,
+                                icon = true,
+                                label = "Leave Competition",
+                                highlighted = false,
+                                larger = false,
+                                isLoading = false,
+                                additionalClasses = "",
+                            }) {
     return <GenericButton onClick={onClick} icon={icon} label={label} highlighted={highlighted} larger={larger}
                           IconObject={DoorOpen} isLoading={isLoading} additionalClasses={additionalClasses}/>
 }
 
 export function ShareButton({
-                               onClick,
-                               icon = true,
-                               label = "Invite Others",
-                               highlighted = false,
-                               larger = false,
-                               isLoading = false,
-    additionalClasses = "",
-                           }) {
+                                onClick,
+                                icon = true,
+                                label = "Invite Others",
+                                highlighted = false,
+                                larger = false,
+                                isLoading = false,
+                                additionalClasses = "",
+                            }) {
     return <GenericButton onClick={onClick} icon={icon} label={label} highlighted={highlighted} larger={larger}
                           IconObject={ExternalLink} isLoading={isLoading} additionalClasses={additionalClasses}/>
 }
@@ -448,21 +463,21 @@ export function ModifyGoalsButton({
                                       highlighted = false,
                                       larger = false,
                                       isLoading = false,
-    additionalClasses = "",
+                                      additionalClasses = "",
                                   }) {
     return <GenericButton onClick={onClick} icon={icon} label={label} highlighted={highlighted} larger={larger}
                           IconObject={Flag} isLoading={isLoading} additionalClasses={additionalClasses}/>
 }
 
 export function FairGoalsButton({
-                                      onClick,
-                                      icon = true,
-                                      label = "Goal Equalizer",
-                                      highlighted = false,
-                                      larger = false,
-                                      isLoading = false,
-    additionalClasses = "",
-                                  }) {
+                                    onClick,
+                                    icon = true,
+                                    label = "Goal Equalizer",
+                                    highlighted = false,
+                                    larger = false,
+                                    isLoading = false,
+                                    additionalClasses = "",
+                                }) {
     return <GenericButton onClick={onClick} icon={icon} label={label} highlighted={highlighted} larger={larger}
                           IconObject={Scale} isLoading={isLoading} additionalClasses={additionalClasses}/>
 }
@@ -474,7 +489,7 @@ export function SettingsButton({
                                    highlighted = false,
                                    larger = false,
                                    isLoading = false,
-    additionalClasses = "",
+                                   additionalClasses = "",
                                }) {
     return <GenericButton onClick={onClick} icon={icon} label={label} highlighted={highlighted} larger={larger}
                           IconObject={Settings} isLoading={isLoading} additionalClasses={additionalClasses}/>
@@ -487,7 +502,7 @@ export function RefreshButton({
                                   highlighted = false,
                                   larger = false,
                                   isLoading = false,
-    additionalClasses = "",
+                                  additionalClasses = "",
                               }) {
     return <GenericButton onClick={onClick} icon={icon} label={label} highlighted={highlighted} larger={larger}
                           IconObject={RefreshCw} isLoading={isLoading} additionalClasses={additionalClasses}/>
@@ -500,7 +515,7 @@ export function SyncStravaButton({
                                      highlighted = false,
                                      larger = false,
                                      isLoading = false,
-    additionalClasses = "",
+                                     additionalClasses = "",
                                  }) {
     return <GenericButton onClick={onClick} icon={icon} label={label} highlighted={highlighted} larger={larger}
                           IconObject={RefreshCw} isLoading={isLoading} additionalClasses={additionalClasses}/>

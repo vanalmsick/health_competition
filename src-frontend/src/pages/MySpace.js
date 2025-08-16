@@ -244,9 +244,9 @@ function CompetitionRow({competition, user}) {
                         ((stats.users[user.id]?.rank == null) ? (
                             <span className="text-gray-400">Time to workout!</span>
                         ) : (
-                            <>No. <span className="text-2xl font-semibold">{stats.users[user.id]?.rank}</span>
+                            <>No. <span className="text-xl font-semibold">{stats.users[user.id]?.rank}</span>
                                 {(competition.has_teams) ? (
-                                    <span><br/><span className="font-semibold">{stats.teams[teamId]?.name}:</span> #{stats.teams[teamId]?.rank}</span>
+                                    <span className="text-gray-400 italic"><br/><span className="font-semibold">My Team:</span> #{stats.teams[teamId]?.rank}</span>
                                 ) : null
                                 }
                             </>

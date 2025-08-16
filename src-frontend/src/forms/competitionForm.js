@@ -5,7 +5,7 @@ import {
     useUpdateCompetitionMutation
 } from "../utils/reducers/competitionsSlice";
 import {useNavigate} from "react-router-dom";
-import {DeleteButton, Modal, SaveButton, SingleForm} from "./basicComponents";
+import {ChangeOwnerButton, DeleteButton, Modal, SaveButton, SingleForm} from "./basicComponents";
 
 
 const fields = {
@@ -52,7 +52,7 @@ const fields = {
 }
 
 
-export default function CompetitionForm({competition, setModalState}) {
+export default function CompetitionForm({competition, setModalState, setShowTransferCompetitionModal}) {
     const navigate = useNavigate();
 
     const [values, setValues] = useState({});
@@ -159,8 +159,9 @@ export default function CompetitionForm({competition, setModalState}) {
             <SingleForm fields={finalFields} values={values} setValues={setValues} errors={fieldErrors}/>
             <div className="text-center text-red-500 text-xs italic">{formError}</div>
             <div className="relative flex justify-between items-center">
-              <DeleteButton onClick={handleDiscard} label={(competition !== undefined) ? "Delete" : "Discard"} highlighted={false} larger={true} />
-              <SaveButton onClick={handleSubmit} label={(competition !== undefined) ? "Update" : "Create"} highlighted={true} larger={true} />
+                <DeleteButton onClick={handleDiscard} label={(competition !== undefined) ? "Delete" : "Discard"} highlighted={false} larger={true} />
+                {(competition !== undefined) && <ChangeOwnerButton onClick={() => {setModalState(false); setShowTransferCompetitionModal(true);}} label={"Transfer Ownership"} highlighted={false} larger={true} />}
+                <SaveButton onClick={handleSubmit} label={(competition !== undefined) ? "Update" : "Create"} highlighted={true} larger={true} />
             </div>
         </Modal>
     )

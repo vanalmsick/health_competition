@@ -278,16 +278,29 @@ class JoinTeamView(APIView):
     """ API post view for users to join a team and make sure they are only a member of one team per competition. """
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, id):
-        team = Team.objects.filter(id=id)
+    def post(self, request):
+        team_id = request.query_params.get('team')
+        team = Team.objects.filter(id=team_id)
         if len(team) == 0:
             return Response({"message": "Invalid team id."}, status=status.HTTP_400_BAD_REQUEST)
         team = team[0]
+
+        user_id = request.query_params.get('user', request.user.id)
+        user = CustomUser.objects.filter(id=user_id)
+        if len(user) == 0:
+            return Response({"message": "Invalid user id."}, status=status.HTTP_400_BAD_REQUEST)
+        user = user[0]
+
         competition = team.competition
         competition_teams = competition.team_set.all()
+
+        if user != request.user and request.user != competition.owner and len(competition_teams.filter(user=user)) > 0:
+            return Response({"message": "Unauthorized. You can only change your own team or add people to your team if they are currently in no team."}, status=status.HTTP_403_FORBIDDEN)
+
         for competition_team in competition_teams:
-            competition_team.user.remove(request.user)
+            competition_team.user.remove(user.id)
             competition_team.save()
-        request.user.my_teams.add(team)
-        request.user.save()
-        return Response({"message": "Successfully joined team.", "team": team.id}, status=status.HTTP_200_OK)
+        user.my_teams.add(team.id)
+        user.save()
+
+        return Response({"message": "Successfully joined team.", "team": team.id, "user": user.id}, status=status.HTTP_200_OK)

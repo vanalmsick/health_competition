@@ -18,9 +18,10 @@ export const joinApi = createApi({
             }),
         }),
         joinTeam: builder.mutation({
-            query: (id) => ({
-                url: `join/team/${id}/`,
+            query: (params = {}) => ({
+                url: `join/team/`,
                 method: 'POST',
+                params: params,
             }),
         }),
     }),

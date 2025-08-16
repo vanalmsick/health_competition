@@ -1,29 +1,13 @@
 import React, {useEffect, useState} from "react";
-import DynamicModal from "./dynamicModal";
-import DynamicForm from "./dynamicForms";
-import {useGetUserByIdQuery, useGetUsersQuery, usersApi, useUpdateUserMutation} from "../utils/reducers/usersSlice";
-import {useDispatch} from "react-redux";
-import {useJoinCompetitionMutation, useJoinTeamMutation} from "../utils/reducers/joinSlice";
-import {useLocation, useNavigate} from "react-router-dom";
-import {
-    competitionsApi, useAddCompetitionMutation, useDeleteCompetitionMutation,
-    useGetCompetitionByIdQuery,
-    useUpdateCompetitionMutation
-} from "../utils/reducers/competitionsSlice";
+import {useJoinTeamMutation} from "../utils/reducers/joinSlice";
 import {useAddTeamMutation, useDeleteTeamMutation, useGetTeamsQuery} from "../utils/reducers/teamsSlice";
 import {PlusIcon, UsersRound, Trash2} from "lucide-react";
 import {BeatLoader} from "react-spinners";
-import {DeleteButton, Modal, SaveButton, SingleForm} from "./basicComponents";
+import {FormInput, Modal} from "./basicComponents";
 
 
-export default function JoinTeamForm({setModalState, competition, join_code = null}) {
+export default function JoinTeamForm({competition, setModalState, user, isOwner}) {
 
-    const [joinTeam, {
-        data: joinData,
-        error: joinError,
-        isLoading: joinIsLoading,
-        isSuccess: joinIsSuccess
-    }] = useJoinTeamMutation();
     const {
         data: teams,
         refetch: teamsRefetch,
@@ -43,131 +27,122 @@ export default function JoinTeamForm({setModalState, competition, join_code = nu
         isLoading: deleteIsLoading,
         isSuccess: deleteIsSuccess
     }] = useDeleteTeamMutation();
-    //const filteredTeams = team?.filter(item => item.competition === competition.id);
+    const [joinTeam, {
+        data: joinData,
+        error: joinError,
+        isLoading: joinIsLoading,
+        isSuccess: joinIsSuccess
+    }] = useJoinTeamMutation();
 
-    const {
-        data: users,
-        error: usersError,
-        isLoading: usersIsLoading,
-        isSuccess: usersIsSuccess
-    } = useGetUsersQuery();
+    const filteredTeams = teams?.filter(item => item.competition === competition.id);
+    const myTeamId = filteredTeams.find(t => t.user.includes(user?.id))?.id;
+    const usedIds = new Set(filteredTeams?.flatMap(team => team.user));
+    const usersWithoutTeams = competition?.user_info.filter(u => !usedIds.has(u.id));
 
-    const [filteredTeams, setFilteredTeams] = useState([]);
+    async function handleTeamChange(kwargs) {
+        await joinTeam(kwargs);
+        console.log('Changed teams:', kwargs);
+        teamsRefetch();
+    };
 
-    useEffect(() => {
-        if (teamsIsSuccess && usersIsSuccess && users && teams) {
-            let tmpTeams = [];
-            for (const team of teams) {
-                if (team.competition === competition.id) {
-                    tmpTeams.push({
-                        'name': team.name,
-                        'id': team.id,
-                        'user': team.user.map(user => users.find(userItem => userItem.id === user)),
-                        'my': team.user.some(user => users.find(userItem => userItem.id === user)?.my),
-                    });
-                }
-            }
-            setFilteredTeams(tmpTeams);
-        }
-    }, [teams, users])
-
-    useEffect(() => {
-        if (createIsSuccess) {
-            joinTeam(createData.id);
-            teamsRefetch();
-        }
-    }, [createIsSuccess])
-
-    function handleSubmit(e) {
+    async function handleTeamCreate(e) {
         e.preventDefault();
-        if (!(createIsLoading || joinIsLoading || teamsLoading)) {
-            createTeam({competition: competition.id, name: e.target.teamName.value});
+        const result = await createTeam({competition: competition.id, name: e.target.teamName.value});
+        console.log('Created new team:', result);
+        e.target.reset();
+        if (!isOwner) {
+            handleTeamChange({team: result.data.id});
         }
-    }
-
-    function handleTeamChange(team_id) {
-        joinTeam(team_id);
-        teamsRefetch();
-    }
-
-    function handleTeamDelete(team_id) {
-        deleteTeam(team_id);
-        teamsRefetch();
-    }
+    };
 
 
     return (
-        <DynamicModal setModalState={setModalState}>
-            <div className="flex items-center justify-center w-full">
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl px-8 pt-6 pb-8 mb-4 ml-2 space-y-4 p-4">
+        <Modal landscape={false} setShowModal={setModalState} isLoading={false}>
+            {filteredTeams?.map((team, teamidx) => (
+                <div key={teamidx} className="p-4">
+                    <div className="flex justify-between items-center mb-2 border-b border-t py-2">
+                        <h2 className="text-lg font-bold mr-auto">{team.name}</h2>
+                        {((!team.my) ? (
+                                    <>
+                                        {((team.user.length === 0) ? (
+                                            <button onClick={() => deleteTeam(team.id)}
+                                                    className="flex items-center gap-2 px-4 py-2 h-9 mr-2 bg-gray-100 dark:bg-gray-900 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 transition">
+                                                <Trash2 className="w-3 h-3"/>
+                                            </button>
+                                        ) : null)}
+                                        {(!isOwner) && (
+                                            <button onClick={() => handleTeamChange({team: team.id})} className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-900 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 transition">
+                                                <UsersRound className="w-3 h-3"/>
+                                                <span className="text-sm break-keep">Join Team</span>
+                                            </button>
+                                        )}
 
-                    {filteredTeams.map((team, index) => (
-                        <div key={"team" + index} className="p-4">
-                            <div className="flex justify-between items-center mb-2 border-b border-t py-2">
-                                <h2 className="text-lg font-bold mr-auto">{team.name}</h2>
-                                {(joinIsLoading || createIsLoading || teamsLoading || teamsIsFetching) ? (
-                                    <BeatLoader color="rgb(209 213 219)"/>
-                                ) : ((!team.my) ? (
-                                            <>
-                                                {((team.user.length === 0) ? (
-                                                    <button onClick={() => handleTeamDelete(team.id)}
-                                                            className="flex items-center gap-2 px-4 py-2 h-9 mr-2 bg-gray-100 dark:bg-gray-900 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 transition">
-                                                        <Trash2 className="w-3 h-3"/>
-                                                    </button>
-                                                ) : null)}
-                                                <button onClick={() => handleTeamChange(team.id)}
-                                                        className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-900 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 transition">
-                                                    <UsersRound className="w-3 h-3"/>
-                                                    <span className="text-sm break-keep">Join Team</span>
-                                                </button>
-                                            </>
-                                        )
-                                        : <div className="text-sm pr-4">My Team</div>
-                                )}
-                            </div>
-                            <ul className="list-disc list-inside text-gray-700 dark:text-gray-300">
-                                {team.user.map((user, userindex) => (
-                                    <li key={"teamuser" + userindex} className="py-0.5">{user.username}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))}
-
-                    <div className="p-4">
-                        <h2 className="text-lg font-bold mb-2 border-b border-t py-2 mb-3">Create New Team</h2>
-                        <form onSubmit={handleSubmit} className="flex items-center space-x-2">
-                            <input
-                                type="text"
-                                name="teamName"
-                                placeholder="Enter team name"
-                                required={true}
-                                disabled={createIsLoading || joinIsLoading || teamsLoading}
-                                className="flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 dark:bg-gray-900 focus:ring-blue-400"
-                            />
-                            {(joinIsLoading || createIsLoading || teamsLoading || teamsIsFetching) ? (
-                                <BeatLoader color="rgb(209 213 219)"/>
-                            ) : (
-                                <button type="button" type="submit"
-                                        disabled={createIsLoading || joinIsLoading || teamsLoading}
-                                        className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-900 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 transition">
-                                    <PlusIcon className="w-3 h-3"/>
-                                    <span className="text-sm break-keep">Create & Join</span>
-                                </button>
-                            )}
-                        </form>
+                                    </>
+                                )
+                                : <div className="text-sm pr-4">My Team</div>
+                        )}
                     </div>
-
-
-                    <p className="text-xs text-center italic text-gray-500">
-                        <b>Note:</b> Team changes can take 10 minutes<br/>to reflect on the competition stats page.
-                    </p>
-
-
+                    <ul className="list-disc list-inside text-gray-700 dark:text-gray-300">
+                        {team.user_info.map((user, useridx) => (
+                            <li key={useridx} className="py-0.5">
+                                {user.username}
+                                {(isOwner) && <FormInput width="inline-block w-1/3 text-sm" type="select" placeholder={false} selectList={filteredTeams?.map(team => ({value: team.id, label: team.name}))} setValue={(team_id) => handleTeamChange({user: user.id, team: team_id})} value={team.id}/>}
+                            </li>
+                        ))}
+                    </ul>
                 </div>
+            ))}
 
+            {(usersWithoutTeams?.length > 0) && (
+                <div className="p-4">
+                    <div className="flex justify-between items-center mb-2 border-b border-t py-2"><h2
+                        className="text-lg font-bold mr-auto">Participants without a team</h2>
+                        <div className="text-sm pr-4">Add them to your team!</div>
+                    </div>
+                    <ul className="list-disc list-inside text-gray-700 dark:text-gray-300">
+                        {usersWithoutTeams?.map((userI, useridx) => (
+                            <li key={useridx} className="py-0.5">
+                                {userI.username}
+                                {(isOwner) ? (
+                                    <FormInput width="inline-block w-1/3 text-sm" type="select" selectList={filteredTeams?.map(team => ({value: team.id, label: team.name}))} setValue={(team_id) => handleTeamChange({user: userI.id, team: team_id})} />
+                                ) : (userI.id === user?.id) ? null : (
+                                    <button onClick={() => handleTeamChange({user: userI.id, team: myTeamId})} className="inline-flex items-center gap-2 px-4 ml-4 py-2 bg-gray-100 dark:bg-gray-900 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 transition">
+                                        <UsersRound className="w-3 h-3"/>
+                                        <span className="text-sm break-keep">Add to my team</span>
+                                    </button>
+                                )
+                                }
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
 
+            <div className="p-4">
+                <h2 className="text-lg font-bold mb-2 border-b border-t py-2 mb-3">Create New Team</h2>
+                <form onSubmit={handleTeamCreate} className="flex items-center space-x-2">
+                    <input
+                        type="text"
+                        name="teamName"
+                        placeholder="Enter team name"
+                        required={true}
+                        disabled={teamsLoading}
+                        className="flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 dark:bg-gray-900 focus:ring-blue-400"
+                    />
+                    {(teamsLoading || teamsIsFetching) ? (
+                        <BeatLoader color="rgb(209 213 219)"/>
+                    ) : (
+                        <button type="button" type="submit"
+                                disabled={teamsLoading}
+                                className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-900 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 transition">
+                            <PlusIcon className="w-3 h-3"/>
+                            <span className="text-sm break-keep">
+                                {(isOwner) ? 'Create Team': 'Create & Join'}
+                            </span>
+                        </button>
+                    )}
+                </form>
             </div>
-
-        </DynamicModal>
+        </Modal>
     )
 }

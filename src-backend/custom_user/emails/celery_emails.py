@@ -25,7 +25,7 @@ def welcome_email(user_pk):
         {
             'first_name': user_obj.first_name,
             'MAIN_HOST': settings.MAIN_HOST,
-            'EMAIL_REPLY_TO': settings.EMAIL_REPLY_TO[0] if settings.EMAIL_REPLY_TO is None else settings.EMAIL_FROM,
+            'EMAIL_REPLY_TO': settings.EMAIL_REPLY_TO[0] if settings.EMAIL_REPLY_TO is not None else settings.EMAIL_FROM,
             'link_strava_note': user_obj.strava_refresh_token is None or user_obj.strava_refresh_token == '',
         }
     )
@@ -74,7 +74,7 @@ def log_workouts_email(user_pk):
             'first_name': user_obj.first_name,
             'last_workouts': workout_obj_lst,
             'MAIN_HOST': settings.MAIN_HOST,
-            'EMAIL_REPLY_TO': settings.EMAIL_REPLY_TO[0] if settings.EMAIL_REPLY_TO is None else settings.EMAIL_FROM,
+            'EMAIL_REPLY_TO': settings.EMAIL_REPLY_TO[0] if settings.EMAIL_REPLY_TO is not None else settings.EMAIL_FROM,
         }
     )
 
@@ -132,7 +132,7 @@ def leaderboard_email(user_pk):
             'MAIN_HOST': settings.MAIN_HOST,
             'competitions_all': competition_all_data,
             'competitions_7d': competition_7d_data,
-            'EMAIL_REPLY_TO': settings.EMAIL_REPLY_TO[0] if settings.EMAIL_REPLY_TO is None else settings.EMAIL_FROM,
+            'EMAIL_REPLY_TO': settings.EMAIL_REPLY_TO[0] if settings.EMAIL_REPLY_TO is not None else settings.EMAIL_FROM,
             'goal_equalizer_note': user_obj.scaling_kcal == 1 and user_obj.scaling_distance == 1,
         }
     )
@@ -270,7 +270,7 @@ def weekly_email(user_pk):
                 'minutes': None if user_obj.goal_workout_minutes is None or user_obj.goal_workout_minutes == '' else {'recorded': recorded_total_duration,'target': user_obj.goal_workout_minutes, 'percent': min(1, recorded_total_duration / user_obj.goal_workout_minutes) * 100, 'percent_vml': int(min(1, recorded_total_duration / user_obj.goal_workout_minutes) * 100 * 2.5)},
             },
             'openai_quote': todays_ai_quote,
-            'EMAIL_REPLY_TO': settings.EMAIL_REPLY_TO[0] if settings.EMAIL_REPLY_TO is None else settings.EMAIL_FROM,
+            'EMAIL_REPLY_TO': settings.EMAIL_REPLY_TO[0] if settings.EMAIL_REPLY_TO is not None else settings.EMAIL_FROM,
         }
     )
 

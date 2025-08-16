@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Link, useLocation, useParams} from "react-router-dom";
+import {Link, useLocation, useNavigationType, useParams} from "react-router-dom";
 import {useDispatch} from 'react-redux';
 import {useNavigate} from 'react-router-dom';
 import {BarLoader, MoonLoader} from "react-spinners";
@@ -11,6 +11,13 @@ import {feedApi} from '../utils/reducers/feedSlice';
 import {PageWrapper} from "../utils/miscellaneous";
 
 function BaseHome({children}) {
+    const navType = useNavigationType();
+    useEffect(() => {
+        if (navType === "POP") {
+            document.body.classList.remove("body-no-scroll");
+        }
+    }, [navType]);
+
     return (
         <div className="relative min-h-screen bg-cover bg-center"
              style={{backgroundImage: "url('/running.webp')"}}>

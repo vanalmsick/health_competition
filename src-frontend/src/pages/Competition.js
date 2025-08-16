@@ -1,4 +1,4 @@
-import {useNavigate, useParams} from 'react-router-dom';
+import {useNavigate, useNavigationType, useParams} from 'react-router-dom';
 import React, {useEffect, useState} from "react";
 import NavMenu from "../utils/navMenu";
 import {competitionsApi, useGetCompetitionByIdQuery} from "../utils/reducers/competitionsSlice";
@@ -631,6 +631,22 @@ function ActivityGoalsBox({user, stats, feed, competitionId, userId, isOwner}) {
                                     <span className="text-xs">{goal.metric} / week </span>
                                 )}
 
+                                {
+                                    (['kcal', 'kj', 'km'].includes(goal.metric)) && (
+                                        <>
+                                            <br/>
+                                            <span className="font-semibold">Equalizing Factor: </span>
+                                            {
+                                                (goal.metric === 'km') ? (
+                                                    <span className="text-xs">{user?.scaling_distance * 100}%</span>
+                                                ) : (
+                                                    <span className="text-xs">{user?.scaling_kcal * 100}%</span>
+                                                )
+                                            }
+                                        </>
+                                    )
+                                }
+
                             </div>
                         </div>
                     </div>
@@ -771,6 +787,13 @@ function ActivityCompetitionBox({stats, userId, teamId}) {
 
 
 export default function Competition() {
+    const navType = useNavigationType();
+    useEffect(() => {
+        if (navType === "POP") {
+            document.body.classList.remove("body-no-scroll");
+        }
+    }, [navType]);
+
     const {id} = useParams();
 
     const {

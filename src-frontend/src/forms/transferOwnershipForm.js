@@ -14,6 +14,7 @@ const fields = {
         "type": "select",
         "required": true,
         "read_only": false,
+        "placeholder": false,
         "label": "New Competition Owner",
         "width": "max-sm:w-full w-2/3",
         "autoFocus": true,
@@ -84,7 +85,7 @@ export default function TransferOwnershipForm({competition, setModalState}) {
         <Modal title="Transfer Competition Ownership" landscape={true} setShowModal={setModalState} isLoading={updateIsLoading}>
             <SingleForm fields={finalFields} values={values} setValues={setValues} errors={fieldErrors}/>
             <div className="text-center text-red-500 text-xs italic">{formError}</div>
-            <div className="relative flex justify-between items-center">
+            <div className="relative flex justify-end items-center">
               <SaveButton onClick={handleSubmit} label={"Update"} highlighted={true} larger={true} />
             </div>
         </Modal>

@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import {BeatLoader} from "react-spinners";
 import TimeField from 'react-simple-timefield';
+import { isMobile } from "react-device-detect";
 
 
 export function Modal({setShowModal, title = null, landscape = false, isLoading = false, children}) {
@@ -118,7 +119,7 @@ export function FormInput({
                             tabIndex={tabIndex}
                             readOnly={readOnly}
                             disabled={disabled}
-                            autoFocus={autoFocus}
+                            autoFocus={!isMobile && autoFocus}
                             checked={value}
                             onChange={(e) => setValue(!value)}
                         />
@@ -154,7 +155,7 @@ export function FormInput({
                                            name={name}
                                            tabIndex={tabIndex}
                                            disabled={disabled}
-                                           autoFocus={autoFocus}
+                                           autoFocus={!isMobile && autoFocus}
                                            checked={(item.value === value) ? true : null}
                                            onChange={(e) => setValue(e.target.value)}
                                            value={item.value}
@@ -173,7 +174,7 @@ export function FormInput({
                                 tabIndex={tabIndex}
                                 required={required}
                                 disabled={disabled}
-                                autoFocus={autoFocus}
+                                autoFocus={!isMobile && autoFocus}
                                 value={(value === null) ? '' : value}
                                 onChange={(e) => setValue(e.target.value)}
                             >
@@ -196,7 +197,7 @@ export function FormInput({
                                 required={required}
                                 readOnly={readOnly}
                                 disabled={disabled}
-                                autoFocus={autoFocus}
+                                autoFocus={!isMobile && autoFocus}
                                 autoComplete={autoComplete}
                                 pattern={pattern}
                                 value={(value === null) ? '' : value}

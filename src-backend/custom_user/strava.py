@@ -64,7 +64,7 @@ def daily_strava_sync(self):
 
 
 @app.task(bind=True)
-def sync_strava(self, user__id):
+def sync_strava(self, user__id, start_datetime=None):
     access_token = cache.get(f"strava_access_token_{user__id}")
     CustomUser = get_user_model()
     user = CustomUser.objects.get(id=user__id)
@@ -113,7 +113,7 @@ def sync_strava(self, user__id):
                 'Authorization': f'Bearer {access_token}',
             },
             params={
-                'after': None,
+                'after': None if start_datetime is None else int(start_datetime.timestamp()),
                 'page': page,
                 'per_page': per_page,
             }
@@ -181,8 +181,9 @@ def sync_strava(self, user__id):
         page += 1
 
     strava_last_synced_at = timezone.now()
-    setattr(user, 'strava_last_synced_at', strava_last_synced_at)
-    user.save()
+    if start_datetime is None:
+        setattr(user, 'strava_last_synced_at', strava_last_synced_at)
+        user.save()
     print(f'User {user__id} - fetched {cnt_new_strava_activities} new strava activities and updated {cnt_updated_strava_activities} existing strava activities')
 
     return {'user': user__id, 'total_activities': (page - 1) * per_page + len(activities), 'new_activities': cnt_new_strava_activities, 'updated_activities': cnt_updated_strava_activities, 'sync_time': strava_last_synced_at}

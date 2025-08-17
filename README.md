@@ -4,6 +4,16 @@ Compete with friends and co-workers across devices (Apple / Android / Garmin / e
 ## How does it work?
 Create a competition, invite friends, and enter workouts manually or link your Strava for automatic workout import.
 
+**Features:**
+- Create a competition or join a friend’s with a link
+- Enter workouts manually or sync with Strava (automatic import daily at 4 AM)
+- Personal dashboard for workout stats and progress
+- Competition dashboards showing friends’ workouts, team and personal leaderboard positions, and points toward activity goals
+- Weekly Monday email with your competition leaderboard standings
+- Weekly Thursday email with your progress against your personal goals
+- Fully responsive design (mobile, tablet, desktop)
+- Light and dark mode
+
 **Your Personal Dashboard:**
 ![Preview Dashboard](/docs/imgs/preview-dashboard.png)
 
@@ -51,6 +61,7 @@ services:
       - EMAIL_USE_TLS=False
       - EMAIL_FROM=competition@yourdomain.com
       - EMAIL_REPLY_TO=support@yourdomain.com
+      - OPENAI_API_KEY=<secret_key>
     restart: unless-stopped
     depends_on:
       database:
@@ -129,7 +140,7 @@ services:
 #### Backend - Task-Scheduling (Celery)
 working dir: `/health_competition/src-backend`  
 run Redis: `redis-server`  
-run Celery Worker: `celery -A health_competition worker --loglevel INFO --without-mingle --without-gossip`  
+run Celery Worker: `celery -A health_competition worker --loglevel INFO --without-mingle --without-gossip --events`  
 run Celery Beat: `celery -A health_competition beat --scheduler django_celery_beat.schedulers:DatabaseScheduler --loglevel INFO`  
 run Celery Flower: `celery -A health_competition flower`  
 ***Note:** For testing email celery tasks, please set the Email env variables. For testing Strava sync celery tasks, please set the Strava env variables. For celery beat, don't forget to set the timezone env variable.*

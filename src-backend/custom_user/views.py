@@ -137,7 +137,7 @@ class LinkStravaView(APIView):
 
         cache.set(f"strava_access_token_{user.id}", strava_tokens.get('access_token', None), int(strava_tokens.get('expires_in', 21600)) - 60)
         try:
-            running_task = sync_strava.delay(user__id=user.id)
+            running_task = sync_strava.delay(user__id=user.id, start_datetime=datetime.datetime.now() - datetime.timedelta(days=43))
             try:
                 running_task.get(timeout=100)
             except TimeoutError:

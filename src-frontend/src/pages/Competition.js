@@ -41,6 +41,7 @@ import CompetitionInviteModal from "../forms/shareModal";
 import {useDispatch} from "react-redux";
 import {useLeaveCompetitionMutation} from "../utils/reducers/joinSlice";
 import TransferOwnershipForm from "../forms/transferOwnershipForm";
+import {teamsApi} from "../utils/reducers/teamsSlice";
 
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Filler, Tooltip, Legend, BarElement, ChartDataLabels);
 
@@ -794,6 +795,7 @@ export default function Competition() {
         }
     }, [navType]);
 
+    const dispatch = useDispatch();
     const {id} = useParams();
 
     const {
@@ -844,6 +846,7 @@ export default function Competition() {
         refreshCompetition();
         refreshFeed();
         refreshStats();
+        dispatch(teamsApi.util.invalidateTags(['Team']));
     }
 
     if (competitionError) {

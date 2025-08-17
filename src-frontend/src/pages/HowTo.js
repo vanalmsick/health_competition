@@ -41,9 +41,11 @@ const steps = [
 export function HowToScreen({setModal}) {
     const [current, setCurrent] = useState(0)
 
+    document.body.classList.add("body-no-scroll");
+
     return (
-        <div className="fixed inset-0 z-50 bg-white bg-opacity-80 dark:bg-black dark:bg-opacity-80 flex items-center justify-center">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 max-w-2xl w-full text-center space-y-4">
+        <div className="fixed inset-0 z-50 bg-white bg-opacity-80 dark:bg-black dark:bg-opacity-80 flex items-center justify-center overflow-auto">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 max-w-2xl w-full text-center space-y-4 max-h-[100vh] overflow-y-auto">
                 <h2 className="text-xl font-semibold">{steps[current].title}</h2>
                 <p className="text-gray-600 dark:text-gray-400">{steps[current].content}</p>
                 <img src={steps[current].img}/>
@@ -66,6 +68,7 @@ export function HowToScreen({setModal}) {
                         className="bg-blue-600 text-white px-4 py-2 rounded-full disabled:opacity-50"
                         onClick={() => {
                             if (current === steps.length - 1) {
+                                document.body.classList.remove("body-no-scroll");
                                 setModal(false); // Close the modal
                                 //setLinkStrava(true); // Open Strava link screen
                             } else {
@@ -94,14 +97,19 @@ export function LinkStravaScreen({setModal}) {
         dispatch(usersApi.util.invalidateTags(['User']));
     }
 
+    useEffect(() => {
+        document.body.classList.add("body-no-scroll");
+    }, [])
+
     return (
-        <div className="fixed inset-0 z-50 bg-white bg-opacity-80 dark:bg-black dark:bg-opacity-80 flex items-center justify-center">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 max-w-2xl w-full text-center space-y-4">
+        <div className="fixed inset-0 z-50 bg-white bg-opacity-80 dark:bg-black dark:bg-opacity-80 flex items-center justify-center overflow-auto">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 max-w-2xl w-full text-center space-y-4 max-h-[100vh] overflow-y-auto">
                 {
                     current === 0 ? (
                         <>
                             <h2 className="text-xl font-semibold">Automatic workout import via Strava</h2>
-                            <p className="text-gray-600 dark:text-gray-400">Either manually enter your workouts or link your free Strava
+                            <p className="text-gray-600 dark:text-gray-400">Either manually enter your workouts or link
+                                your free Strava
                                 account for automatic workout import.</p>
                             <img src="/how_to_strava_sync.png"/>
                             <p>Only absolutely necessary metrics are synced with Strava:</p>
@@ -109,21 +117,26 @@ export function LinkStravaScreen({setModal}) {
                                 <li>• Sport type</li>
                                 <li>• Start time & duration</li>
                                 <li>• Workout id</li>
-                                <li>• Distance, kcal, kj, avg. watt</li>
+                                <li>• Distance, kcal, kj, avg. watt, avg. heart rate</li>
                                 <li>––– That's it – nothing more! –––</li>
                             </ul>
+                            <p className="text-gray-500 text-sm italic">You still don't trust it? Check the <a
+                                className="text-blue-500 hover:underline" target="_blank"
+                                href="https://github.com/vanalmsick/health_competition/blob/main/src-backend/custom_user/strava.py#L126-L162">public
+                                source code yourself (here)</a>!</p>
                         </>
                     ) : (
                         <>
-                            <h2 className="text-xl font-semibold">Scan this QR Code to link Strava</h2>
-                            <p className="text-gray-600 dark:text-gray-400">For automatic workout import link your Strava account via the
-                                scanning the below QR code on your phone (that has the Strava App installed).</p>
+                            <h2 className="text-xl font-semibold">Connect Strava</h2>
+                            <p className="text-gray-600 dark:text-gray-400">Scan the QR code with your phone or click
+                                the link below to connect Strava.</p>
                             <div className="flex justify-center items-center">
                                 <QRCodeSVG value={url} title={"QR code to link to Strava account"} size={200}
                                            level={"L"}/>
                             </div>
-                            <p className="text-gray-600 dark:text-gray-400">Or <a className="text-blue-500 hover:underline" href={url}
-                                                               target="_blank">click this link</a></p>
+                            <p className="text-gray-600 dark:text-gray-400">Or <a
+                                className="text-blue-500 hover:underline" href={url}
+                                target="_blank">click this link</a></p>
                         </>
                     )
                 }

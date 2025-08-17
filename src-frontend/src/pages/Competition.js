@@ -633,7 +633,7 @@ function ActivityGoalsBox({user, stats, feed, competitionId, userId, isOwner}) {
                                 )}
 
                                 {
-                                    (['kcal', 'kj', 'km'].includes(goal.metric) && (Math.abs(user.scaling_distance - 1) < 0.01 || Math.abs(user.scaling_kcal - 1) < 0.01)) && (
+                                    (['kcal', 'kj', 'km'].includes(goal.metric) && (Math.abs(user.scaling_distance - 1) >= 0.01 || Math.abs(user.scaling_kcal - 1) >= 0.01)) && (
                                         <>
                                             <br/>
                                             <span className="font-semibold">Equalizing Factor: </span>

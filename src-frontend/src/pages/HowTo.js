@@ -54,6 +54,7 @@ export function HowToScreen({setModal}) {
                         className="text-sm text-gray-500"
                         onClick={() => {
                             if (current === 0) {
+                                document.body.classList.remove("body-no-scroll");
                                 setModal(false); // Close the modal
                                 //setLinkStrava(true); // Open Strava link screen
                             } else {
@@ -144,6 +145,7 @@ export function LinkStravaScreen({setModal}) {
                     <button className="text-sm text-gray-500"
                             onClick={() => {
                                 if (current === 0) {
+                                    document.body.classList.remove("body-no-scroll");
                                     setModal(false); // Close the modal
                                 } else {
                                     setCurrent(0); // Go to previous step
@@ -155,6 +157,7 @@ export function LinkStravaScreen({setModal}) {
                     <button className="bg-blue-600 text-white px-4 py-2 rounded-full"
                             onClick={() => {
                                 if (current === 1) {
+                                    document.body.classList.remove("body-no-scroll");
                                     setModal(false); // Close the modal
                                     refreshWorkouts(); // refresh workouts in case Strava was linked on phone via QR code
                                 } else {

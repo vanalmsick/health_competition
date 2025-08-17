@@ -633,15 +633,15 @@ function ActivityGoalsBox({user, stats, feed, competitionId, userId, isOwner}) {
                                 )}
 
                                 {
-                                    (['kcal', 'kj', 'km'].includes(goal.metric)) && (
+                                    (['kcal', 'kj', 'km'].includes(goal.metric) && (user?.scaling_distance !== 1.0 || user?.scaling_kcal !== 1.0)) && (
                                         <>
                                             <br/>
                                             <span className="font-semibold">Equalizing Factor: </span>
                                             {
                                                 (goal.metric === 'km') ? (
-                                                    <span className="text-xs">{user?.scaling_distance * 100}%</span>
+                                                    <span className="text-xs">{user?.scaling_distance * 100}% x {Math.round(goal.goal).toLocaleString()} {goal.metric}</span>
                                                 ) : (
-                                                    <span className="text-xs">{user?.scaling_kcal * 100}%</span>
+                                                    <span className="text-xs">{user?.scaling_kcal * 100}% x {Math.round(goal.goal).toLocaleString()} {goal.metric}</span>
                                                 )
                                             }
                                         </>

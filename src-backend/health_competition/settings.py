@@ -184,7 +184,7 @@ TIME_ZONE = CELERY_TIMEZONE = os.environ.get("TIME_ZONE", "Europe/London")
 TIME_ZONE_OBJ = pytz.timezone(TIME_ZONE)
 
 USE_I18N = True
-
+USE_L10N = False # use US formatting
 USE_TZ = True
 
 # Celery

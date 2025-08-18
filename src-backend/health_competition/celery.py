@@ -50,6 +50,12 @@ app.conf.beat_schedule = {
         "schedule": crontab(day_of_week="4", minute="5", hour="15"),
         "args": (),
     },
+    # every day at noon send start competition email
+    "send_all_competition_start_email": {
+        "task": "custom_user.emails.celery_emails.send_all_competition_start_email",
+        "schedule": crontab(minute="5", hour="12"),
+        "args": (),
+    },
 }
 
 

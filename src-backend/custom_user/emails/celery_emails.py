@@ -88,6 +88,56 @@ def log_workouts_email(user_pk):
 
 
 @app.task()
+def send_all_competition_start_email():
+    print("Scheduling competition start emails...")
+    Competition = apps.get_model('competition', 'Competition')
+    competition_lst = Competition.objects.filter(start_date=datetime.date.today() + datetime.timedelta(days=1)).order_by('pk')
+    task_log = []
+    for i, competition_obj in enumerate(competition_lst):
+        eta = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=10) + datetime.timedelta(minutes=(15 * i))
+        user_lst = competition_obj.user.all().order_by('pk')
+        eta_steps = max(min((60 * 60) // len(user_lst), 60), 10)
+        for user_obj in user_lst:
+            result = competition_start_email.apply_async(args=[competition_obj.pk, user_obj.pk], eta=eta)
+            task_log.append({'user_pk': user_obj.pk, 'username': user_obj.username, 'email': user_obj.email, 'competition_pk': competition_obj.pk, 'competition_name': competition_obj.name, 'task_id': result.task_id, 'eta': eta.isoformat()})
+            eta += datetime.timedelta(seconds=eta_steps)
+    return task_log
+
+
+@app.task()
+def competition_start_email(competition_pk, user_pk):
+    """Email for competition start tomorrow."""
+    Competition = apps.get_model('competition', 'Competition')
+    competition_obj = Competition.objects.get(pk=competition_pk)
+    goal_objs = competition_obj.activitygoal_set.all()
+
+    CustomUser = apps.get_model('custom_user', 'CustomUser')
+    user_obj = CustomUser.objects.get(pk=user_pk)
+
+    email_subject = 'Workout Challenge - READY, SET, GO!'
+
+    email_body = render_to_string(
+        "email_competition_start.html",
+        {
+            'first_name': user_obj.first_name,
+            'MAIN_HOST': settings.MAIN_HOST,
+            'competition': competition_obj,
+            'goals': goal_objs,
+            'EMAIL_REPLY_TO': settings.EMAIL_REPLY_TO[0] if settings.EMAIL_REPLY_TO is not None else settings.EMAIL_FROM,
+            'goal_equalizer_note': user_obj.scaling_kcal == 1 and user_obj.scaling_distance == 1,
+        }
+    )
+
+    if settings.DEBUG:
+        with open('tmp_email.html', 'w') as file:
+            file.write(email_body)
+
+    send_email(subject=email_subject, body=email_body, to_email=user_obj.email)
+
+    return ({'pk': user_obj.pk, 'username': user_obj.username, 'email': user_obj.email})
+
+
+@app.task()
 def send_all_leaderboard_emails():
     print("Scheduling leaderboard emails...")
     CustomUser = apps.get_model('custom_user', 'CustomUser')

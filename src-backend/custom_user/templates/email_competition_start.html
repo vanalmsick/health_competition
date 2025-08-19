@@ -1,4 +1,3 @@
-{% load l10n %}
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 
@@ -95,7 +94,7 @@
 </head>
 
 <body style="word-spacing:normal;background-color:#E1E8ED;">
-  <div style="display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;"> Keep the momentum going – keep the streak alive! Aim for 150-300 minutes of moderate or 75-150 minutes of vigorous activity weekly (or an equivalent mix) spread over at least 2 days, as recommended by the WHO. </div>
+  <div style="display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;"> The "{{ competition.name }}" competition kicks off tomorrow! Give it a strong start, build momentum – your best is waiting! But first, here's how the goals work and how to earn points. </div>
   <div style="background-color:#E1E8ED;">
     <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:600px;" width="600" ><tr><td style="line-height:0;font-size:0;mso-line-height-rule:exactly;"><v:image style="border:0;mso-position-horizontal:center;position:absolute;top:0;width:600px;z-index:-3;" src="{{ MAIN_HOST }}/running_email.jpg" xmlns:v="urn:schemas-microsoft-com:vml" /><![endif]-->
     <div style="margin:0 auto;max-width:600px;">
@@ -161,7 +160,7 @@
                                 <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.2;text-align:left;color:#000000;">
                                   <p>Hi {{ first_name }},</p>
                                   <p>The "{{ competition.name }}" competition kicks off tomorrow!</p>
-                                  <p>Push hard, stay consistent, and let’s see how far you can go—your best is waiting!</p>
+                                  <p>Give it a strong start, build momentum – your best is waiting!</p>
                                   <p>But first, here's how the goals work and how to earn points.</p>
                                 </div>
                               </td>
@@ -245,11 +244,11 @@
                                   <table cellpadding="0" cellspacing="0" border="0" width="100%">
                                     <tr>
                                       <td style="font-size:14px; line-height:16px; mso-line-height-rule:exactly; font-weight:bold; color: #6b7280;">{{ goal.name }}</td>
-                                      <td align="right" style="font-size:14px; line-height:16px; mso-line-height-rule:exactly; color: #6b7280;">{{ goal.goal|floatformat:0|localize }} {{ goal.metric }} <span style="font-size:10px;">/ {{ goal.period }}</span></td>
+                                      <td align="right" style="font-size:14px; line-height:16px; mso-line-height-rule:exactly; color: #6b7280;">{{ goal.goal|floatformat:0 }} {{ goal.metric }} <span style="font-size:10px;">/ {{ goal.period }}</span></td>
                                     </tr>
                                     <tr>
                                       <td colspan="2" height="12" style="padding-top:8px; line-height:0; font-size:0;">
-                                        <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" arcsize="50%" strokecolor="#e5e5e5" strokeweight="1px" style="width:250%;height:12px;" fillcolor="#e5e5e5"><v:fill color="#4a78b5" /></v:roundrect><![endif]-->
+                                        <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" arcsize="50%" strokecolor="#e5e5e5" strokeweight="1px" style="width:250%;height:12px;" fillcolor="#e5e5e5"><v:fill color="#e5e5e5" /></v:roundrect><![endif]-->
                                         <!--[if !mso]><!-- -->
                                         <div style="background:#e5e5e5; border-radius:4px; width:100%; height:12px;"></div>
                                         <!--<![endif]-->
@@ -257,7 +256,7 @@
                                     </tr>
                                     <tr>
                                       <td style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.2;text-align:left;color:#6b7280;padding-top: 7px;" colspan="2"><b>Limits:</b>
-                                        <ul style="margin: 0px;"> {% if goal.min_per_workout > 0 %}<li>min <b>{{ goal.min_per_workout|floatformat:0|localize }} {{ goal.metric }}</b> <span style="font-size:10px">/ workout</span></li>{% endif %} {% if goal.max_per_workout > 0 %}<li>max <b>{{ goal.max_per_workout|floatformat:0|localize }} {{ goal.metric }}</b> <span style="font-size:10px">/ workout</span></li>{% endif %} {% if goal.min_per_day > 0 %}<li>min <b>{{ goal.min_per_day|floatformat:0|localize }} {{ goal.metric }}</b> <span style="font-size:10px">/ day</span></li>{% endif %} {% if goal.max_per_day > 0 %}<li>max <b>{{ goal.max_per_day|floatformat:0|localize }} {{ goal.metric }}</b> <span style="font-size:10px">/ day</span></li>{% endif %} {% if goal.min_per_week > 0 %}<li>min <b>{{ goal.min_per_week|floatformat:0|localize }} {{ goal.metric }}</b> <span style="font-size:10px">/ week</span></li>{% endif %} {% if goal.max_per_week > 0 %}<li>max <b>{{ goal.max_per_week|floatformat:0|localize }} {{ goal.metric }}</b> <span style="font-size:10px">/ week</span></li>{% endif %} </ul>
+                                        <ul style="margin: 0px;"> {% if goal.min_per_workout > 0 %}<li>min <b>{{ goal.min_per_workout|floatformat:0 }} {{ goal.metric }}</b> <span style="font-size:10px">/ workout</span></li>{% endif %} {% if goal.max_per_workout > 0 %}<li>max <b>{{ goal.max_per_workout|floatformat:0 }} {{ goal.metric }}</b> <span style="font-size:10px">/ workout</span></li>{% endif %} {% if goal.min_per_day > 0 %}<li>min <b>{{ goal.min_per_day|floatformat:0 }} {{ goal.metric }}</b> <span style="font-size:10px">/ day</span></li>{% endif %} {% if goal.max_per_day > 0 %}<li>max <b>{{ goal.max_per_day|floatformat:0 }} {{ goal.metric }}</b> <span style="font-size:10px">/ day</span></li>{% endif %} {% if goal.min_per_week > 0 %}<li>min <b>{{ goal.min_per_week|floatformat:0 }} {{ goal.metric }}</b> <span style="font-size:10px">/ week</span></li>{% endif %} {% if goal.max_per_week > 0 %}<li>max <b>{{ goal.max_per_week|floatformat:0 }} {{ goal.metric }}</b> <span style="font-size:10px">/ week</span></li>{% endif %} </ul>
                                       </td>
                                     </tr>
                                   </table>

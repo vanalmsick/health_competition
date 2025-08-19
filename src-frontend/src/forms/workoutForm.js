@@ -86,10 +86,10 @@ const fields = {
         "width": "max-sm:w-full w-1/2",
     },
     "duration": {
-        "type": "time",
+        "type": "duration",
         "required": true,
         "read_only": false,
-        "label": "Duration (hh:mm:ss)",
+        "label": "Duration (hh:mm[:ss])",
         "width": "max-sm:w-full w-1/2",
     },
     "intensity_category": {

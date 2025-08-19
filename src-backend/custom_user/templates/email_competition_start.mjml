@@ -1,7 +1,7 @@
 <mjml>
   <!-- Written with https://mjml.io/ -->
   <mj-head>
-    <mj-preview>Keep the momentum going – keep the streak alive! Aim for 150-300 minutes of moderate or 75-150 minutes of vigorous activity weekly (or an equivalent mix) spread over at least 2 days, as recommended by the WHO.</mj-preview>
+    <mj-preview>The "{{ competition.name }}" competition kicks off tomorrow! Give it a strong start, build momentum – your best is waiting! But first, here's how the goals work and how to earn points.</mj-preview>
     <mj-attributes>
       <mj-text line-height="1.2" />
     </mj-attributes>
@@ -20,7 +20,7 @@
         <mj-text padding-bottom="0px">
           <p>Hi {{ first_name }},</p>
           <p>The "{{ competition.name }}" competition kicks off tomorrow!</p>
-          <p>Push hard, stay consistent, and let’s see how far you can go—your best is waiting!</p>
+          <p>Give it a strong start, build momentum – your best is waiting!</p>
           <p>But first, here's how the goals work and how to earn points.</p>
         </mj-text>
         <mj-divider border-color="#E1E8ED" border-width="2px"></mj-divider>
@@ -64,13 +64,13 @@
                         <table cellpadding="0" cellspacing="0" border="0" width="100%">
                           <tr>
                             <td style="font-size:14px; line-height:16px; mso-line-height-rule:exactly; font-weight:bold; color: #6b7280;">{{ goal.name }}</td>
-                            <td align="right" style="font-size:14px; line-height:16px; mso-line-height-rule:exactly; color: #6b7280;">{{ goal.goal|floatformat:0|localize }} {{ goal.metric }} <span style="font-size:10px;">/ {{ goal.period }}</span></td>
+                            <td align="right" style="font-size:14px; line-height:16px; mso-line-height-rule:exactly; color: #6b7280;">{{ goal.goal|floatformat:0 }} {{ goal.metric }} <span style="font-size:10px;">/ {{ goal.period }}</span></td>
                           </tr>
                           <tr>
                             <td colspan="2" height="12" style="padding-top:8px; line-height:0; font-size:0;">
                               <!--[if mso]>
                               <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" arcsize="50%" strokecolor="#e5e5e5" strokeweight="1px" style="width:250%;height:12px;" fillcolor="#e5e5e5">
-                                <v:fill color="#4a78b5" />
+                                <v:fill color="#e5e5e5" />
                               </v:roundrect>
                               <![endif]-->
                               <!--[if !mso]><!-- -->
@@ -82,12 +82,12 @@
                           <tr>
                             <td style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.2;text-align:left;color:#6b7280;padding-top: 7px;" colspan="2"><b>Limits:</b>
                               <ul style="margin: 0px;">
-                                {% if goal.min_per_workout > 0 %}<li>min <b>{{ goal.min_per_workout|floatformat:0|localize }} {{ goal.metric }}</b> <span style="font-size:10px">/ workout</span></li>{% endif %}
-                                {% if goal.max_per_workout > 0 %}<li>max <b>{{ goal.max_per_workout|floatformat:0|localize }} {{ goal.metric }}</b> <span style="font-size:10px">/ workout</span></li>{% endif %}
-                                {% if goal.min_per_day > 0 %}<li>min <b>{{ goal.min_per_day|floatformat:0|localize }} {{ goal.metric }}</b> <span style="font-size:10px">/ day</span></li>{% endif %}
-                                {% if goal.max_per_day > 0 %}<li>max <b>{{ goal.max_per_day|floatformat:0|localize }} {{ goal.metric }}</b> <span style="font-size:10px">/ day</span></li>{% endif %}
-                                {% if goal.min_per_week > 0 %}<li>min <b>{{ goal.min_per_week|floatformat:0|localize }} {{ goal.metric }}</b> <span style="font-size:10px">/ week</span></li>{% endif %}
-                                {% if goal.max_per_week > 0 %}<li>max <b>{{ goal.max_per_week|floatformat:0|localize }} {{ goal.metric }}</b> <span style="font-size:10px">/ week</span></li>{% endif %}
+                                {% if goal.min_per_workout > 0 %}<li>min <b>{{ goal.min_per_workout|floatformat:0 }} {{ goal.metric }}</b> <span style="font-size:10px">/ workout</span></li>{% endif %}
+                                {% if goal.max_per_workout > 0 %}<li>max <b>{{ goal.max_per_workout|floatformat:0 }} {{ goal.metric }}</b> <span style="font-size:10px">/ workout</span></li>{% endif %}
+                                {% if goal.min_per_day > 0 %}<li>min <b>{{ goal.min_per_day|floatformat:0 }} {{ goal.metric }}</b> <span style="font-size:10px">/ day</span></li>{% endif %}
+                                {% if goal.max_per_day > 0 %}<li>max <b>{{ goal.max_per_day|floatformat:0 }} {{ goal.metric }}</b> <span style="font-size:10px">/ day</span></li>{% endif %}
+                                {% if goal.min_per_week > 0 %}<li>min <b>{{ goal.min_per_week|floatformat:0 }} {{ goal.metric }}</b> <span style="font-size:10px">/ week</span></li>{% endif %}
+                                {% if goal.max_per_week > 0 %}<li>max <b>{{ goal.max_per_week|floatformat:0 }} {{ goal.metric }}</b> <span style="font-size:10px">/ week</span></li>{% endif %}
                               </ul>
                             </td>
                           </tr>

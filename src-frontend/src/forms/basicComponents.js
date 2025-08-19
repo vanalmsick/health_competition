@@ -138,7 +138,7 @@ export function FormInput({
                     (type === "checkbox") ? (
                         <> {/* Checkbox Input Element has to go before the label */} </>
                     ) :
-                    (type === "time-cursor") ? (
+                    ((type === "time-cursor") || (!isMobile && type === "duration")) ? (
                         <TimeField
                             value={value}
                             onChange={(e) => setValue(e.target.value)}
@@ -191,7 +191,7 @@ export function FormInput({
                             <input
                                 className={"w-full shadow border rounded py-2 px-3 text-gray-700 dark:text-gray-500 leading-tight focus:outline-none focus:shadow-outline" + (highlight ? " bg-sky-50 dark:bg-sky-950 border border-blue-300 ": " dark:bg-gray-900 ") + additionalClasses}
                                 name={name}
-                                type={type}
+                                type={(type === "duration") ? "time" : type}
                                 placeholder={placeholder}
                                 tabIndex={tabIndex}
                                 required={required}

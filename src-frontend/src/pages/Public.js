@@ -150,152 +150,179 @@ const LoadingForm = () => {
 
 
 const apiCreateAccount = async (email, first_name, last_name, gender, password) => {
-
-    const response = await fetch((process.env.REACT_APP_BACKEND_URL || '') + '/api/user/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            email: email,
-            first_name: first_name,
-            last_name: last_name,
-            gender: gender,
-            password: password
-        }),
-    })
-    if (response.ok) {
-        console.log('Registration Success');
-        return [true, undefined]
-    } else {
-        console.log('Registration Error:', response.status, response.statusText);
-        let error_msg = 'Registration Error (' + response.status + '): ' + response.statusText + ', ';
-        try {
-            const error = await response.json();
-            for (const key in error) {
-                error_msg += key + ': ' + error[key] + ', ';
+    try {
+        const response = await fetch((process.env.REACT_APP_BACKEND_URL || '') + '/api/user/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: email,
+                first_name: first_name,
+                last_name: last_name,
+                gender: gender,
+                password: password
+            }),
+        });
+        
+        if (response.ok) {
+            console.log('Registration Success');
+            return [true, undefined];
+        } else {
+            console.log('Registration Error:', response.status, response.statusText);
+            let error_msg = 'Registration Error (' + response.status + '): ' + response.statusText + ', ';
+            try {
+                const error = await response.json();
+                for (const key in error) {
+                    error_msg += key + ': ' + error[key] + ', ';
+                }
+            } catch (e) {
+                error_msg += ' Unknown error';
             }
-        } catch (e) {
-            error_msg += ' Unknown error';
+            return [false, error_msg];
         }
-        return [false, error_msg];
+    } catch (error) {
+        console.error('Network or server error during registration:', error);
+        return [false, 'Network or server error occurred. Please try again.'];
     }
 }
 
 const apiLogin = async (email, password) => {
+    try {
+        const response = await fetch((process.env.REACT_APP_BACKEND_URL || '') + '/api/token/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password
+            }),
+        });
 
-    const response = await fetch((process.env.REACT_APP_BACKEND_URL || '') + '/api/token/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            email: email,
-            password: password
-        }),
-    })
-    if (response.ok) {
-        console.log('Login Successful');
-        const token = await response.json();
-        localStorage.setItem('access_token', token.access);
-        localStorage.setItem('refresh_token', token.refresh);
-        return [true, undefined]
-    } else {
-        console.log('Login Error:', response.status, response.statusText);
-        let parsedError = null;
-        try {
-            parsedError = await response.json();
-        } catch (e) {
-            parsedError = null;
+        if (response.ok) {
+            console.log('Login Successful');
+            const token = await response.json();
+            localStorage.setItem('access_token', token.access);
+            localStorage.setItem('refresh_token', token.refresh);
+            return [true, undefined];
+        } else {
+            console.log('Login Error:', response.status, response.statusText);
+            let parsedError = null;
+            try {
+                parsedError = await response.json();
+            } catch (e) {
+                parsedError = null;
+            }
+            return [false, response.statusText + ' (' + response.status + ') - ' + (parsedError ? parsedError.detail : 'Unknown error')];
         }
-        return [false, response.statusText + ' (' + response.status + ') - ' + (parsedError ? parsedError.detail : 'Unknown error')]
+    } catch (error) {
+        console.error('Network or server error during login:', error);
+        return [false, 'Network or server error occurred. Please try again.'];
     }
-
-}
+};
 
 
 const apiRequestNewPassword = async (email) => {
-
-    const response = await fetch((process.env.REACT_APP_BACKEND_URL || '') + '/api/password-reset/request/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            email: email,
-        }),
-    })
-    if (response.ok) {
-        console.log('Password Reset Request Successful');
-        return [true, undefined]
-    } else {
-        console.log('Password Reset Request Error:', response.status, response.statusText, response);
-        let parsedError = null;
-        try {
-            parsedError = await response.json();
-        } catch (e) {
-            parsedError = null;
+    try {
+        const response = await fetch((process.env.REACT_APP_BACKEND_URL || '') + '/api/password-reset/request/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: email,
+            }),
+        });
+        
+        if (response.ok) {
+            console.log('Password Reset Request Successful');
+            return [true, undefined];
+        } else {
+            console.log('Password Reset Request Error:', response.status, response.statusText, response);
+            let parsedError = null;
+            try {
+                parsedError = await response.json();
+            } catch (e) {
+                parsedError = null;
+            }
+            return [false, response.statusText + ' (' + response.status + ') - ' + (parsedError ? parsedError.detail : 'Unknown error')];
         }
-        return [false, response.statusText + ' (' + response.status + ') - ' + (parsedError ? parsedError.detail : 'Unknown error')]
+    } catch (error) {
+        console.error('Network or server error during password reset request:', error);
+        return [false, 'Network or server error occurred. Please try again.'];
     }
-
-}
+};
 
 
 const apiSetNewPassword = async (uid, token, newPassword) => {
-
-    const response = await fetch((process.env.REACT_APP_BACKEND_URL || '') + '/api/password-reset/confirm/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            uid: uid,
-            token: token,
-            new_password: newPassword,
-        }),
-    })
-    if (response.ok) {
-        console.log('Set New Password Successful');
-        return [true, undefined]
-    } else {
-        console.log('Set New Password Error:', response.status, response.statusText, response);
-        let parsedError = null;
-        try {
-            parsedError = await response.json();
-        } catch (e) {
-            parsedError = null;
+    try {
+        const response = await fetch((process.env.REACT_APP_BACKEND_URL || '') + '/api/password-reset/confirm/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                uid: uid,
+                token: token,
+                new_password: newPassword,
+            }),
+        });
+        
+        if (response.ok) {
+            console.log('Set New Password Successful');
+            return [true, undefined];
+        } else {
+            console.log('Set New Password Error:', response.status, response.statusText, response);
+            let parsedError = null;
+            try {
+                parsedError = await response.json();
+            } catch (e) {
+                parsedError = null;
+            }
+            return [false, response.statusText + ' (' + response.status + ') - ' + (parsedError ? parsedError.detail : 'Unknown error')];
         }
-        return [false, response.statusText + ' (' + response.status + ') - ' + (parsedError ? parsedError.detail : 'Unknown error')]
+    } catch (error) {
+        console.error('Network or server error during password reset:', error);
+        return [false, 'Network or server error occurred. Please try again.'];
     }
-
 }
 
 
 const apiRefreshToken = async (refreshToken) => {
-
-    const response = await fetch((process.env.REACT_APP_BACKEND_URL || '') + '/api/token/refresh/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            refresh: refreshToken,
-        }),
-    })
-    if (response.ok) {
-        console.log('Token Refresh Successful');
-        const token = await response.json();
-        localStorage.setItem('access_token', token.access);
-        return [true, undefined]
-    } else {
-        console.log('Token Refresh Error:', response.status, response.statusText);
-        const error = await response.json();
+    try {
+        const response = await fetch((process.env.REACT_APP_BACKEND_URL || '') + '/api/token/refresh/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                refresh: refreshToken,
+            }),
+        });
+        
+        if (response.ok) {
+            console.log('Token Refresh Successful');
+            const token = await response.json();
+            localStorage.setItem('access_token', token.access);
+            return [true, undefined];
+        } else {
+            console.log('Token Refresh Error:', response.status, response.statusText);
+            let error = null;
+            try {
+                error = await response.json();
+            } catch (e) {
+                error = { detail: 'Unknown error' };
+            }
+            localStorage.removeItem('refresh_token');
+            return [false, response.statusText + ' (' + response.status + ') - ' + error.detail];
+        }
+    } catch (error) {
+        console.error('Network or server error during token refresh:', error);
         localStorage.removeItem('refresh_token');
-        return [false, response.statusText + ' (' + response.status + ') - ' + error.detail]
+        return [false, 'Network or server error occurred during token refresh. Please try again.'];
     }
-
-}
+};
 
 
 function RegisterPage() {

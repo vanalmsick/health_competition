@@ -539,8 +539,8 @@ function CalendarStats({workouts, last5Weeks}) {
                             </div>
                             <div
                                 className={"mx-auto flex items-center justify-center w-8 h-8 rounded-full font-semibold text-white " + ((tableStreakData[weeks - idxWeek] > 0) ? "bg-streak-blue" : "bg-gray-200 dark:bg-gray-700")}>
-                                {(tableStreakData[weeks - idxWeek] >= 9000) ?
-                                    <CheckCheck className="w-5 h-5"/> : (tableStreakData[weeks - idxWeek] > 0) ?
+                                {(tableStreakData[weeks - idxWeek] >= 9000) ? // double tick: 9000 = 150 minutes as recommended by the WHO
+                                    <CheckCheck className="w-5 h-5"/> : (tableStreakData[weeks - idxWeek] > 0) ? // single tick: any workout
                                         <Check className="w-5 h-5"/> : ""}
                             </div>
                             <div

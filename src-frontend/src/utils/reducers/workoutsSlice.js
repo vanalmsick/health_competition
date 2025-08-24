@@ -42,7 +42,7 @@ export const dateFormatter = (dateString) => {
 
     // prev week's Sunday
     const prevSunday = new Date(today);
-    prevSunday.setDate(today.getDate() - currentDay); // go back to Sunday
+    prevSunday.setDate(today.getDate() - ((currentDay !== 0) ? currentDay : 7)); // go back to Sunday
     const prevSundayDate = new Date(prevSunday.getFullYear(), prevSunday.getMonth(), prevSunday.getDate());
 
     // Calculate difference in days/weeks

@@ -143,10 +143,10 @@ def send_all_leaderboard_emails():
     print("Scheduling leaderboard emails...")
     CustomUser = apps.get_model('custom_user', 'CustomUser')
     user_lst = CustomUser.objects.filter(my_competitions__start_date__lt=datetime.date.today(), my_competitions__end_date__gte=datetime.date.today()).order_by('pk')
+    task_log = []
     if len(user_lst) > 0:
         eta_steps = max(min((60 * 60) // len(user_lst), 60), 10)
         eta = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=10)
-        task_log = []
         for user_obj in user_lst:
             result = leaderboard_email.apply_async(args=[user_obj.pk], eta=eta)
             task_log.append({'pk': user_obj.pk, 'username': user_obj.username, 'email': user_obj.email, 'task_id': result.task_id, 'eta': eta.isoformat()})
@@ -203,10 +203,10 @@ def send_all_weekly_emails():
     print("Scheduling weekly emails...")
     CustomUser = apps.get_model('custom_user', 'CustomUser')
     user_lst = CustomUser.objects.all().order_by('pk')
+    task_log = []
     if len(user_lst) > 0:
         eta_steps = max(min((60 * 60) // len(user_lst), 60), 10)
         eta = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=10)
-        task_log = []
         for user_obj in user_lst:
             result = weekly_email.apply_async(args=[user_obj.pk], eta=eta)
             task_log.append({'pk': user_obj.pk, 'username': user_obj.username, 'email': user_obj.email, 'task_id': result.task_id, 'eta': eta.isoformat()})

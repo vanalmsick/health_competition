@@ -596,60 +596,62 @@ function ActivityGoalsBox({user, stats, feed, competitionId, userId, isOwner}) {
                                     className="text-sm"></span>
                                 </div>
                             </div>
-                            {(goal.min_per_workout || goal.max_per_workout || goal.min_per_day || goal.max_per_day || goal.min_per_week || goal.max_per_week) && (
-                                <div className="text-sm text-gray-400 pt-1.5 hidden group-hover:block">
-                                    <span className="font-semibold">Limits: </span>
-                                    {(goal.min_per_workout) && (
-                                        <><ArrowDownToLine
-                                            className="w-4 h-4 inline"/> {Math.round(goal.min_per_workout).toLocaleString()} </>
-                                    )}
-                                    {(goal.max_per_workout) && (
-                                        <><ArrowUpToLine
-                                            className="w-4 h-4 inline"/> {Math.round(goal.max_per_workout).toLocaleString()} </>
-                                    )}
-                                    {(goal.min_per_workout || goal.max_per_workout) && (
-                                        <span className="text-xs">{goal.metric} / workout </span>
-                                    )}
-                                    {(goal.min_per_day) && (
-                                        <><ArrowDownToLine
-                                            className="w-4 h-4 inline"/> {Math.round(goal.min_per_day).toLocaleString()} </>
-                                    )}
-                                    {(goal.max_per_day) && (
-                                        <><ArrowUpToLine
-                                            className="w-4 h-4 inline"/> {Math.round(goal.max_per_day).toLocaleString()} </>
-                                    )}
-                                    {(goal.min_per_day || goal.max_per_day) && (
-                                        <span className="text-xs">{goal.metric} / day </span>
-                                    )}
-                                    {(goal.min_per_week) && (
-                                        <><ArrowDownToLine
-                                            className="w-4 h-4 inline"/> {Math.round(goal.min_per_week).toLocaleString()} </>
-                                    )}
-                                    {(goal.max_per_week) && (
-                                        <><ArrowUpToLine
-                                            className="w-4 h-4 inline"/> {Math.round(goal.max_per_week).toLocaleString()} </>
-                                    )}
-                                    {(goal.min_per_week || goal.max_per_week) && (
-                                        <span className="text-xs">{goal.metric} / week </span>
-                                    )}
 
-                                    {
-                                        (['kcal', 'kj', 'km'].includes(goal.metric) && (Math.abs(user.scaling_distance - 1) >= 0.01 || Math.abs(user.scaling_kcal - 1) >= 0.01)) && (
-                                            <>
-                                                <br/>
-                                                <span className="font-semibold">Equalizing Factor: </span>
-                                                {
-                                                    (goal.metric === 'km') ? (
-                                                        <span className="text-xs">{user.scaling_distance * 100}% x {Math.round(goal.goal / user.scaling_distance).toLocaleString()} {goal.metric}</span>
-                                                    ) : (
-                                                        <span className="text-xs">{user.scaling_kcal * 100}% x {Math.round(goal.goal / user.scaling_kcal).toLocaleString()} {goal.metric}</span>
-                                                    )
-                                                }
-                                            </>
-                                        )
-                                    }
-                                </div>
-                            )}
+                            <div className="text-sm text-gray-400 pt-1.5 hidden group-hover:block">
+                                <span className="font-semibold">Limits: </span>
+                                {(!(goal.min_per_workout || goal.max_per_workout || goal.min_per_day || goal.max_per_day || goal.min_per_week || goal.max_per_week)) && (
+                                    <>None</>
+                                )}
+                                {(goal.min_per_workout) && (
+                                    <><ArrowDownToLine
+                                        className="w-4 h-4 inline"/> {Math.round(goal.min_per_workout).toLocaleString()} </>
+                                )}
+                                {(goal.max_per_workout) && (
+                                    <><ArrowUpToLine
+                                        className="w-4 h-4 inline"/> {Math.round(goal.max_per_workout).toLocaleString()} </>
+                                )}
+                                {(goal.min_per_workout || goal.max_per_workout) && (
+                                    <span className="text-xs">{goal.metric} / workout </span>
+                                )}
+                                {(goal.min_per_day) && (
+                                    <><ArrowDownToLine
+                                        className="w-4 h-4 inline"/> {Math.round(goal.min_per_day).toLocaleString()} </>
+                                )}
+                                {(goal.max_per_day) && (
+                                    <><ArrowUpToLine
+                                        className="w-4 h-4 inline"/> {Math.round(goal.max_per_day).toLocaleString()} </>
+                                )}
+                                {(goal.min_per_day || goal.max_per_day) && (
+                                    <span className="text-xs">{goal.metric} / day </span>
+                                )}
+                                {(goal.min_per_week) && (
+                                    <><ArrowDownToLine
+                                        className="w-4 h-4 inline"/> {Math.round(goal.min_per_week).toLocaleString()} </>
+                                )}
+                                {(goal.max_per_week) && (
+                                    <><ArrowUpToLine
+                                        className="w-4 h-4 inline"/> {Math.round(goal.max_per_week).toLocaleString()} </>
+                                )}
+                                {(goal.min_per_week || goal.max_per_week) && (
+                                    <span className="text-xs">{goal.metric} / week </span>
+                                )}
+
+                                {
+                                    (['kcal', 'kj', 'km'].includes(goal.metric) && (Math.abs(user.scaling_distance - 1) >= 0.01 || Math.abs(user.scaling_kcal - 1) >= 0.01)) && (
+                                        <>
+                                            <br/>
+                                            <span className="font-semibold">Equalizing Factor: </span>
+                                            {
+                                                (goal.metric === 'km') ? (
+                                                    <span className="text-xs">{user.scaling_distance * 100}% x {Math.round(goal.goal / user.scaling_distance).toLocaleString()} {goal.metric}</span>
+                                                ) : (
+                                                    <span className="text-xs">{user.scaling_kcal * 100}% x {Math.round(goal.goal / user.scaling_kcal).toLocaleString()} {goal.metric}</span>
+                                                )
+                                            }
+                                        </>
+                                    )
+                                }
+                            </div>
                         </div>
                     </div>
                 ))}

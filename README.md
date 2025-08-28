@@ -2,17 +2,23 @@
 Compete with friends and co-workers across devices (Apple / Android / Garmin / etc.) using the metrics you want to use (km / minutes / kcal / # of times / etc.) respecting your privacy.
 
 ## How does it work?
-Create a competition, invite friends, and enter workouts manually or link your Strava for automatic workout import.
+Create your own competition or use a friend’s invitation link to join their competition, enter your workouts manually or link your Strava for automatic workout import, and enjoy the competition.
 
 **Features:**
-- Create a competition or join a friend’s with a link
-- Enter workouts manually or sync with Strava (automatic import daily at 4 AM)
-- Personal dashboard for workout stats and progress
-- Competition dashboards showing friends’ workouts, team and personal leaderboard positions, and points toward activity goals
-- Weekly Monday email with your competition leaderboard standings
-- Weekly Thursday email with your progress against your personal goals
-- Fully responsive design (mobile, tablet, desktop)
+- Create your own competition or use a friend’s invitation link to join their competition
+- Enter workouts manually or import them automatically via Strava (daily at 4 AM)
+- Your personal dashboard shows workout stats and your workout streak
+- The competition dashboards show friends’ workouts, leaderboards, and your progress towards the competition goals
+- A weekly email on Mondays shows you your spot on the competition leaderboards
+- A weekly email on Thursday shows your progress against your personal goals
+- Fully responsive website and emails (mobile, tablet, desktop)
 - Light and dark mode
+
+**Competition Goal Choices:**  
+*Create one to infinity number of goals for your competition.*
+- **Metrics:** time (minutes) / number of times (#) / distance (km) / calories (kcal) / kilojoules (kj)
+- **Period:** per day / per week / per month / during the entire competition
+- **Limits:** min / max per workout, min / max per day, min / max per week
 
 **Your Personal Dashboard:**
 ![Preview Dashboard](/docs/imgs/preview-dashboard.png)
@@ -20,9 +26,9 @@ Create a competition, invite friends, and enter workouts manually or link your S
 **Competition Dashboards:**
 ![Preview Competition](/docs/imgs/preview-competition.png)
 
-## Quick Start
+## Give it a quick try
 ```
-docker run vanalmsi/health_competition -p 80:80
+docker run vanalmsick/health_competition -p 80:80
 ```
 
 ## Full Production Deployment

@@ -202,7 +202,7 @@ def leaderboard_email(user_pk):
 def send_all_weekly_emails():
     print("Scheduling weekly emails...")
     CustomUser = apps.get_model('custom_user', 'CustomUser')
-    user_lst = CustomUser.objects.all().order_by('pk')
+    user_lst = CustomUser.objects.filter(email_mid_week=True).order_by('pk')
     task_log = []
     if len(user_lst) > 0:
         eta_steps = max(min((60 * 60) // len(user_lst), 60), 10)

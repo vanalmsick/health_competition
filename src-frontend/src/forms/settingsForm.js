@@ -91,6 +91,13 @@ const fields = {
         "label": "Allow others to follow me on Strava",
     },
 
+    "email_mid_week": {
+        "type": "checkbox",
+        "required": false,
+        "read_only": false,
+        "label": "Send me mid-week streak email",
+    },
+
 }
 
 

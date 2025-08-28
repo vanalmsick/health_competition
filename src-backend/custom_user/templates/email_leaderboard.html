@@ -205,17 +205,17 @@
                   <tbody>
                     <tr>
                       <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                        <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.2;text-align:left;color:#000000;"><b><span style="color:#075985">{{ competition.competition.name }}</span> - Individual</b></div>
+                        <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.2;text-align:left;color:#000000;"><b><span style="color:#075985">{{ competition.competition.name }}</span> - Team</b></div>
                       </td>
                     </tr>
                     <tr>
                       <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
                         <table cellpadding="0" cellspacing="0" width="100%" border="0" style="color:#000000;font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:22px;table-layout:auto;width:100%;border:none;">
-                          <mj-raw> {% for individual in competition.leaderboard.individual %} </mj-raw>
+                          <mj-raw> {% for team in competition.leaderboard.team %} </mj-raw>
                           <tr style="border-top:1px solid #ecedee;border-bottom:1px solid #ecedee;text-align:left;padding:15px 0;">
-                            <td style="padding: 0 15px 0 0;">{% if individual.rank is not None %}#{{ individual.rank }}{% else %}-/-{% endif %}</td>
-                            <td style="padding: 0 15px;">{{ individual.username }}</td>
-                            <td style="padding: 0 0 0 15px;">{% if individual.total_capped is not None %}{{ individual.total_capped|floatformat:0 }}P{% endif %}</td>
+                            <td style="padding: 0 15px 0 0;">{% if team.rank is not None %}#{{ team.rank }}{% else %}-/-{% endif %}</td>
+                            <td style="padding: 0 15px;">{{ team.name }}</td>
+                            <td style="padding: 0 0 0 15px;">{% if team.total_capped is not None %}{{ team.total_capped|floatformat:0 }}P{% endif %}</td>
                           </tr>
                           <mj-raw> {% endfor %} </mj-raw>
                         </table>
@@ -230,17 +230,17 @@
                   <tbody>
                     <tr>
                       <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                        <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.2;text-align:left;color:#000000;"><b><span style="color:#075985">{{ competition.competition.name }}</span> - Team</b></div>
+                        <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.2;text-align:left;color:#000000;"><b><span style="color:#075985">{{ competition.competition.name }}</span> - Individual</b></div>
                       </td>
                     </tr>
                     <tr>
                       <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
                         <table cellpadding="0" cellspacing="0" width="100%" border="0" style="color:#000000;font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:22px;table-layout:auto;width:100%;border:none;">
-                          <mj-raw> {% for team in competition.leaderboard.team %} </mj-raw>
+                          <mj-raw> {% for individual in competition.leaderboard.individual %} </mj-raw>
                           <tr style="border-top:1px solid #ecedee;border-bottom:1px solid #ecedee;text-align:left;padding:15px 0;">
-                            <td style="padding: 0 15px 0 0;">{% if team.rank is not None %}#{{ team.rank }}{% else %}-/-{% endif %}</td>
-                            <td style="padding: 0 15px;">{{ team.name }}</td>
-                            <td style="padding: 0 0 0 15px;">{% if team.total_capped is not None %}{{ team.total_capped|floatformat:0 }}P{% endif %}</td>
+                            <td style="padding: 0 15px 0 0;">{% if individual.rank is not None %}#{{ individual.rank }}{% else %}-/-{% endif %}</td>
+                            <td style="padding: 0 15px;">{{ individual.username }}</td>
+                            <td style="padding: 0 0 0 15px;">{% if individual.total_capped is not None %}{{ individual.total_capped|floatformat:0 }}P{% endif %}</td>
                           </tr>
                           <mj-raw> {% endfor %} </mj-raw>
                         </table>
@@ -312,17 +312,17 @@
                   <tbody>
                     <tr>
                       <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                        <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.2;text-align:left;color:#000000;"><b><span style="color:#075985">{{ competition.competition.name }}</span> - Individual</b></div>
+                        <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.2;text-align:left;color:#000000;"><b><span style="color:#075985">{{ competition.competition.name }}</span> - Team</b></div>
                       </td>
                     </tr>
                     <tr>
                       <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
                         <table cellpadding="0" cellspacing="0" width="100%" border="0" style="color:#000000;font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:22px;table-layout:auto;width:100%;border:none;">
-                          <mj-raw> {% for individual in competition.leaderboard.individual %} </mj-raw>
+                          <mj-raw> {% for team in competition.leaderboard.team %} </mj-raw>
                           <tr style="border-top:1px solid #ecedee;border-bottom:1px solid #ecedee;text-align:left;padding:15px 0;">
-                            <td style="padding: 0 15px 0 0;">{% if individual.rank is not None %}#{{ individual.rank }}{% else %}-/-{% endif %}</td>
-                            <td style="padding: 0 15px;">{{ individual.username }}</td>
-                            <td style="padding: 0 0 0 15px;">{% if individual.total_capped is not None %}{{ individual.total_capped|floatformat:0 }}P{% endif %}</td>
+                            <td style="padding: 0 15px 0 0;">{% if team.rank is not None %}#{{ team.rank }}{% else %}-/-{% endif %}</td>
+                            <td style="padding: 0 15px;">{{ team.name }}</td>
+                            <td style="padding: 0 0 0 15px;">{% if team.total_capped is not None %}{{ team.total_capped|floatformat:0 }}P{% endif %}</td>
                           </tr>
                           <mj-raw> {% endfor %} </mj-raw>
                         </table>
@@ -337,17 +337,17 @@
                   <tbody>
                     <tr>
                       <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                        <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.2;text-align:left;color:#000000;"><b><span style="color:#075985">{{ competition.competition.name }}</span> - Team</b></div>
+                        <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.2;text-align:left;color:#000000;"><b><span style="color:#075985">{{ competition.competition.name }}</span> - Individual</b></div>
                       </td>
                     </tr>
                     <tr>
                       <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
                         <table cellpadding="0" cellspacing="0" width="100%" border="0" style="color:#000000;font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:22px;table-layout:auto;width:100%;border:none;">
-                          <mj-raw> {% for team in competition.leaderboard.team %} </mj-raw>
+                          <mj-raw> {% for individual in competition.leaderboard.individual %} </mj-raw>
                           <tr style="border-top:1px solid #ecedee;border-bottom:1px solid #ecedee;text-align:left;padding:15px 0;">
-                            <td style="padding: 0 15px 0 0;">{% if team.rank is not None %}#{{ team.rank }}{% else %}-/-{% endif %}</td>
-                            <td style="padding: 0 15px;">{{ team.name }}</td>
-                            <td style="padding: 0 0 0 15px;">{% if team.total_capped is not None %}{{ team.total_capped|floatformat:0 }}P{% endif %}</td>
+                            <td style="padding: 0 15px 0 0;">{% if individual.rank is not None %}#{{ individual.rank }}{% else %}-/-{% endif %}</td>
+                            <td style="padding: 0 15px;">{{ individual.username }}</td>
+                            <td style="padding: 0 0 0 15px;">{% if individual.total_capped is not None %}{{ individual.total_capped|floatformat:0 }}P{% endif %}</td>
                           </tr>
                           <mj-raw> {% endfor %} </mj-raw>
                         </table>

@@ -16,27 +16,46 @@ const baseQuery = fetchBaseQuery({
     },
 });
 
+
+export function sentryError(result, errorSource, endpointName = undefined, queryArgs = undefined) {
+    Sentry.withScope((scope) => {
+        scope.setContext('RTK Query Request', {
+            ...queryArgs,
+            endpointName,
+        });
+        scope.setContext('RTK Query Error', {
+            status: result.error?.status,
+            data: result.error?.data,
+            originalStatus: result.error?.originalStatus,
+            message: result.error?.message,
+            name: result.error?.name,
+            stack: result.error?.stack,
+        });
+        scope.setContext('Network Info', {
+            online: navigator?.onLine,
+            userAgent: navigator?.userAgent,
+            url: window?.location?.href,
+        });
+        scope.setTag('error.source', errorSource);
+        scope.setTag('error.type', 'network-or-server');
+        scope.setTag('error.status', result.error?.status);
+        Sentry.captureException(
+            result.error instanceof Error ? result.error : new Error(`RTK Query request failed: ${result.error?.status}`)
+        );
+    });
+}
+
+
 export const baseQueryWithReauth = async (args, api, extraOptions) => {
     let result = await baseQuery(args, api, extraOptions);
 
     // report to Sentry if not 401 (login access token needs refreshing) and 429 (too many strava sync requests) and 404 (not found after entry deletion)
     if (result.error && result.error.status !== 401 && result.error.status !== 429 && result.error.status !== 404) {
-        Sentry.withScope((scope) => {
-            scope.setContext('RTK Query Request', {
-                args,
-                endpointName: api.endpoint, // might be undefined outside endpoint context
-                extraOptions,
-            });
-            scope.setContext('RTK Query Error', {
-                status: result.error.status,
-                data: result.error.data,
-                originalStatus: result.error.originalStatus,
-            });
-            scope.setTag('error.source', 'rtk-query');
-            scope.setTag('error.type', 'network-or-server');
-            Sentry.captureException(
-                new Error(`RTK Query request failed: ${result.error.status}`)
-            );
+        sentryError({
+            result: result,
+            errorSource: 'rtk-query',
+            endpointName: api?.endpoint,
+            queryArgs: {args, extraOptions},
         });
     }
 

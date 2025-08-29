@@ -9,6 +9,7 @@ import {competitionsApi} from '../utils/reducers/competitionsSlice';
 import {statsApi} from '../utils/reducers/statsSlice';
 import {feedApi} from '../utils/reducers/feedSlice';
 import {PageWrapper} from "../utils/miscellaneous";
+import {sentryError} from "../utils/reducers/baseQueryWithReauth";
 
 function BaseHome({children}) {
     const navType = useNavigationType();
@@ -183,6 +184,12 @@ const apiCreateAccount = async (email, first_name, last_name, gender, password) 
         }
     } catch (error) {
         console.error('Network or server error during registration:', error);
+        // Capture network errors in Sentry
+        sentryError({
+            result: error,
+            errorSource: 'manual-api',
+            endpointName: 'register',
+        });
         return [false, 'Network or server error occurred. Please try again.'];
     }
 }
@@ -218,6 +225,12 @@ const apiLogin = async (email, password) => {
         }
     } catch (error) {
         console.error('Network or server error during login:', error);
+        // Capture network errors in Sentry
+        sentryError({
+            result: error,
+            errorSource: 'manual-api',
+            endpointName: 'login',
+        });
         return [false, 'Network or server error occurred. Please try again.'];
     }
 };
@@ -250,6 +263,12 @@ const apiRequestNewPassword = async (email) => {
         }
     } catch (error) {
         console.error('Network or server error during password reset request:', error);
+        // Capture network errors in Sentry
+        sentryError({
+            result: error,
+            errorSource: 'manual-api',
+            endpointName: 'new-password-request',
+        });
         return [false, 'Network or server error occurred. Please try again.'];
     }
 };
@@ -284,6 +303,12 @@ const apiSetNewPassword = async (uid, token, newPassword) => {
         }
     } catch (error) {
         console.error('Network or server error during password reset:', error);
+        // Capture network errors in Sentry
+        sentryError({
+            result: error,
+            errorSource: 'manual-api',
+            endpointName: 'set-new-password',
+        });
         return [false, 'Network or server error occurred. Please try again.'];
     }
 }
@@ -320,6 +345,12 @@ const apiRefreshToken = async (refreshToken) => {
     } catch (error) {
         console.error('Network or server error during token refresh:', error);
         localStorage.removeItem('refresh_token');
+        // Capture network errors in Sentry
+        sentryError({
+            result: error,
+            errorSource: 'manual-api',
+            endpointName: 'refresh-token',
+        });
         return [false, 'Network or server error occurred during token refresh. Please try again.'];
     }
 };

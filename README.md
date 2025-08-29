@@ -28,7 +28,7 @@ Create your own competition or use a friend’s invitation link to join their co
 
 ## Give it a quick try
 ```
-docker run vanalmsick/health_competition -p 80:80
+docker run -p 80:80 vanalmsick/health_competition
 ```
 
 ## Full Production Deployment
@@ -90,6 +90,10 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+```
+
+```
+docker compose -f /path/to/docker-compose.yml up
 ```
 
 ### Environment variables

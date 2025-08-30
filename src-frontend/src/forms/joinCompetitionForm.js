@@ -47,23 +47,25 @@ export default function JoinCompetitionForm({setModalState, join_code= null}) {
     useEffect(() => {
         if (join_code !== undefined && join_code !== null) {
             setValues({join_code: join_code});
-            joinCompetition(join_code);
+            joinCompetition(join_code, false);
         }
     }, [])
 
     // form action button right
     async function handleSubmit() {
-        joinCompetition(values.join_code);
+        joinCompetition(values.join_code, join_code === null);
     }
 
     // function to join competition
-    async function joinCompetition(joinCode) {
+    async function joinCompetition(joinCode, redirect = true) {
         try {
             const result = await updateEntry(joinCode).unwrap();
             console.log('Join Competition success:', result);
             setModalState(false);
             document.body.classList.remove('body-no-scroll');
-            navigate('/competition/' + result.competition);
+            if (redirect) {
+                navigate('/competition/' + result.competition);
+            }
             dispatch(competitionsApi.util.invalidateTags(['Competition']));
             dispatch(usersApi.util.invalidateTags(['User']));
         } catch (err) {

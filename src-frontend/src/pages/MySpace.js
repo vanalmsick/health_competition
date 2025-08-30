@@ -677,38 +677,38 @@ export default function MySpace() {
         pollingInterval: 10800000, // 3 hours
     });
 
-    {/* Old Code */
-    }
     const [searchParams, setSearchParams] = useSearchParams();
     const {search} = useLocation();
     const query = new URLSearchParams(search);
     const searchTermWelcome = query.get('welcome'); // null if not present
     const searchTermJoin = query.get('join'); // null if not present
 
-    const [welcomeMessage, setWelcomeMessage] = useState(searchTermWelcome !== null);
+    const [welcomeStep, setWelcomeStep] = useState(0);
+    const [welcomeMessage, setWelcomeMessage] = useState(false);
     const [linkStrava, setLinkStrava] = useState(false);
     const [joinCompetition, setJoinCompetition] = useState(false);
 
-    function setWelcomeMessageOverlay({state}) {
-        if (state === true) {
-            setWelcomeMessage(true);
-        } else {
-            setWelcomeMessage(false);
-            // launch link strava screen after welcome screen was closed
-            setLinkStrava(true);
-            searchParams.delete('welcome');
-            setSearchParams(searchParams);
-        }
-    }
-
     useEffect(() => {
-        if (welcomeMessage === false && linkStrava === false && searchTermJoin !== null) {
-            // if url contains join competition code join that competition after link strava was closed
-            setJoinCompetition(searchTermJoin);
-            searchParams.delete('join');
-            setSearchParams(searchParams);
+        if (searchTermWelcome !== null && welcomeMessage === false && linkStrava === false && joinCompetition === false) {
+            // Step 1: Join competition
+            if (welcomeStep === 0) {
+                setJoinCompetition(searchTermJoin);
+                setWelcomeStep(1);
+            // Step 2: Welcome message
+            } else if (welcomeStep === 1) {
+                searchParams.delete('join');
+                setSearchParams(searchParams);
+                setWelcomeMessage(true);
+                setWelcomeStep(2);
+            // Step 3: Link Strava
+            } else if (welcomeStep === 2) {
+                setLinkStrava(true);
+                setWelcomeStep(3);
+                searchParams.delete('welcome');
+                setSearchParams(searchParams);
+            }
         }
-    }, [linkStrava]);
+    }, [welcomeStep, welcomeMessage, linkStrava, joinCompetition])
 
 
     if (userError) {
@@ -786,7 +786,7 @@ export default function MySpace() {
                 </div>
             </div>
 
-            {welcomeMessage && <HowToScreen setModal={setWelcomeMessageOverlay}/>}
+            {welcomeMessage && <HowToScreen setModal={setWelcomeMessage}/>}
             {linkStrava && <LinkStravaScreen setModal={setLinkStrava}/>}
             {joinCompetition && <JoinCompetitionForm setModalState={setJoinCompetition} join_code={searchTermJoin}/>}
 

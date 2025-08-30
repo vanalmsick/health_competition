@@ -19,18 +19,47 @@ const baseQuery = fetchBaseQuery({
 
 export function sentryError({result, errorSource, endpointName = undefined, queryArgs = undefined}) {
     Sentry.withScope((scope) => {
+        // Add request query args
         scope.setContext('Request', {
             ...queryArgs,
             endpointName,
         });
+
+        // Add error message
         scope.setContext('Error', {
-            ...result
+            ...result.error,
+            error: result.error?.error,
         });
+
+        // Add API request specific performance data
+        const requestUrl = (process.env.REACT_APP_BACKEND_URL || '') + '/api/' + (queryArgs?.args?.url || '');
+        const resourceTimings = performance.getEntriesByType('resource')
+            .filter(entry => entry.name.includes(requestUrl))
+            .pop();
+        if (resourceTimings) {
+            scope.setContext('Request Timing', {
+                duration: resourceTimings.duration,
+                fetchStart: resourceTimings.fetchStart,
+                responseEnd: resourceTimings.responseEnd,
+                requestStart: resourceTimings.requestStart,
+                responseStart: resourceTimings.responseStart,
+                dnsTime: resourceTimings.domainLookupEnd - resourceTimings.domainLookupStart,
+                tcpTime: resourceTimings.connectEnd - resourceTimings.connectStart,
+            });
+        }
+
+        // Add additional properties
         scope.setTag('network.online', navigator?.onLine);
         scope.setTag('network.connection', navigator?.connection?.effectiveType);
         scope.setTag('error.source', errorSource);
-        scope.setTag('error.type', 'network-or-server');
         scope.setTag('error.status', result.error?.originalStatus || result.error?.status);
+        if ((result.error?.originalStatus || result.error?.status) >= 500) {
+            scope.setTag('error.type', 'server');
+        } else if ((result.error?.originalStatus || result.error?.status) >= 400) {
+            scope.setTag('error.type', 'client');
+        }
+
+        // Raise error
         Sentry.captureException(
             new Error(`API Request failed: ${result.error?.originalStatus || result.error?.status}`)
         );

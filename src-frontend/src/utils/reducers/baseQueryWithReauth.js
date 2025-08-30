@@ -17,13 +17,13 @@ const baseQuery = fetchBaseQuery({
 });
 
 
-export function sentryError(result, errorSource, endpointName = undefined, queryArgs = undefined) {
+export function sentryError({result, errorSource, endpointName = undefined, queryArgs = undefined}) {
     Sentry.withScope((scope) => {
-        scope.setContext('RTK Query Request', {
+        scope.setContext('Request', {
             ...queryArgs,
             endpointName,
         });
-        scope.setContext('RTK Query Error', {
+        scope.setContext('Error', {
             status: result.error?.status,
             data: result.error?.data,
             originalStatus: result.error?.originalStatus,
@@ -31,17 +31,12 @@ export function sentryError(result, errorSource, endpointName = undefined, query
             name: result.error?.name,
             stack: result.error?.stack,
         });
-        scope.setContext('Network Info', {
-            online: navigator?.onLine,
-            userAgent: navigator?.userAgent,
-            url: window?.location?.href,
-        });
+        scope.setTag('network.online', navigator?.onLine);
+        scope.setTag('network.connection', navigator?.connection?.effectiveType);
         scope.setTag('error.source', errorSource);
         scope.setTag('error.type', 'network-or-server');
         scope.setTag('error.status', result.error?.status);
-        Sentry.captureException(
-            result.error instanceof Error ? result.error : new Error(`RTK Query request failed: ${result.error?.status}`)
-        );
+        Sentry.captureException(result.error);
     });
 }
 

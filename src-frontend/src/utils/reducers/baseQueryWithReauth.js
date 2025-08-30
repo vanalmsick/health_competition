@@ -24,19 +24,16 @@ export function sentryError({result, errorSource, endpointName = undefined, quer
             endpointName,
         });
         scope.setContext('Error', {
-            status: result.error?.status,
-            data: result.error?.data,
-            originalStatus: result.error?.originalStatus,
-            message: result.error?.message,
-            name: result.error?.name,
-            stack: result.error?.stack,
+            ...result
         });
         scope.setTag('network.online', navigator?.onLine);
         scope.setTag('network.connection', navigator?.connection?.effectiveType);
         scope.setTag('error.source', errorSource);
         scope.setTag('error.type', 'network-or-server');
-        scope.setTag('error.status', result.error?.status);
-        Sentry.captureException(result.error);
+        scope.setTag('error.status', result.error?.originalStatus || result.error?.status);
+        Sentry.captureException(
+            new Error(`API Request failed: ${result.error?.originalStatus || result.error?.status}`)
+        );
     });
 }
 

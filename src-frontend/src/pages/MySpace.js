@@ -692,7 +692,9 @@ export default function MySpace() {
         if (searchTermWelcome !== null && welcomeMessage === false && linkStrava === false && joinCompetition === false) {
             // Step 1: Join competition
             if (welcomeStep === 0) {
-                setJoinCompetition(searchTermJoin);
+                if (searchTermJoin !== null) {
+                    setJoinCompetition(searchTermJoin);
+                }
                 setWelcomeStep(1);
             // Step 2: Welcome message
             } else if (welcomeStep === 1) {

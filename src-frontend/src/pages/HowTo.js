@@ -3,6 +3,7 @@ import {QRCodeSVG} from 'qrcode.react';
 import {usersApi} from "../utils/reducers/usersSlice";
 import {useDispatch} from "react-redux";
 import {workoutsApi} from "../utils/reducers/workoutsSlice";
+import {statsApi} from "../utils/reducers/statsSlice";
 
 const steps = [
     {title: "Welcome", content: "Let's find out how to best navigate the Workout Challenge!", img: null},
@@ -96,6 +97,7 @@ export function LinkStravaScreen({setModal}) {
     function refreshWorkouts() {
         dispatch(workoutsApi.util.invalidateTags(['Workout']));
         dispatch(usersApi.util.invalidateTags(['User']));
+        dispatch(statsApi.util.invalidateTags(['Stats']));
     }
 
     useEffect(() => {

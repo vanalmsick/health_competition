@@ -70,8 +70,8 @@ export function sentryError({result, errorSource, endpointName = undefined, quer
 export const baseQueryWithReauth = async (args, api, extraOptions) => {
     let result = await baseQuery(args, api, extraOptions);
 
-    // report to Sentry if not 401 (login access token needs refreshing) and 429 (too many strava sync requests) and 404 (not found after entry deletion)
-    if (result.error && result.error.status !== 401 && result.error.status !== 429 && result.error.status !== 404) {
+    // report to Sentry if not 401 (login access token needs refreshing) and 403 (forbidden - strava access rights insufficient) and 429 (too many strava sync requests) and 404 (not found after entry deletion)
+    if (result.error && result.error.status !== 401 && result.error.status !== 403 && result.error.status !== 429 && result.error.status !== 404) {
         sentryError({
             result: result,
             errorSource: 'rtk-query',

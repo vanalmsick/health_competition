@@ -143,8 +143,8 @@ class LinkStravaView(APIView):
             except TimeoutError:
                 print(f"Strava sync task is still running ({running_task.id}). Don't let the user wait so long.")
         except requests.exceptions.HTTPError as err:
-            if err.response.status_code == 401:
-                return Response({'message': 'Access to activities denied by Strava. Not sufficient permissions to download activities.', 'original': err.response.json()}, status=status.HTTP_403_FORBIDDEN)
+            if '401 Client Error: Unauthorized' in str(err):
+                return Response({'message': 'Access to activities denied by Strava. Not sufficient permissions to download activities.'}, status=status.HTTP_403_FORBIDDEN)
             else:
                 raise Response(err.response.json(), status=err.response.status_code)
 

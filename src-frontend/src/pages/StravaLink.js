@@ -119,7 +119,7 @@ export function ReturnStravaLink() {
     useEffect(() => {
         if (linkStravaError) {
             console.error('Strava linkage error (2):', linkStravaError);
-            setErrorMsg(`Strava linkage error (${linkStravaError?.status} / ${linkStravaError?.message}). Please try again.`);
+            setErrorMsg(`Strava linkage error - ${linkStravaError?.status} / ${linkStravaError?.data?.message}. Please try again.`);
         }
     }, [linkStravaError])
 

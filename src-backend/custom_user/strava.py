@@ -163,7 +163,7 @@ def sync_strava(self, user__id, start_datetime=None):
 
                 # estimate intensity
                 max_heart_rate = 180
-                kcal_per_ten_minute = kcal / (activity.get('moving_time', 60 * 30) / (60 * 10))
+                kcal_per_ten_minute = kcal / (max(activity.get('moving_time', 60 * 30), 60) / (60 * 10))
                 if avg_heart_rate > max_heart_rate * 0.85 or kcal_per_ten_minute > 120 or avg_watt > 300:
                     props['intensity_category'] = 4
                 elif avg_heart_rate > max_heart_rate * 0.70 or kcal_per_ten_minute > 90 or avg_watt > 275:

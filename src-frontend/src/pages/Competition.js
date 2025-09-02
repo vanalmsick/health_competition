@@ -643,9 +643,9 @@ function ActivityGoalsBox({user, stats, feed, competitionId, userId, isOwner}) {
                                             <span className="font-semibold">Equalizing Factor: </span>
                                             {
                                                 (goal.metric === 'km') ? (
-                                                    <span className="text-xs">{user.scaling_distance * 100}% x {Math.round(goal.goal / user.scaling_distance).toLocaleString()} {goal.metric}</span>
+                                                    <span className="text-xs">{Math.round(user.scaling_distance * 100 * 10) / 10}% x {Math.round(goal.goal / user.scaling_distance).toLocaleString()} {goal.metric}</span>
                                                 ) : (
-                                                    <span className="text-xs">{user.scaling_kcal * 100}% x {Math.round(goal.goal / user.scaling_kcal).toLocaleString()} {goal.metric}</span>
+                                                    <span className="text-xs">{Math.round(user.scaling_kcal * 100 * 100) / 100}% x {Math.round(goal.goal / user.scaling_kcal).toLocaleString()} {goal.metric}</span>
                                                 )
                                             }
                                         </>

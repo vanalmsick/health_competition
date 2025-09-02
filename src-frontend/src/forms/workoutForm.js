@@ -142,14 +142,37 @@ const fields = {
 }
 
 
-export default function WorkoutForm({id, setModalState}) {
+const step_field = {
+
+    "steps": {
+        "type": "number",
+        "required": false,
+        "read_only": false,
+        "highlight": true,
+        "label": "Or enter the number of steps...",
+        "width": "max-sm:w-full w-2/3",
+        "placeholder": "Enter steps to estimate"
+    },
+
+}
+
+
+function formatTime(totalSeconds) {
+    const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+    const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+    const seconds = String(Math.round(totalSeconds % 60)).padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+}
+
+
+export default function WorkoutForm({id, setModalState, scaling_distance}) {
     const dispatch = useDispatch();
 
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayString = yesterday.toISOString();
     const defaultValues = {
-        "sport_type": "Run",
+        "sport_type": "Walk",
         "start_datetime": yesterdayString.substring(0, 10) + "T20:00",
         "duration": "00:30:10",
         "intensity_category": 1,
@@ -266,23 +289,46 @@ export default function WorkoutForm({id, setModalState}) {
         dispatch(feedApi.util.invalidateTags(['Feed']));
     }
 
+    const [activeFields, setActiveFields] = useState(fields);
+
+    // if workout type is walk, add additional field "steps" for people to estimate time and distance
+    useEffect(() => {
+        if (values.sport_type === "Walk") {
+            setActiveFields({...fields, ...step_field});
+        } else {
+            setActiveFields(fields);
+        }
+    }, [values.sport_type])
+
+    // if workout type is walk, calculate distance and duration based on steps
+    useEffect(() => {
+        const distance = Math.round(0.82 * scaling_distance * values.steps / 1000 * 100) / 100;
+        const duration_seconds = distance * (1 / scaling_distance) / 5 * 60 * 60;
+        const duration_text = formatTime(duration_seconds);
+
+        if (values.sport_type === "Walk" && values.steps !== undefined) {
+            setValues({
+                ...values,
+                "distance": (distance === undefined || distance === 0 || distance === "") ? "" : distance,
+                "duration": (distance === undefined || distance === 0 || distance === "") ? "00:30:10" : duration_text,
+            });
+        }
+    }, [values.steps])
+
     return (
-        <Modal title="Workout" landscape={true} setShowModal={setModalState}
-               isLoading={iniLoading || updateIsLoading || createIsLoading || deleteIsLoading}>
-            <SingleForm fields={fields} values={values} setValues={setValues} errors={fieldErrors}/>
+        <Modal title="Workout" landscape={true} setShowModal={setModalState} isLoading={iniLoading || updateIsLoading || createIsLoading || deleteIsLoading}>
+            <SingleForm fields={activeFields} values={values} setValues={setValues} errors={fieldErrors}/>
             <div className="text-center text-red-500 text-xs italic">{formError}</div>
-            {(id !== true && (values?.strava_id === null || values?.strava_id === '')) ? <div className="text-center text-gray-700 dark:text-gray-300 text-xs italic"><b>Note:</b> Empty the kcal field to re-calculate after changes to the workout type, duration, or intensity.</div> : null}
+            {(id !== true && (values?.strava_id === null || values?.strava_id === '')) ? <div className="text-center text-orange-500 text-xs italic"><b>Note:</b> Empty the kcal field to re-calculate after changes to the workout type, duration, or intensity.</div> : null}
             <div className="relative flex justify-between items-center">
                 {
                     (id !== true) ? (
                         <DeleteButton onClick={handleDiscard} label="Delete" highlighted={false} larger={true}/>
                     ) : (
-                        <AddButton additionalClasses=" hover:text-green-800 " onClick={handleDiscard} label="Save and add another" highlighted={false}
-                                   larger={true}/>
+                        <AddButton additionalClasses=" hover:text-green-800 " onClick={handleDiscard} label="Save and add another" highlighted={false} larger={true}/>
                     )
                 }
-                <SaveButton onClick={handleSubmit} label={(id !== true) ? "Update" : "Save"} highlighted={true}
-                            larger={true}/>
+                <SaveButton onClick={handleSubmit} label={(id !== true) ? "Update" : "Save"} highlighted={true} larger={true}/>
             </div>
         </Modal>
     )

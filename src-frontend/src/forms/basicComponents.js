@@ -17,8 +17,8 @@ import {
     UserRoundPen,
 } from "lucide-react";
 import {BeatLoader} from "react-spinners";
-import TimeField from 'react-simple-timefield';
 import { isMobile } from "react-device-detect";
+import TimeField from "./customTimefieldInput";
 
 
 export function Modal({setShowModal, title = null, landscape = false, isLoading = false, children}) {

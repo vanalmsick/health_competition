@@ -197,7 +197,7 @@ function WorkoutsBox({workouts, user, setLinkStrava}) {
             </table>
 
             {(showEditWorkoutModal) && (
-                <WorkoutForm setModalState={setShowEditWorkoutModal} id={showEditWorkoutModal}/>
+                <WorkoutForm setModalState={setShowEditWorkoutModal} id={showEditWorkoutModal} scaling_distance={parseFloat(user?.scaling_distance || "1.0")}/>
             )}
 
         </BoxSection>

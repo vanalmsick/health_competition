@@ -1,8 +1,7 @@
-import time
+from datetime import timedelta
 from decimal import Decimal
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+from django.db.models import Sum
 
 from custom_user.models import CustomUser
 from competition.scorer import trigger_workout_change, trigger_workout_delete
@@ -22,6 +21,7 @@ SPORT_TYPE_GROUPS = [
 ]
 
 SPORT_TYPES = [
+    ('Steps', 'Total Daily Steps'),
     ('Badminton', 'Badminton'),
     ('Ride', 'Biking/Cycling'),
     ('EBikeRide', 'Biking/Cycling (E-Bike)'),
@@ -70,8 +70,8 @@ SPORT_TYPES = [
     ('WeightTraining', 'Weight Training'),
     ('Wheelchair', 'Wheelchair'),
     ('Windsurf', 'Windsurf'),
-    ('Workout', 'Workout / Other'),
     ('Yoga', 'Yoga'),
+    ('Workout', 'Other Workout'),
 ]
 
 # MET (Metabolic Equivalent) Source https://pacompendium.com/adult-compendium/
@@ -147,6 +147,7 @@ class Workout(models.Model):
     intensity_category = models.IntegerField(null=True, choices=INTENSITY_CATEGORIES)
     kcal = models.DecimalField(null=True, max_digits=7, decimal_places=2)
     distance = models.DecimalField(null=True, max_digits=7, decimal_places=2)
+    steps = models.IntegerField(null=True)
 
     strava_id = models.BigIntegerField(unique=True, null=True)
     strava_intensity_avg_watts = models.DecimalField(null=True, max_digits=7, decimal_places=2)
@@ -181,9 +182,23 @@ class Workout(models.Model):
     def save(self, *args, **kwargs):
         """ trigger recalculation of points_capped if workout changes """
         is_create = self.pk is None
+        scaling_kcal = float((1 if kwargs.get('user', None) is None else kwargs.get('user').scaling_kcal) if self.user is None else self.user.scaling_kcal)
+        scaling_distance = float((1 if kwargs.get('user', None) is None else kwargs.get('user').scaling_distance) if self.user is None else self.user.scaling_distance)
+        if self.sport_type == "Steps":
+            self.intensity_category = 1
+            # Subtract the steps from walks and runs from the daily total steps to not double count
+            recorded_walks = Workout.objects.filter(user=self.user, start_datetime__date=self.start_datetime, sport_type='Walk').aggregate(duration=Sum('duration'))['duration']
+            recorded_runs = Workout.objects.filter(user=self.user, start_datetime__date=self.start_datetime, sport_type='Run').aggregate(duration=Sum('duration'))['duration']
+            recorded_steps_walks = 0 if recorded_walks is None else 6_000 / (60 * 60) * recorded_walks.seconds
+            recorded_steps_runs = 0 if recorded_runs is None else 10_000 / (60 * 60) * recorded_runs.seconds
+            self.distance = 0.82 * scaling_distance * max(self.steps - recorded_steps_walks - recorded_steps_runs, 0) / 1000
+            base_duration_seconds = self.distance * (1 / scaling_distance) / 5 * 60 * 60
+            self.duration = timedelta(seconds=base_duration_seconds)
+            self.kcal = SPORT_MET["Walk"][self.intensity_category] * 75 * (base_duration_seconds / (60 * 60)) * scaling_kcal  # default human 75kg scaled up/down by scaler
+        # default intensity 2
         if self.intensity_category is None or self.intensity_category == "":
             self.intensity_category = 2
-        scaling_kcal = float((1 if kwargs.get('user', None) is None else kwargs.get('user').scaling_kcal) if self.user is None else self.user.scaling_kcal)
+        # estimate kcal using database MET values
         if self.kcal is None or self.kcal == "":
             self.kcal = SPORT_MET.get(self.sport_type, SPORT_MET['Workout'])[self.intensity_category] * 75 * (self.duration.seconds / (60 * 60)) * scaling_kcal # default human 75kg scaled up/down by scaler
         super().save(*args, **kwargs)
@@ -194,10 +209,32 @@ class Workout(models.Model):
             changes=changed
         )
         self._original = self._dict()  # reset
+        # if workout is run or walk and steps were recorded on the same day, update steps to avoid double counting
+        if self.sport_type in ['Run', 'Walk']:
+            if 'start_datetime' in changed:
+                date_lst = list(changed['start_datetime'])
+            else:
+                date_lst = [self.start_datetime]
+            recorded_steps = Workout.objects.filter(user=self.user, start_datetime__date__in=date_lst, sport_type='Steps')
+            if len(recorded_steps) > 0:
+                for steps in recorded_steps:
+                    setattr(steps, 'distance', None)
+                    setattr(steps, 'kcal', None)
+                    steps.save()
 
     def delete(self, *args, **kwargs):
         """ trigger recalculation of points_capped if workout deleted """
+        deleted_run_or_walk = self.sport_type in ['Run', 'Walk']
         trigger_workout_delete(
             instance=self
         )
         super().delete(*args, **kwargs)
+        # if deleted workout was run or walk, update steps to give back counting
+        if deleted_run_or_walk:
+            recorded_steps = Workout.objects.filter(user=self.user, start_datetime__date=self.start_datetime, sport_type='Steps')
+            if len(recorded_steps) > 0:
+                for steps in recorded_steps:
+                    setattr(steps, 'distance', None)
+                    setattr(steps, 'kcal', None)
+                    setattr(steps, 'duration', timedelta(seconds=0))
+                    steps.save()

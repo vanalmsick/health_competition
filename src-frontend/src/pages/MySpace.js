@@ -171,18 +171,15 @@ function WorkoutsBox({workouts, user, setLinkStrava}) {
                             <td className="py-2 px-4 text-sm md:text-base">
                                 {/* Mobile view (stacked) */}
                                 <div className="md:hidden">
-                                    <div className="font-base">{workout.duration.substring(0, 5)} <span className="font-semibold">{workoutTypes[workout.sport_type].label_short}</span></div>
-                                    <div className="text-sm text-gray-600 dark:text-gray-400">{Math.round(workout.kcal).toLocaleString()}<span className="text-sm"> kcal < /span></div>
+                                    <div className="font-base">{(workout.sport_type === "Steps") ? workout.steps?.toLocaleString() : workout.duration.substring(0, 5)} <span className="font-semibold">{workoutTypes[workout.sport_type].label_short}</span></div>
+                                    {(workout.sport_type !== "Steps") && <div className="text-sm text-gray-600 dark:text-gray-400">{Math.round(workout.kcal).toLocaleString()}<span className="text-sm"> kcal < /span></div>}
                                 </div>
                                 {/* Desktop view (normal) */}
-                                <div className="hidden md:block">{workout.duration.substring(0, 5)} <span className="font-semibold text-base">{workoutTypes[workout.sport_type].label_short}</span> {(workout.distance) ? (<span className="hidden sm:inline">({workout.distance}km)</span>) : (null)}</div>
+                                <div className="hidden md:block">{(workout.sport_type === "Steps") ? workout.steps?.toLocaleString() : workout.duration.substring(0, 5)} <span className="font-semibold text-base">{workoutTypes[workout.sport_type].label_short}</span> {(workout.distance && workout.sport_type !== "Steps") ? (<span className="hidden sm:inline">({workout.distance}km)</span>) : (null)}</div>
                             </td>
                             <td className="py-2 px-4 hidden md:table-cell">
                                 {(workout.kcal) ? (
-                                    <>
-                                        {Math.round(workout.kcal).toLocaleString()}
-                                        <span className="text-sm"> kcal < /span>
-                                    </>
+                                    (workout.sport_type !== "Steps") && (<>{Math.round(workout.kcal).toLocaleString()} <span className="text-sm"> kcal < /span></>)
                                 ) : null}
                             </td>
                             <td className="py-2 px-4">
@@ -468,12 +465,14 @@ function CalendarStats({workouts, last5Weeks}) {
     const weeks = (isMonday ? 5 : 4);
 
     useEffect(() => {
+        const filteredWorkouts = _.filter(workouts || [], item => item.sport_type !== 'Steps');
+
         // chunked table data
         const hasWorkout = (list, value) => list.some(obj => obj.start_datetime_fmt.days_ago === -value) ? 1 : 0;
-        const combinedData = last5Weeks.map(week => ({...week, hasWorkout: hasWorkout(workouts, week.offset)}));
+        const combinedData = last5Weeks.map(week => ({...week, hasWorkout: hasWorkout(filteredWorkouts, week.offset)}));
         const chunkedData = splitIntoChunks(combinedData);
         setTableDateData(chunkedData);
-        const workoutsPerWeek = _.mapValues(_.groupBy(workouts || [], 'start_datetime_fmt.weeksAgo'), items => _.sumBy(items, 'duration_seconds'));
+        const workoutsPerWeek = _.mapValues(_.groupBy(filteredWorkouts || [], 'start_datetime_fmt.weeksAgo'), items => _.sumBy(items, 'duration_seconds'));
         setTableStreakData(workoutsPerWeek);
 
         // streak number
@@ -580,7 +579,7 @@ function StatsBox({workouts, user}) {
 
     useEffect(() => {
         // 30 day stats
-        const filtered30Days = _.filter(workouts || [], item => item.start_datetime_fmt.days_ago < 30);
+        const filtered30Days = _.filter(workouts || [], item => item.start_datetime_fmt.days_ago < 30 && item.sport_type !== 'Steps');
         setThirtyDayStats({
             activeDays: _.uniqBy(filtered30Days, 'start_datetime_fmt.date_iso').length,
             workouts: filtered30Days.length,
@@ -598,7 +597,7 @@ function StatsBox({workouts, user}) {
         })
 
         // 7 day goals
-        const filtered7Days = _.filter(workouts || [], item => item.start_datetime_fmt.days_ago < 7);
+        const filtered7Days = _.filter(workouts || [], item => item.start_datetime_fmt.days_ago < 7 && item.sport_type !== 'Steps');
         let newGoals = [];
         if (user.goal_active_days !== null) {
             newGoals.push({

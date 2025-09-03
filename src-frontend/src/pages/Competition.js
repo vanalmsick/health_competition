@@ -446,12 +446,12 @@ function FeedBox({feed, refreshCompetition, competitionIsRefreshing}) {
                                     {/* Mobile view (stacked) */}
                                     <div className="md:hidden">
                                         <div className="font-medium">{entry.workout__user__username}</div>
-                                        <div className="text-sm text-gray-600 dark:text-gray-400">{Math.round(parseFloat(entry.workout__duration) / 60, 0).toLocaleString()}min<span className="font-semibold"> {workoutTypes[entry.workout__sport_type].label_short}</span></div>
+                                        <div className="text-sm text-gray-600 dark:text-gray-400">{(entry.workout__sport_type === "Steps") ? entry.workout__steps?.toLocaleString() : Math.round(parseFloat(entry.workout__duration) / 60, 0).toLocaleString() + "min"}<span className="font-semibold"> {workoutTypes[entry.workout__sport_type].label_short}</span></div>
                                     </div>
                                     {/* Desktop view (normal) */}
                                     <div className="hidden md:block">{entry.workout__user__username}</div>
                                 </td>
-                                <td className="py-2 px-4 hidden md:table-cell">{Math.round(parseFloat(entry.workout__duration) / 60, 0).toLocaleString()}min<span
+                                <td className="py-2 px-4 hidden md:table-cell">{(entry.workout__sport_type === "Steps") ? entry.workout__steps?.toLocaleString() : Math.round(parseFloat(entry.workout__duration) / 60, 0).toLocaleString() + "min"}<span
                                     className="font-semibold"> {workoutTypes[entry.workout__sport_type].label_short}</span>
                                 </td>
                                 <td className="py-2 px-0 sm:px-4">

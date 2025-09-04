@@ -45,8 +45,7 @@ def send_all_log_workouts_email():
     CustomUser = apps.get_model('custom_user', 'CustomUser')
     user_lst = CustomUser.objects.filter(
         Q(my_competitions__start_date__lte=datetime.date.today()) &
-        Q(my_competitions__end_date__gte=datetime.date.today()) &
-        (Q(strava_refresh_token__isnull=True) | Q(strava_refresh_token=''))
+        Q(my_competitions__end_date__gte=datetime.date.today())
     ).order_by('pk')
     task_log = []
     if len(user_lst) > 0:
@@ -73,6 +72,7 @@ def log_workouts_email(user_pk):
         {
             'first_name': user_obj.first_name,
             'last_workouts': workout_obj_lst,
+            'link_strava_note': user_obj.strava_refresh_token is None or user_obj.strava_refresh_token == '',
             'MAIN_HOST': settings.MAIN_HOST,
             'EMAIL_REPLY_TO': settings.EMAIL_REPLY_TO[0] if settings.EMAIL_REPLY_TO is not None else settings.EMAIL_FROM,
         }

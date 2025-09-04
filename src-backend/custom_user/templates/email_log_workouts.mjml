@@ -20,7 +20,11 @@
         <mj-text padding-bottom="0px">
           <p>Hi {{ first_name }},</p>
           <p>New week, new gains!</p>
-          <p>But first time to <b>log last week's workouts</b> before we send out the leaderboard this afternoon!</p>
+          <mj-raw> {% if link_strava_note %} </mj-raw>
+            <p>But first, time to <b>log last week's workouts & steps</b> before we send out the leaderboard this afternoon!</p>
+          <mj-raw> {% else %} </mj-raw>
+            <p>But first, time to <b>log last week's steps</b> as Strava does not automatically import steps. Your workouts should have been imported already. We will send out the leaderboard this afternoon!</p>
+          <mj-raw> {% endif %} </mj-raw>
         </mj-text>
         <mj-divider border-color="#E1E8ED" border-width="2px"></mj-divider>
         <mj-text padding-bottom="0px">
@@ -40,15 +44,20 @@
           <mj-raw> {% for item in last_workouts %} </mj-raw>
           <tr style="border-top:1px solid #ecedee;border-bottom:1px solid #ecedee;text-align:left;padding:15px 0;">
             <td style="padding: 0 15px 0 0;">{{ item.start_datetime|date:"D, M j H:i" }}</td>
-            <td style="padding: 0 15px;">{{ item.duration }} <b>{{ item.sport_type }}</b></td>
+            <td style="padding: 0 15px;">{% if item.sport_type == "Steps" %}{{ item.steps }}{% else %}{{ item.duration }}{% endif %} <b>{{ item.sport_type }}</b></td>
           </tr>
           <mj-raw> {% endfor %} </mj-raw>
         </mj-table>
-        <mj-button align="center" background-color="#075985" color="#fff" border-radius="24px" href="{{ MAIN_HOST }}/dashboard" font-family="Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif" padding-bottom="17px" padding-top="7px">Log New Workouts</mj-button>
+        <mj-raw> {% if link_strava_note %} </mj-raw>
+          <mj-button align="center" background-color="#075985" color="#fff" border-radius="24px" href="{{ MAIN_HOST }}/dashboard" font-family="Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif" padding-bottom="17px" padding-top="7px">Log Workouts & Steps</mj-button>
+        <mj-raw> {% else %} </mj-raw>
+          <mj-button align="center" background-color="#075985" color="#fff" border-radius="24px" href="{{ MAIN_HOST }}/dashboard" font-family="Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif" padding-bottom="17px" padding-top="7px">Log Steps</mj-button>
+        <mj-raw> {% endif %} </mj-raw>
       </mj-column> 
     </mj-section>
     
     <!-- Link Strava -->
+    <mj-raw> {% if link_strava_note %} </mj-raw>
     <mj-section background-color="#075985" vertical-align="middle">
       <mj-column width="100%" vertical-align="middle">
         <mj-text align="center" color="#ffffff" font-size="18px" padding-bottom="10px" padding-top="20px">Skip the hassle of manual logging – connect Strava for automatic workout imports!</mj-text>
@@ -63,6 +72,7 @@
         <mj-button align="center" background-color="#ffffff" color="#075985" border-radius="24px" href="{{ MAIN_HOST }}/strava/link" font-family="Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif" padding-bottom="5px" padding-top="0px">Link Strava</mj-button>
       </mj-column>
     </mj-section>
+    <mj-raw> {% endif %} </mj-raw>
     
     <!-- Final remarks -->
     <mj-section padding-top="0px" padding-bottom="0px" background-color="white">

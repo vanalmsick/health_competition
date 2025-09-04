@@ -46,8 +46,9 @@ function WelcomeBox({user, workouts, setLinkStrava}) {
 
     useEffect(() => {
         if (workouts !== undefined) {
-            setCountTotal(workouts.length);
-            const grouped = _.mapValues(_.groupBy(_.values(workouts), 'sport_type'), group => group.length);
+            const filteredWorkouts = _.filter(workouts || [], item => item.sport_type !== 'Steps');
+            setCountTotal(filteredWorkouts.length);
+            const grouped = _.mapValues(_.groupBy(_.values(filteredWorkouts), 'sport_type'), group => group.length);
             const sorted = _.fromPairs(_.orderBy(_.toPairs(grouped), ([, value]) => value, 'desc'));
             const limited = Object.fromEntries(Object.entries(sorted).slice(0, 4));
             setCountGroups(limited);

@@ -1,4 +1,4 @@
-from datetime import timedelta
+import datetime
 from decimal import Decimal
 from django.db import models
 from django.db.models import Sum
@@ -193,7 +193,7 @@ class Workout(models.Model):
             recorded_steps_runs = 0 if recorded_runs is None else 10_000 / (60 * 60) * recorded_runs.seconds
             self.distance = 0.82 * scaling_distance * max(self.steps - recorded_steps_walks - recorded_steps_runs, 0) / 1000
             base_duration_seconds = self.distance * (1 / scaling_distance) / 5 * 60 * 60
-            self.duration = timedelta(seconds=base_duration_seconds)
+            self.duration = datetime.timedelta(seconds=base_duration_seconds)
             self.kcal = SPORT_MET["Walk"][self.intensity_category] * 75 * (base_duration_seconds / (60 * 60)) * scaling_kcal  # default human 75kg scaled up/down by scaler
         # default intensity 2
         if self.intensity_category is None or self.intensity_category == "":
@@ -212,9 +212,11 @@ class Workout(models.Model):
         # if workout is run or walk and steps were recorded on the same day, update steps to avoid double counting
         if self.sport_type in ['Run', 'Walk']:
             if 'start_datetime' in changed:
-                date_lst = list(changed['start_datetime'])
+                date_lst = datetime.datetime.fromisoformat(changed['start_datetime']) if type(changed['start_datetime']) is str else changed['start_datetime']
+                date_lst = list(date_lst)
             else:
-                date_lst = [self.start_datetime]
+                date_lst = datetime.datetime.fromisoformat(self.start_datetime) if type(self.start_datetime) is str else self.start_datetime
+                date_lst = [date_lst]
             recorded_steps = Workout.objects.filter(user=self.user, start_datetime__date__in=date_lst, sport_type='Steps')
             if len(recorded_steps) > 0:
                 for steps in recorded_steps:

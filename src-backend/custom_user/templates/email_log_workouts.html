@@ -150,7 +150,11 @@
                                 <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.2;text-align:left;color:#000000;">
                                   <p>Hi {{ first_name }},</p>
                                   <p>New week, new gains!</p>
-                                  <p>But first time to <b>log last week's workouts</b> before we send out the leaderboard this afternoon!</p>
+                                  <mj-raw> {% if link_strava_note %} </mj-raw>
+                                  <p>But first, time to <b>log last week's workouts & steps</b> before we send out the leaderboard this afternoon!</p>
+                                  <mj-raw> {% else %} </mj-raw>
+                                  <p>But first, time to <b>log last week's steps</b> as Strava does not automatically import steps. Your workouts should have been imported already. We will send out the leaderboard this afternoon!</p>
+                                  <mj-raw> {% endif %} </mj-raw>
                                 </div>
                               </td>
                             </tr>
@@ -204,25 +208,36 @@
                           <mj-raw> {% for item in last_workouts %} </mj-raw>
                           <tr style="border-top:1px solid #ecedee;border-bottom:1px solid #ecedee;text-align:left;padding:15px 0;">
                             <td style="padding: 0 15px 0 0;">{{ item.start_datetime|date:"D, M j H:i" }}</td>
-                            <td style="padding: 0 15px;">{{ item.duration }} <b>{{ item.sport_type }}</b></td>
+                            <td style="padding: 0 15px;">{% if item.sport_type == "Steps" %}{{ item.steps }}{% else %}{{ item.duration }}{% endif %} <b>{{ item.sport_type }}</b></td>
                           </tr>
                           <mj-raw> {% endfor %} </mj-raw>
                         </table>
                       </td>
-                    </tr>
-                    <tr>
+                    </tr> {% if link_strava_note %} <tr>
                       <td align="center" vertical-align="middle" style="font-size:0px;padding:10px 25px;padding-top:7px;padding-bottom:17px;word-break:break-word;">
                         <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:separate;line-height:100%;">
                           <tbody>
                             <tr>
                               <td align="center" bgcolor="#075985" role="presentation" style="border:none;border-radius:24px;cursor:auto;mso-padding-alt:10px 25px;background:#075985;" valign="middle">
-                                <a href="{{ MAIN_HOST }}/dashboard" style="display:inline-block;background:#075985;color:#ffffff;font-family:Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif;font-size:13px;font-weight:normal;line-height:120%;margin:0;text-decoration:none;text-transform:none;padding:10px 25px;mso-padding-alt:0px;border-radius:24px;" target="_blank"> Log New Workouts </a>
+                                <a href="{{ MAIN_HOST }}/dashboard" style="display:inline-block;background:#075985;color:#ffffff;font-family:Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif;font-size:13px;font-weight:normal;line-height:120%;margin:0;text-decoration:none;text-transform:none;padding:10px 25px;mso-padding-alt:0px;border-radius:24px;" target="_blank"> Log Workouts & Steps </a>
                               </td>
                             </tr>
                           </tbody>
                         </table>
                       </td>
-                    </tr>
+                    </tr> {% else %} <tr>
+                      <td align="center" vertical-align="middle" style="font-size:0px;padding:10px 25px;padding-top:7px;padding-bottom:17px;word-break:break-word;">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:separate;line-height:100%;">
+                          <tbody>
+                            <tr>
+                              <td align="center" bgcolor="#075985" role="presentation" style="border:none;border-radius:24px;cursor:auto;mso-padding-alt:10px 25px;background:#075985;" valign="middle">
+                                <a href="{{ MAIN_HOST }}/dashboard" style="display:inline-block;background:#075985;color:#ffffff;font-family:Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif;font-size:13px;font-weight:normal;line-height:120%;margin:0;text-decoration:none;text-transform:none;padding:10px 25px;mso-padding-alt:0px;border-radius:24px;" target="_blank"> Log Steps </a>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr> {% endif %}
                   </tbody>
                 </table>
               </div>
@@ -233,7 +248,7 @@
       </table>
     </div>
     <!--[if mso | IE]></td></tr></table><![endif]-->
-    <!-- Link Strava -->
+    <!-- Link Strava -->{% if link_strava_note %}
     <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" class="" role="presentation" style="width:600px;" width="600" bgcolor="#075985" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
     <div style="background:#075985;background-color:#075985;margin:0px auto;max-width:600px;">
       <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#075985;background-color:#075985;width:100%;">
@@ -290,7 +305,7 @@
         </tbody>
       </table>
     </div>
-    <!--[if mso | IE]></td></tr></table><![endif]-->
+    <!--[if mso | IE]></td></tr></table><![endif]--> {% endif %}
     <!-- Final remarks -->
     <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" class="" role="presentation" style="width:600px;" width="600" bgcolor="white" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
     <div style="background:white;background-color:white;margin:0px auto;max-width:600px;">

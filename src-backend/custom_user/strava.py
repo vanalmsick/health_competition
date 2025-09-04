@@ -34,7 +34,7 @@ def _seconds_until_next_interval():
 
 
 @app.task(bind=True, time_limit=60 * 60 * 3, max_retries=10)  # 3 hour time limit
-def daily_strava_sync(self):
+def daily_strava_sync(self, refresh_all=False):
     if is_task_already_executing('daily_strava_sync'):
         return 'Task already executing. Skipping.'
 
@@ -42,10 +42,13 @@ def daily_strava_sync(self):
     user_lst = CustomUser.objects.filter(
         strava_refresh_token__isnull=False,
         is_active=True
-    ).filter(
-        Q(strava_last_synced_at__lt=timezone.now() - datetime.timedelta(hours=6)) |
-        Q(strava_last_synced_at__isnull=True)
-    ).order_by('strava_last_synced_at', 'pk')
+    )
+    if refresh_all is False:
+        user_lst = user_lst.filter(
+            Q(strava_last_synced_at__lt=timezone.now() - datetime.timedelta(hours=6)) |
+            Q(strava_last_synced_at__isnull=True)
+        )
+    user_lst = user_lst.order_by('strava_last_synced_at', 'pk')
 
     user_lst_names = [{'pk': i.pk, 'username': i.username, 'email': i.email} for i in user_lst]
     print(f'Syncing Strava for {len(user_lst)} users: {user_lst_names}')
@@ -129,7 +132,7 @@ def sync_strava(self, user__id, start_datetime=None):
                 'user': user,
                 'strava_id': activity_id,
                 'sport_type': activity.get('sport_type'),
-                'start_datetime': activity.get('start_date'),
+                'start_datetime': datetime.datetime.fromisoformat(activity.get('start_date')),
                 'duration': datetime.timedelta(seconds=activity.get('moving_time')),
                 'distance': None if activity.get('distance') == 0 else activity.get('distance') / 1_000,
             }

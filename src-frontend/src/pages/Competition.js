@@ -55,7 +55,7 @@ function CompetitionHead({competition, feed, isOwner}) {
     const [countGroups, setCountGroups] = useState({});
 
     useEffect(() => {
-        const filteredFeed = _.filter(_.values(feed), item => item.workout !== null && item.sport_type !== 'Steps');
+        const filteredFeed = _.filter(_.values(feed), item => item.workout !== null && item.workout__sport_type !== 'Steps');
         const totalCount = filteredFeed.length;
         setCountTotal(totalCount);
         const grouped = _.mapValues(_.groupBy(_.values(filteredFeed), 'workout__sport_type'), group => group.length);

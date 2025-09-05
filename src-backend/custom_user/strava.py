@@ -61,7 +61,7 @@ def daily_strava_sync(self, refresh_all=False):
             print(f'Strava sync rate limit exceeded - sleeping for {sleep_time // 60 } mins')
             raise self.retry(exc=exc, countdown=sleep_time)  # retry in next Strava 15min api period
         except Exception as exc:
-            print(f'Strava sync failed for user {user.id} - {exc}')
+            print(f'Strava sync failed for user {user.email} - {exc}')
 
     print('Finished syncing Strava.')
     return user_lst_names
@@ -112,7 +112,6 @@ def sync_strava(self, user__id, start_datetime=None):
         if strava_api_monitor.ok_workout_requests() is False:
             raise RateLimitExceeded("No Strava Workout API requests allowed anymore to keep enough balance for user linkage")
 
-        try:
         response = requests.get(
             url='https://www.strava.com/api/v3/athlete/activities',
             headers={

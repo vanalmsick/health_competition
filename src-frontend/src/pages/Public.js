@@ -158,7 +158,7 @@ const apiCreateAccount = async (email, first_name, last_name, gender, password) 
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                email: email,
+                email: email.toLowerCase(),
                 first_name: first_name,
                 last_name: last_name,
                 gender: gender,
@@ -202,7 +202,7 @@ const apiLogin = async (email, password) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                email: email,
+                email: email.toLowerCase(),
                 password: password
             }),
         });

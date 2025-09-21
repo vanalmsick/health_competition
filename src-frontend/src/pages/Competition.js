@@ -294,7 +294,7 @@ function AwardsBox({competition}) {
     )
 }
 
-function TeamLeaderboardBox({stats, competition, user, isOwner}) {
+function TeamLeaderboardBox({stats, competition, user, teamId, isOwner}) {
     const dispatch = useDispatch();
 
     const [showChangeTeamModal, setShowChangeTeamModal] = useState(false);
@@ -328,7 +328,7 @@ function TeamLeaderboardBox({stats, competition, user, isOwner}) {
                     ) : (
                         stats.leaderboard.team.map((team, index) => (
                             <tr key={"leader_team" + index}
-                                className="hover:bg-gray-100 dark:hover:bg-gray-900 border-b">
+                                className={((parseInt(teamId) === team.workout__user__my_teams__id) ? "bg-sky-50 dark:bg-sky-950 " : "") + "hover:bg-gray-100 dark:hover:bg-gray-900 border-b"}>
                                 <td className="py-2 px-2">
                                     <span className="font-semibold">#{team.rank}</span>
                                 </td>
@@ -368,7 +368,7 @@ function TeamLeaderboardBox({stats, competition, user, isOwner}) {
     )
 }
 
-function IndividualLeaderboardBox({stats}) {
+function IndividualLeaderboardBox({stats, userId}) {
 
     return (
         <BoxSection>
@@ -385,7 +385,7 @@ function IndividualLeaderboardBox({stats}) {
                     </tr>
                 ) : (
                 stats.leaderboard.individual.map((person, index) => (
-                    <tr key={"leader_user" + index} className="hover:bg-gray-100 dark:hover:bg-gray-900 border-b">
+                    <tr key={"leader_user" + index} className={((userId === person.workout__user__id) ? "bg-sky-50 dark:bg-sky-950 " : "") + "hover:bg-gray-100 dark:hover:bg-gray-900 border-b"}>
                         <td className="py-2 px-2">
                             <span className="font-semibold">#{person.rank}</span>
                         </td>
@@ -942,7 +942,7 @@ export default function Competition() {
                                     <ErrorBoxSection
                                         errorMsg={statsError?.status + ' / ' + (statsError?.error || statsError?.message || statsError?.data?.detail)}/>
                                 ) : (
-                                    <TeamLeaderboardBox stats={stats} competition={competition} user={user} isOwner={isOwner}/>
+                                    <TeamLeaderboardBox stats={stats} competition={competition} user={user} teamId={teamId} isOwner={isOwner}/>
                                 )
                             }
                         </div>
@@ -955,7 +955,7 @@ export default function Competition() {
                                     <ErrorBoxSection
                                         errorMsg={statsError?.status + ' / ' + (statsError?.error || statsError?.message || statsError?.data?.detail)}/>
                                 ) : (
-                                    <IndividualLeaderboardBox stats={stats}/>
+                                    <IndividualLeaderboardBox stats={stats} userId={user?.id}/>
                                 )
                             }
                         </div>

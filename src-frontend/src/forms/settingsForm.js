@@ -166,7 +166,11 @@ export default function SettingsForm({user, setModalState, setLinkStrava}) {
     async function handleSubmit() {
         // update personal details
         try {
-            const result = await updateEntry({id: 'me', ...values}).unwrap();
+            const result = await updateEntry({
+                id: 'me',
+                ...values,
+                email: values.email.toLowerCase()
+            }).unwrap();
             console.log('Update Personal Settings success:', result);
             setModalState(false);
             document.body.classList.remove('body-no-scroll');

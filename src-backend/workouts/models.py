@@ -1,5 +1,7 @@
 import datetime
 from decimal import Decimal
+
+from django.conf import settings
 from django.db import models
 from django.db.models import Sum
 
@@ -186,6 +188,7 @@ class Workout(models.Model):
         scaling_distance = float((1 if kwargs.get('user', None) is None else kwargs.get('user').scaling_distance) if self.user is None else self.user.scaling_distance)
         if self.sport_type == "Steps":
             self.intensity_category = 1
+
             # Subtract the steps from walks and runs from the daily total steps to not double count
             recorded_walks = Workout.objects.filter(user=self.user, start_datetime__date=self.start_datetime, sport_type='Walk').aggregate(duration=Sum('duration'))['duration']
             recorded_runs = Workout.objects.filter(user=self.user, start_datetime__date=self.start_datetime, sport_type='Run').aggregate(duration=Sum('duration'))['duration']
@@ -195,12 +198,23 @@ class Workout(models.Model):
             base_duration_seconds = self.distance * (1 / scaling_distance) / 5 * 60 * 60
             self.duration = datetime.timedelta(seconds=base_duration_seconds)
             self.kcal = SPORT_MET["Walk"][self.intensity_category] * 75 * (base_duration_seconds / (60 * 60)) * scaling_kcal  # default human 75kg scaled up/down by scaler
+
+            # update start_datetime to server 23:59:00
+            self.start_datetime = datetime.datetime.combine(self.start_datetime.date(), datetime.time(23, 59, 0), settings.TIME_ZONE_OBJ)
+
+        else:
+            # estimate distance using database MET values
+            if self.distance is None or self.distance == "":
+                self.distance = SPORT_MET.get(self.sport_type, SPORT_MET['Workout'])[self.intensity_category] * 1000 * (self.duration.seconds / (60 * 60)) * scaling_distance # default human 1000m scaled up/down by scaler
+
         # default intensity 2
         if self.intensity_category is None or self.intensity_category == "":
             self.intensity_category = 2
+
         # estimate kcal using database MET values
         if self.kcal is None or self.kcal == "":
             self.kcal = SPORT_MET.get(self.sport_type, SPORT_MET['Workout'])[self.intensity_category] * 75 * (self.duration.seconds / (60 * 60)) * scaling_kcal # default human 75kg scaled up/down by scaler
+
         super().save(*args, **kwargs)
         changed = self.get_changed_fields()
         trigger_workout_change(
@@ -209,6 +223,7 @@ class Workout(models.Model):
             changes=changed
         )
         self._original = self._dict()  # reset
+
         # if workout is run or walk and steps were recorded on the same day, update steps to avoid double counting
         if self.sport_type in ['Run', 'Walk']:
             if 'start_datetime' in changed:

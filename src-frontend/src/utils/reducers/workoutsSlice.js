@@ -5,11 +5,24 @@ import {baseQueryWithReauth} from './baseQueryWithReauth';
 /**
  * Converts a date string with timezone to local timezone
  * @param {string} dateString - Date string in format '2025-06-28T18:04:59+01:00'
+ * @param {boolean} convertEoD - If true, converts time to 23:59:00 of the closest day
  * @returns {string} Date string in local timezone without timezone info
  */
-export const convertToLocalTimezone = (dateString) => {
+export const convertToLocalTimezone = (dateString, convertEoD = false) => {
     if (!dateString) return dateString;
     const d = new Date(dateString);
+
+    // overwrite timestamp for workout "steps"
+    if (convertEoD) {
+        const hours = d.getHours();
+        // If time is after 12:00, set to 23:59 of same day
+        // If time is before 12:00, set to 23:59 of previous day
+        if (hours < 12) {
+            d.setDate(d.getDate() - 1);
+        }
+        d.setHours(23, 59, 0);
+    }
+    
     const pad = num => String(num).padStart(2, '0');
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T` +
            `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
@@ -32,8 +45,20 @@ export const addLocalTimezone = (dateString) => {
 };
 
 
-export const dateFormatter = (dateString) => {
+export const dateFormatter = (dateString, convertEoD = false) => {
     const date = new Date(dateString);
+
+    // overwrite timestamp for workout "steps"
+    if (convertEoD) {
+        const hours = date.getHours();
+        // If time is after 12:00, set to 23:59 of same day
+        // If time is before 12:00, set to 23:59 of previous day
+        if (hours < 12) {
+            date.setDate(date.getDate() - 1);
+        }
+        date.setHours(23, 59, 0);
+    }
+
     const dateDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
     const today = new Date();
@@ -85,8 +110,8 @@ export const workoutsApi = createApi({
                 return response.map(workout => {
                     return {
                         ...workout,
-                        start_datetime_fmt: dateFormatter(workout.start_datetime), // format datetime
-                        start_datetime: convertToLocalTimezone(workout.start_datetime), // convert to local timezone
+                        start_datetime_fmt: dateFormatter(workout.start_datetime, workout.sport_type === 'Steps'), // format datetime
+                        start_datetime: convertToLocalTimezone(workout.start_datetime, workout.sport_type === 'Steps'), // convert to local timezone
                     };
                 });
             },
@@ -101,8 +126,8 @@ export const workoutsApi = createApi({
             transformResponse: (response) => {
                 return {
                     ...response,
-                    start_datetime_fmt: dateFormatter(response.start_datetime),
-                    start_datetime: convertToLocalTimezone(response.start_datetime),
+                    start_datetime_fmt: dateFormatter(response.start_datetime, response.sport_type === 'Steps'),
+                    start_datetime: convertToLocalTimezone(response.start_datetime, response.sport_type === 'Steps'),
                 };
             },
             providesTags: (result, error, id) => [{type: 'Workout', id}],

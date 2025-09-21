@@ -18,8 +18,8 @@ export const feedApi = createApi({
                 return response.map(activity => {
                     return {
                         ...activity,
-                        workout__start_datetime_fmt: dateFormatter(activity.workout__start_datetime), // format datetime
-                        workout__start_datetime: convertToLocalTimezone(activity.workout__start_datetime), // convert to local timezone
+                        workout__start_datetime_fmt: dateFormatter(activity.workout__start_datetime, activity.workout__sport_type === 'Steps'), // format datetime
+                        workout__start_datetime: convertToLocalTimezone(activity.workout__start_datetime, activity.workout__sport_type === 'Steps'), // convert to local timezone
                     };
                 });
             },

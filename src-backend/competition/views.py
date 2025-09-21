@@ -232,7 +232,7 @@ class FeedQueryView(APIView):
         competition_obj = Competition.objects.filter(id=competition)
         self.check_object_permissions(request, competition_obj)
 
-        all_points = Points.objects.filter(Q(award__competition__id=competition) | Q(goal__competition_id=competition)).order_by('-workout__start_datetime', '-workout__duration', '-workout', '-workout__user')
+        all_points = Points.objects.filter(Q(award__competition__id=competition) | Q(goal__competition_id=competition)).order_by('-workout__start_datetime', '-workout__steps', '-workout__duration', '-workout', '-workout__user')
 
         grouped_points = {i['workout']: i for i in all_points.values('workout__user', 'workout__user__username', 'workout__user__strava_allow_follow', 'workout', 'workout__sport_type', 'workout__start_datetime', 'workout__duration', 'workout__steps', 'workout__strava_id', 'award').annotate(points_capped=Sum('points_capped'), points_raw=Sum('points_raw')).order_by('-workout__start_datetime', '-workout__duration', '-workout', '-workout__user')}
 

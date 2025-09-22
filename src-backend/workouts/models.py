@@ -202,10 +202,10 @@ class Workout(models.Model):
             # update start_datetime to server 23:59:00
             self.start_datetime = datetime.datetime.combine(self.start_datetime.date(), datetime.time(23, 59, 0), settings.TIME_ZONE_OBJ)
 
-        else:
+        if self.sport_type in ["Ride", "EBikeRide", "GravelRide", "Handcycle", "Velomobile", "VirtualRide", "MountainBikeRide", "EMountainBikeRide", "Run", "TrailRun", "VirtualRun", "Walk"]:
             # estimate distance using database MET values
             if self.distance is None or self.distance == "":
-                self.distance = SPORT_MET.get(self.sport_type, SPORT_MET['Workout'])[self.intensity_category] * 1000 * (self.duration.seconds / (60 * 60)) * scaling_distance # default human 1000m scaled up/down by scaler
+                self.distance = SPORT_MET.get(self.sport_type, SPORT_MET['Workout'])[self.intensity_category] * (self.duration.seconds / (60 * 60)) * scaling_distance # default human 1000m scaled up/down by scaler
 
         # default intensity 2
         if self.intensity_category is None or self.intensity_category == "":
@@ -253,5 +253,5 @@ class Workout(models.Model):
                 for steps in recorded_steps:
                     setattr(steps, 'distance', None)
                     setattr(steps, 'kcal', None)
-                    setattr(steps, 'duration', timedelta(seconds=0))
+                    setattr(steps, 'duration', datetime.timedelta(seconds=0))
                     steps.save()

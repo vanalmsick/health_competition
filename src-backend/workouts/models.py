@@ -202,7 +202,7 @@ class Workout(models.Model):
 
             # update start_datetime to server 23:59:00 in UTC
             server_time = datetime.datetime.combine(self.start_datetime.date(), datetime.time(23, 59, 0))
-            self.start_datetime = timezone.make_aware(server_time).astimezone(timezone.utc)
+            self.start_datetime = timezone.make_aware(server_time).astimezone(datetime.timezone.utc)
 
         if self.sport_type in ["Ride", "EBikeRide", "GravelRide", "Handcycle", "Velomobile", "VirtualRide", "MountainBikeRide", "EMountainBikeRide", "Run", "TrailRun", "VirtualRun", "Walk"]:
             # estimate distance using database MET values

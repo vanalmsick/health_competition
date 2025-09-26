@@ -52,9 +52,10 @@ def trigger_workout_change(instance, new, changes):
         start_datetime = datetime.datetime.strptime(instance.start_datetime, '%Y-%m-%dT%H:%M:%SZ') if type(instance.start_datetime) is str else instance.start_datetime
         for competition in instance.user.my_competitions.filter(start_date__lte=start_datetime, end_date__gte=start_datetime):
             for goal in competition.activitygoal_set.all():
-                points = _calculate_points_raw(goal=goal, workout=instance, user=instance.user)
-                Points(goal=goal, workout=instance, points_raw=points, points_capped=points).save()
-                RecalcRequest(user=instance.user, goal=goal, start_datetime=start_datetime).save()
+                if goal.count_steps_as_walks or instance.sport_type != 'Steps':
+                    points = _calculate_points_raw(goal=goal, workout=instance, user=instance.user)
+                    Points(goal=goal, workout=instance, points_raw=points, points_capped=points).save()
+                    RecalcRequest(user=instance.user, goal=goal, start_datetime=start_datetime).save()
     else:
         # updated existing workout
         # check if relevant field was changed
@@ -83,11 +84,14 @@ def trigger_workout_change(instance, new, changes):
 
 def trigger_goal_change(instance, new, changes):
     RecalcRequest = apps.get_model('custom_user', 'RecalcRequest')
+    Points = apps.get_model('competition', 'Points')
+    Workout = apps.get_model('workouts', 'Workout')
     if new:
         # newly created goal - add point entries
-        Points = apps.get_model('competition', 'Points')
-        Workout = apps.get_model('workouts', 'Workout')
-        for workout in Workout.objects.filter(start_datetime__gte=instance.competition.start_date, start_datetime__lte=instance.competition.end_date + datetime.timedelta(days=1), user__in=instance.competition.user.all()):
+        workout_lst = Workout.objects.filter(start_datetime__gte=instance.competition.start_date, start_datetime__lte=instance.competition.end_date + datetime.timedelta(days=1), user__in=instance.competition.user.all())
+        if instance.count_steps_as_walks is False:
+            workout_lst = workout_lst.exclude(sport_type='Steps')
+        for workout in workout_lst:
             points = _calculate_points_raw(goal=instance, workout=workout, user=workout.user)
             Points(goal=instance, workout=workout, points_raw=points, points_capped=points).save()
             RecalcRequest(user=workout.user, goal=instance, start_datetime=workout.start_datetime).save()
@@ -96,6 +100,16 @@ def trigger_goal_change(instance, new, changes):
         # check if relevant field was changed
         _ = changes.pop('name', None)
         if len(changes) > 0:
+            if 'count_steps_as_walks' in changes:
+                # add steps
+                if changes['count_steps_as_walks'][1]:
+                    for workout in Workout.objects.filter(start_datetime__gte=instance.competition.start_date, start_datetime__lte=instance.competition.end_date + datetime.timedelta(days=1), user__in=instance.competition.user.all(), sport_type='Steps'):
+                        points = _calculate_points_raw(goal=instance, workout=workout, user=workout.user)
+                        Points(goal=instance, workout=workout, points_raw=points, points_capped=points).save()
+                # remove steps
+                else:
+                    for point in instance.points_set.filter(workout__sport_type='Steps'):
+                        point.delete()
             for user in instance.competition.user.all():
                 RecalcRequest(user=user, goal=instance, start_datetime=instance.competition.start_date).save()
 

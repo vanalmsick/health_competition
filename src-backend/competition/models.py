@@ -145,6 +145,8 @@ class ActivityGoal(models.Model):
     goal = models.DecimalField(null=False, max_digits=10, decimal_places=2)
     period = models.CharField(null=False, max_length=12, default='day', choices=POINT_REF_PERIODS)
 
+    count_steps_as_walks = models.BooleanField(default=True)
+
     min_per_workout = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=2)
     max_per_workout = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=2)
     min_per_day = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=2)

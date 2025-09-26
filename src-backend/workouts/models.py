@@ -1,6 +1,7 @@
 import datetime
 from decimal import Decimal
 
+from django.utils import timezone
 from django.conf import settings
 from django.db import models
 from django.db.models import Sum
@@ -199,8 +200,9 @@ class Workout(models.Model):
             self.duration = datetime.timedelta(seconds=base_duration_seconds)
             self.kcal = SPORT_MET["Walk"][self.intensity_category] * 75 * (base_duration_seconds / (60 * 60)) * scaling_kcal  # default human 75kg scaled up/down by scaler
 
-            # update start_datetime to server 23:59:00
-            self.start_datetime = datetime.datetime.combine(self.start_datetime.date(), datetime.time(23, 59, 0), settings.TIME_ZONE_OBJ)
+            # update start_datetime to server 23:59:00 in UTC
+            server_time = datetime.datetime.combine(self.start_datetime.date(), datetime.time(23, 59, 0))
+            self.start_datetime = timezone.make_aware(server_time).astimezone(timezone.utc)
 
         if self.sport_type in ["Ride", "EBikeRide", "GravelRide", "Handcycle", "Velomobile", "VirtualRide", "MountainBikeRide", "EMountainBikeRide", "Run", "TrailRun", "VirtualRun", "Walk"]:
             # estimate distance using database MET values

@@ -145,6 +145,15 @@ const fields = {
         "width": "w-1/2",
     },
 
+    "count_steps_as_walks": {
+        "type": "checkbox",
+        "required": false,
+        "read_only": false,
+        "label": "Count steps as walks (double counting is taken care of but manual steps entry required)",
+        "value": false,
+        "width": "w-full",
+    },
+
 }
 
 
